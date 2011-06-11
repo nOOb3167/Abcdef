@@ -81,6 +81,8 @@ Please observe get default stage / default stage creation!!
 
 _cogl_winsys_onscreen_init from cogl_framebuffer_allocate trying to SetPixelFormat which fails
  let it create a window for us instead
+
+Clutter_stage_allocate does stuff like cogl_onscreen_clutter_backend_set_size
 */
 
 #include <stdlib.h>
@@ -153,6 +155,17 @@ _cogl_setup ()
     if (!cogl_framebuffer_allocate (framebuffer, NULL))
         _exit ("COGL_FRAMEBUFFER_ALLOCATE");
     
+    // This one is from clutter_stage_allocate, not sure about the call order
+    cogl_onscreen_clutter_backend_set_size (640, 480);
+    
+    // Calls cogl_set_framebuffer wheeeeee
+    cogl_push_framebuffer (framebuffer);
+
+    float vp[4];
+    cogl_get_viewport (vp);
+    
+    cogl_pop_framebuffer ();
+    
     // - Backend create context
      // But this does nothing, already here..
     // - End of Backend create context
@@ -187,9 +200,6 @@ main (int argc, char **argv)
 
     CoglFeatureFlags cff;
     cff = cogl_get_features ();
-
-    float vp[4];
-    cogl_get_viewport (vp);
 
     ALLEGRO_TIMER* timer;
     timer = al_create_timer (1.0f/1.0f);
