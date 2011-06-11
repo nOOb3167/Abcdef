@@ -75,7 +75,9 @@ is called from clutter_stage_realize
 maybe clutter_actor_realize does the clutter_stage_realize thing (YES stage_class_init actor_class->realize = clutter_stage_realize)
 Clutter_stage_get_default calls clutter_actor_realize for example
  clutter_stage_get_default seems important, dox claims gets called from clutter_init
-Please observe default stage creation
+Please observe get default stage / default stage creation!!
+ Stage subclass of Actor so that clutter_actor_realize call will call clutter_stage_realize
+ clutter_stage_realize -> _clutter_stage_window_realize -> vmethod clutter_stage_win32_realize
 
 */
 
