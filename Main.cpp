@@ -143,12 +143,7 @@ _cogl_setup ()
     hwnd = al_get_win_window_handle (display);
     if (!hwnd)
         _exit ("HWND");
-        
-    HDC hax_hdc;
-    hax_hdc = GetWindowDC (hwnd);
-    if (!hax_hdc)
-        _exit ("HAX_HDC");
-    
+            
     cogl_onscreen_win32_set_foreign_window (onscreen,
                                             hwnd);
     cogl_onscreen_set_swap_throttled (onscreen, 0);
