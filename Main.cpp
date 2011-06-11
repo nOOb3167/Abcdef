@@ -18,6 +18,19 @@ _cogl_onscreen_clutter_backend_set_size (width, height);
 clutter_stage_win32_realize <- wait is this called _AFTER_ context creation? LOL
  Dont think so, _clutter_backend_create_context called from here
 
+ GObject
+ twophase
+   init, construct
+   but construct vmethod invoked first,
+    meant to chain to parent, basebasebase g_object_constructor then calls init,
+    init returns then the constructs unchain back
+   Aka if you want to use the builtin construct-param system:
+    override construct vmethod
+     construct
+      1 chain parent
+      2 essentially is a ctor with params. use the params to init self (at this point init will be invoked already)
+     init
+      1 parameterless ctor
 */
 
 #include <stdlib.h>
