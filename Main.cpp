@@ -149,20 +149,8 @@ _cogl_setup ()
     if (!hax_hdc)
         _exit ("HAX_HDC");
     
-    /*
-    // UMAD
-    CoglFramebuffer *hax_fb = COGL_FRAMEBUFFER (onscreen);
-    CoglContext *hax_ctx = hax_fb;
-    CoglDisplay *hax_ds = hax_ctx->display;
-    CoglDisplayWgl *hax_wl = hax_ds->winsys;
-    //CoglOnscreenWgl *hax_wl;
-    hax_wl->dummy_dc = hax_hdc;
-    */
-
-    /* Let cogl create a window for me
     cogl_onscreen_win32_set_foreign_window (onscreen,
                                             hwnd);
-    */
     cogl_onscreen_set_swap_throttled (onscreen, 0);
     
     CoglFramebuffer *framebuffer;
