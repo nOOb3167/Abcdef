@@ -79,16 +79,20 @@ Please observe get default stage / default stage creation!!
  Stage subclass of Actor so that clutter_actor_realize call will call clutter_stage_realize
  clutter_stage_realize -> _clutter_stage_window_realize -> vmethod clutter_stage_win32_realize
 
+_cogl_winsys_onscreen_init from cogl_framebuffer_allocate trying to SetPixelFormat which fails
 */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_windows.h>
 #include <allegro5/allegro_opengl.h>
 #include <allegro5/allegro_primitives.h>
 
 #define COGL_ENABLE_EXPERIMENTAL_2_0_API
 #include <cogl/cogl.h>
+
+ALLEGRO_DISPLAY* display;
 
 static void
 _exit (const char *what)
@@ -130,13 +134,46 @@ _cogl_setup ()
         _exit ("COGL_CONTEXT");
 
     cogl_set_default_context (cogl_context);
+    
+    // The realize part now
+    CoglOnscreen *onscreen;
+    onscreen = cogl_onscreen_new (cogl_context, 640, 480);
+    HWND hwnd;
+    hwnd = al_get_win_window_handle (display);
+    if (!hwnd)
+        _exit ("HWND");
+        
+    HDC hax_hdc;
+    hax_hdc = GetWindowDC (hwnd);
+    if (!hax_hdc)
+        _exit ("HAX_HDC");
+    
+    /*
+    // UMAD
+    CoglFramebuffer *hax_fb = COGL_FRAMEBUFFER (onscreen);
+    CoglContext *hax_ctx = hax_fb;
+    CoglDisplay *hax_ds = hax_ctx->display;
+    CoglDisplayWgl *hax_wl = hax_ds->winsys;
+    //CoglOnscreenWgl *hax_wl;
+    hax_wl->dummy_dc = hax_hdc;
+    */
+    
+    cogl_onscreen_win32_set_foreign_window (onscreen,
+                                            hwnd);
+    cogl_onscreen_set_swap_throttled (onscreen, 0);
+    
+    CoglFramebuffer *framebuffer;
+    framebuffer = COGL_FRAMEBUFFER (onscreen);
+    if (!cogl_framebuffer_allocate (framebuffer, NULL))
+        _exit ("COGL_FRAMEBUFFER_ALLOCATE");
+    // End of realize part
+
 }
 
 int
 main (int argc, char **argv)
 {
     int tmp;
-    ALLEGRO_DISPLAY* display;
 
     al_init ();
     al_init_primitives_addon ();
@@ -153,6 +190,8 @@ main (int argc, char **argv)
     al_set_target_backbuffer(display);
 
     _cogl_setup ();
+    
+    printf ("COGL SETUP COMPLETE\n");
 
     CoglFeatureFlags cff;
     cff = cogl_get_features ();
