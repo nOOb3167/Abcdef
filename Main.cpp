@@ -80,6 +80,7 @@ Please observe get default stage / default stage creation!!
  clutter_stage_realize -> _clutter_stage_window_realize -> vmethod clutter_stage_win32_realize
 
 _cogl_winsys_onscreen_init from cogl_framebuffer_allocate trying to SetPixelFormat which fails
+ let it create a window for us instead
 */
 
 #include <stdlib.h>
@@ -157,17 +158,25 @@ _cogl_setup ()
     //CoglOnscreenWgl *hax_wl;
     hax_wl->dummy_dc = hax_hdc;
     */
-    
+
+    /* Let cogl create a window for me
     cogl_onscreen_win32_set_foreign_window (onscreen,
                                             hwnd);
+    */
     cogl_onscreen_set_swap_throttled (onscreen, 0);
     
     CoglFramebuffer *framebuffer;
     framebuffer = COGL_FRAMEBUFFER (onscreen);
     if (!cogl_framebuffer_allocate (framebuffer, NULL))
         _exit ("COGL_FRAMEBUFFER_ALLOCATE");
+    
+    // - Backend create context
+     // But this does nothing, already here..
+    // - End of Backend create context
     // End of realize part
 
+    //Hmm if we didn't create window and setup GL context
+    //_cogl_winsys_display_setup shoulda gotten called
 }
 
 int
