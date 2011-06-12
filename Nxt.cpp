@@ -5,6 +5,9 @@ Also see COGL_DEBUG_DISABLE_ATLAS
 cogl-framebuffer.c:_cogl_framebuffer_init_bits
  The HAVE_COGL_GL path throws Invalid Enumeration Value
  The glGetIntegerv path kinda works?
+
+cogl_display_setup -> display_setup -> winsys -> context_create
+
 */
 
 #include <stdlib.h>
@@ -150,9 +153,6 @@ main (int argc, char **argv)
     _cogl_setup ();
     
     printf ("COGL SETUP COMPLETE\n");
-
-    CoglFeatureFlags cff;
-    cff = cogl_get_features ();
 
     ALLEGRO_TIMER* timer;
     timer = al_create_timer (1.0f/1.0f);
