@@ -38,32 +38,47 @@ _cogl_setup ()
     
     /*
     cogl_renderer_new
-     Does nothing basically, just allocates
+      Does nothing basically, just allocates
     cogl_renderer_connect
-     The vtable: _cogl_winsys_vtable_getters has _cogl_winsys_wgl_get_vtable
-     That entry's renderer_connect is called
-      Does nothing, allocates CoglRendererWgl (renderer->winsys)
-     renderer->winsys_vtable is set
+      The vtable: _cogl_winsys_vtable_getters has _cogl_winsys_wgl_get_vtable
+      That entry's renderer_connect is called
+        Does nothing, allocates CoglRendererWgl (renderer->winsys)
+      renderer->winsys_vtable is set
     cogl_swap_chain
-     Allocates
+      Allocates
     cogl_onscreen_template_new
-     Allocates
+      Allocates
     cogl_renderer_check_onscreen_template
-     Renderer_connect vmethod (aka does nothing)
-     Cogl_display_new
-      CoglDisplay struct, links renderer, winsys?whichvtableorstruct?TheStruct!WillBeCoglDisplayWglSeeLater, onscreen template
-      returns with display->setup=false
-     Cogl_display_setup
-      display_setup vmethod
-       Sets display->winsys to new allocation of CoglDisplayWgl (Holds window_class, HGLRC wgl_context, dummy_hwnd, dummy_dc)
-       Create_window_class
-        --
-       Create_context
-        CreateWindowW
-        Choose_pixel_format
-        SetPixelFormat
-        wglCreateContext
-        wglMakeCurrent
+      Renderer_connect vmethod (aka does nothing)
+      Cogl_display_new
+        CoglDisplay struct, links renderer, winsys?whichvtableorstruct?TheStruct!WillBeCoglDisplayWglSeeLater, onscreen template
+        returns with display->setup=false
+      Cogl_display_setup
+        display_setup vmethod
+          Sets display->winsys to new allocation of CoglDisplayWgl (Holds window_class, HGLRC wgl_context, dummy_hwnd, dummy_dc)
+          Create_window_class
+            --
+          Create_context
+            CreateWindowW
+            Choose_pixel_format
+            SetPixelFormat
+            wglCreateContext
+            wglMakeCurrent
+        As far as I can tell then the display is unreffed   
+    Cogl_display_new; Again
+    Cogl_display_setup; Again
+    Cogl_context_new
+      context_init vmethod
+        cogl_renderer_add_native_filter (win32_event_filter_cb)
+        update_winsys_features (stuff with GL extensions)
+      _cogl_pipeline_init_default_pipeline and related
+        notice how storing depthtest etc
+      Context->framebuffers nulled, so is context->current_pipeline
+       But context->framebuffer_stack inited with an COGL_INVALID_HANDLE entry
+      WARNING see "if (context->stub_winsys)" note about Clutter
+       If winsys was stub_winsys it will create _cogl_onscreen_new and cogl_set_framebuffer
+    
+    
     */
     
     cogl_renderer = cogl_renderer_new ();
