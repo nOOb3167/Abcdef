@@ -1,88 +1,5 @@
 /*
-_cogl_swap_buffers_notify after SwapBuffers
- ... which does nothing at all
-
-clutter-stage.c:358
-about backend windows?
-_cogl_check_driver_valid
-
---
-
-  _cogl_framebuffer_init (COGL_FRAMEBUFFER (onscreen),
-                          COGL_FRAMEBUFFER_TYPE_ONSCREEN,
-                          COGL_PIXEL_FORMAT_RGBA_8888_PRE,
-                          0xdeadbeef, 0xdeadbeef);
-
-_cogl_onscreen_clutter_backend_set_size (width, height);
-
-clutter_stage_win32_realize <- wait is this called _AFTER_ context creation? LOL
- Dont think so, _clutter_backend_create_context called from here
-
- GObject
- twophase
-   init, construct
-   but construct vmethod invoked first,
-    meant to chain to parent, basebasebase g_object_constructor then calls init,
-    init returns then the constructs unchain back
-   Aka if you want to use the builtin construct-param system:
-    override construct vmethod
-     construct
-      1 chain parent
-      2 essentially is a ctor with params. use the params to init self (at this point init will be invoked already)
-     init
-      1 parameterless ctor
-
-Clutter
-clutter_init
- _clutter_context_get_default: context creation
-  ClutterCntx with backend g_object_new, backend be singleton much
-   backend has the create_context and create_stage vmethods
- init_real
-  _clutter_feature_init, Claims initializes cogl state!
-   _clutter_backend_create_context, calls create_context vmethod!
-    init_events vmethod, creates device_manager _clutter_backend_win32_events_init <- they do nothing relevant?
-clutter_stage_new
- clutter_stage_init
-  _clutter_backend_create_stage, create_stage backend vmethod
-   creates CLUTTER_TYPE_STAGE_MANAGER
-   create_stage backend vmethod
-    creates CLUTTER_TYPE_STAGE_WIN32
-     class_init/init do nothing but notice this thing has the HWND
-  cogl_matrix calls and stuff
-  clutter_stage_set_viewport: is called but didn't really investigate
-   queue_full_redraw
-    clutter_actor_queue_redraw for self (stage)
-     _clutter_actor_queue_redraw_full actually seems important?
-     hints at _clutter_stage_do_update
-
-Also see crate.c queue redraw
-
---clutter_actor_show ()
---clutter_main ()
-
-search for where clutter_stage_win32_realize / ->realize gets called from
-it is where cogl_onscreen_new happens for example and CreateWindowW
-see
- clutter_stage_realize
-  _clutter_stage_window_realize <- stage's window iface, which has clutter_stage_win32_realize ?
-   yes, from clutter-stage-win32.c: clutter_stage_window_iface_init
-  _clutter_backend_ensure_context
-see where _clutter_stage_window_realize got called from, that's calling the STAGE_WINDOW_GET_IFACE's vmethod
-is called from clutter_stage_realize
- (this one is also what does _clutter_backend_ensure_context_internal)
-  ..Ensure_context_internal is important, duplicate it,
-  it calls the backend ensure_context
-maybe clutter_actor_realize does the clutter_stage_realize thing (YES stage_class_init actor_class->realize = clutter_stage_realize)
-Clutter_stage_get_default calls clutter_actor_realize for example
- clutter_stage_get_default seems important, dox claims gets called from clutter_init
-Please observe get default stage / default stage creation!!
- Stage subclass of Actor so that clutter_actor_realize call will call clutter_stage_realize
- clutter_stage_realize -> _clutter_stage_window_realize -> vmethod clutter_stage_win32_realize
-
-_cogl_winsys_onscreen_init from cogl_framebuffer_allocate trying to SetPixelFormat which fails
- let it create a window for us instead
-
-Clutter_stage_allocate does stuff like cogl_onscreen_clutter_backend_set_size
+But why am I creating an onscreen?
 */
 
 #include <stdlib.h>
@@ -138,10 +55,12 @@ _cogl_setup ()
 
     cogl_set_default_context (cogl_context);
     
-    // The realize part now
     CoglOnscreen *onscreen;
-    onscreen = cogl_onscreen_new (cogl_context, 640, 480);
+    CoglFramebuffer *framebuffer;
     HWND hwnd;
+    
+    onscreen = cogl_onscreen_new (cogl_context, 640, 480);
+    
     hwnd = al_get_win_window_handle (display);
     if (!hwnd)
         _exit ("HWND");
@@ -150,29 +69,18 @@ _cogl_setup ()
                                             hwnd);
     cogl_onscreen_set_swap_throttled (onscreen, 0);
     
-    CoglFramebuffer *framebuffer;
     framebuffer = COGL_FRAMEBUFFER (onscreen);
     if (!cogl_framebuffer_allocate (framebuffer, NULL))
         _exit ("COGL_FRAMEBUFFER_ALLOCATE");
     
-    // This one is from clutter_stage_allocate, not sure about the call order
     cogl_onscreen_clutter_backend_set_size (640, 480);
     
-    // Calls cogl_set_framebuffer wheeeeee
-    cogl_push_framebuffer (framebuffer);
-
+    cogl_set_framebuffer (framebuffer);
+    
     float vp[4];
     cogl_get_viewport (vp);
     
-    cogl_pop_framebuffer ();
-    
-    // - Backend create context
-     // But this does nothing, already here..
-    // - End of Backend create context
-    // End of realize part
-
-    //Hmm if we didn't create window and setup GL context
-    //_cogl_winsys_display_setup shoulda gotten called
+    printf ("Viewport %3.0f %3.0f %3.0f %3.0f\n", vp[0], vp[1], vp[2], vp[3]);
 }
 
 int
