@@ -29,13 +29,7 @@ _exit (const char *what)
 
 static void
 _cogl_setup ()
-{
-    CoglRenderer *cogl_renderer;
-    CoglDisplay *cogl_display;
-    CoglContext *cogl_context;
-    CoglSwapChain *swap_chain;
-    CoglOnscreenTemplate *onscreen_template;
-    
+{    
     /*
     cogl_renderer_new
       Does nothing basically, just allocates
@@ -94,8 +88,15 @@ _cogl_setup ()
           Dirty bound_framebuffer, gl_viewport
           _cogl_matrix_stack_dirty model and projection
           _cogl_clip_stack_dirty
+    Notice cogl_flush -> _cogl_journal_flush "if (journal->entries->len == 0) return"
     
     */
+
+    CoglRenderer *cogl_renderer;
+    CoglDisplay *cogl_display;
+    CoglContext *cogl_context;
+    CoglSwapChain *swap_chain;
+    CoglOnscreenTemplate *onscreen_template;
     
     cogl_renderer = cogl_renderer_new ();
     if (!cogl_renderer_connect (cogl_renderer, NULL))
