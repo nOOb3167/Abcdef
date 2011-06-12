@@ -20,8 +20,6 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #define COGL_ENABLE_EXPERIMENTAL_2_0_API
 #include <cogl/cogl.h>
 
-ALLEGRO_DISPLAY* display;
-
 static void
 _exit (const char *what)
 {
@@ -38,13 +36,35 @@ _cogl_setup ()
     CoglSwapChain *swap_chain;
     CoglOnscreenTemplate *onscreen_template;
     
-    ALLEGRO_BITMAP *abmp;
-    GLuint atex;
-    abmp = al_create_bitmap (640, 480);
-    atex = al_get_opengl_texture(abmp);
-    if (atex == 0)
-        _exit ("ATEX_ZERO");
-    
+    /*
+    cogl_renderer_new
+     Does nothing basically, just allocates
+    cogl_renderer_connect
+     The vtable: _cogl_winsys_vtable_getters has _cogl_winsys_wgl_get_vtable
+     That entry's renderer_connect is called
+      Does nothing, allocates CoglRendererWgl (renderer->winsys)
+     renderer->winsys_vtable is set
+    cogl_swap_chain
+     Allocates
+    cogl_onscreen_template_new
+     Allocates
+    cogl_renderer_check_onscreen_template
+     Renderer_connect vmethod (aka does nothing)
+     Cogl_display_new
+      CoglDisplay struct, links renderer, winsys?whichvtableorstruct?TheStruct!WillBeCoglDisplayWglSeeLater, onscreen template
+      returns with display->setup=false
+     Cogl_display_setup
+      display_setup vmethod
+       Sets display->winsys to new allocation of CoglDisplayWgl (Holds window_class, HGLRC wgl_context, dummy_hwnd, dummy_dc)
+       Create_window_class
+        --
+       Create_context
+        CreateWindowW
+        Choose_pixel_format
+        SetPixelFormat
+        wglCreateContext
+        wglMakeCurrent
+    */
     
     cogl_renderer = cogl_renderer_new ();
     if (!cogl_renderer_connect (cogl_renderer, NULL))
@@ -122,13 +142,8 @@ _cogl_setup ()
     cogl_pop_framebuffer ();
     
     cogl_flush ();
-    //cogl_begin_gl ();
-    
-    al_set_target_backbuffer(display);
-    al_draw_bitmap (abmp, 0, 0, 0);
-    al_flip_display ();
-    
-    //cogl_end_gl ();
+    cogl_begin_gl ();    
+    cogl_end_gl ();
 }
 
 int
@@ -136,45 +151,9 @@ main (int argc, char **argv)
 {
     int tmp;
 
-    al_init ();
-    al_init_primitives_addon ();
-
-    al_set_new_display_flags(ALLEGRO_OPENGL | ALLEGRO_NOFRAME);
-    al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_REQUIRE);
-    al_set_new_display_option(ALLEGRO_SWAP_METHOD, 2, ALLEGRO_REQUIRE);
-
-    display = al_create_display (640, 480);
-    if(!display) { return 1; }
-
-    wglSwapIntervalEXT (0);
-
-    al_set_target_backbuffer(display);
-
     _cogl_setup ();
     
     printf ("COGL SETUP COMPLETE\n");
-
-    ALLEGRO_TIMER* timer;
-    timer = al_create_timer (1.0f/1.0f);
-    if(timer == NULL) { return 1; }
-
-    ALLEGRO_EVENT_QUEUE* queue;
-    ALLEGRO_EVENT ev;
-    queue = al_create_event_queue ();
-    if(queue == NULL) { return 1; }
-
-    al_register_event_source (queue, al_get_timer_event_source (timer));
-    al_start_timer (timer);
-
-    printf("Starting wait.\n");
-    while(1)
-      {
-        al_wait_for_event(queue, &ev);
-        printf("Ev res %d\n", ev.type);
-        al_set_target_backbuffer(display);
-        al_draw_filled_rectangle (50, 50, 100, 100, al_map_rgb (255, 0, 0));
-        al_flip_display();
-      }
 
     return EXIT_SUCCESS;
 }
