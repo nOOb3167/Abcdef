@@ -78,16 +78,23 @@ _cogl_setup ()
       WARNING see "if (context->stub_winsys)" note about Clutter
        If winsys was stub_winsys it will create _cogl_onscreen_new and cogl_set_framebuffer
     Cogl_set_default_context
-      Meh it's like already done by cogl_context_new
+       Meh it's like already done by cogl_context_new
     Cogl_onscreen_new
-      _cogl_framebuffer_init
+       _cogl_framebuffer_init
     Cogl_framebuffer_allocate
-      Nothing for offscreens, note says about cogl_offscreen_new_to_texture implicit allocation
-      onscreen_init vmethod
-        There's an if (onscreen->foreign_hwnd)
-          WARNING SKIPS creating window but not setting pixel format surely this is retard mode/bug, patched cogl not to setpixelformat
-        Else CreateWindowW, Get dummy_dc's pixel format, set the onscreen's pf to it
-        WARNING Cogl patched not to do that for Main, use unpatched for Nxt
+       Nothing for offscreens, note says about cogl_offscreen_new_to_texture implicit allocation
+       onscreen_init vmethod
+         There's an if (onscreen->foreign_hwnd)
+           WARNING SKIPS creating window but not setting pixel format surely this is retard mode/bug, patched cogl not to setpixelformat
+         Else CreateWindowW, Get dummy_dc's pixel format, set the onscreen's pf to it
+         WARNING Cogl patched not to do that for Main, use unpatched for Nxt    
+    Cogl_set_framebuffer
+       _cogl_framebuffer_flush_journal
+       _cogl_set_framebuffers_real
+          Dirty bound_framebuffer, gl_viewport
+          _cogl_matrix_stack_dirty model and projection
+          _cogl_clip_stack_dirty
+    
     */
     
     cogl_renderer = cogl_renderer_new ();
