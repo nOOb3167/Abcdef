@@ -90,6 +90,8 @@ _cogl_setup ()
           _cogl_clip_stack_dirty
     Notice cogl_flush -> _cogl_journal_flush "if (journal->entries->len == 0) return"
     
+    --
+    Doubt I really need cogl_onscreen_clutter_backend_set_size (640, 480);
     */
 
     CoglRenderer *cogl_renderer;
@@ -125,24 +127,12 @@ _cogl_setup ()
     
     CoglOnscreen *onscreen;
     CoglFramebuffer *framebuffer;
-    HWND hwnd;
     
     onscreen = cogl_onscreen_new (cogl_context, 640, 480);
-    
-    hwnd = al_get_win_window_handle (display);
-    if (!hwnd)
-        _exit ("HWND");
-            
-    cogl_onscreen_win32_set_foreign_window (onscreen,
-                                            hwnd);
-    cogl_onscreen_set_swap_throttled (onscreen, 0);
-    
     framebuffer = COGL_FRAMEBUFFER (onscreen);
     if (!cogl_framebuffer_allocate (framebuffer, NULL))
         _exit ("COGL_FRAMEBUFFER_ALLOCATE");
-    
-    cogl_onscreen_clutter_backend_set_size (640, 480);
-    
+        
     cogl_set_framebuffer (framebuffer);
     
     float vp[4];
@@ -150,32 +140,8 @@ _cogl_setup ()
     
     printf ("Viewport %3.0f %3.0f %3.0f %3.0f\n", vp[0], vp[1], vp[2], vp[3]);
     
-    CoglHandle tex;
-    tex = cogl_texture_new_with_size (640, 480, (CoglTextureFlags)(COGL_TEXTURE_NO_AUTO_MIPMAP | COGL_TEXTURE_NO_SLICING | COGL_TEXTURE_NO_ATLAS), COGL_PIXEL_FORMAT_BGR_888);
-    if (tex == COGL_INVALID_HANDLE)
-        _exit ("TEX_HANDLE_INVALID");
-    CoglHandle offb;
-    offb = cogl_offscreen_new_to_texture (tex);
-    if (tex == COGL_INVALID_HANDLE)
-        _exit ("OFFSCREEN_HANDLE_INVALID");
-        
-    CoglHandle ftex;
-    ftex = cogl_texture_new_from_foreign (atex, GL_TEXTURE_2D,
-                                          640, 480, 0, 0, COGL_PIXEL_FORMAT_RGB_888);
-    if (ftex == COGL_INVALID_HANDLE)
-        _exit ("OFFSCREEN_HANDLE_INVALID");
-    CoglHandle foffb;
-    foffb = cogl_offscreen_new_to_texture (ftex);
-    if (ftex == COGL_INVALID_HANDLE)
-        _exit ("OFFSCREEN_HANDLE_INVALID");
-        
-    cogl_push_framebuffer (COGL_FRAMEBUFFER (offb));
     cogl_rectangle (50, 50, 200, 200);
-    cogl_pop_framebuffer ();
-    
     cogl_flush ();
-    cogl_begin_gl ();    
-    cogl_end_gl ();
 }
 
 int
