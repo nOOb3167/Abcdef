@@ -1,5 +1,6 @@
 /*
 But why am I creating an onscreen?
+Also see COGL_DEBUG_DISABLE_ATLAS
 */
 
 #include <stdlib.h>
