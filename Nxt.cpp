@@ -28,6 +28,79 @@ _exit (const char *what)
     exit (1);
 }
 
+struct context_holder
+{
+    int state; // 0 = Invalid; 1 = Allegro; 2 = Cogl
+    ALLEGRO_DISPLAY *display;
+    HDC hdc;
+    HGLRC hglrc;
+};
+
+static void
+_context_holder_get_win (HDC *hdc, HGLRC *hglrc)
+{
+    *hglrc = wglGetCurrentContext ();
+    if (!(*hglrc))
+        _exit ("CURRENT_HGLRC");
+    *hdc = wglGetCurrentDC ();
+    if (!(*hdc))
+        _exit ("CURRENT_DC");
+}
+
+/**
+ * Warning Cogl MUST be current at this point
+ */
+static struct context_holder *
+context_holder_new_WHILE_COGL ()
+{
+    struct context_holder *ret;
+    ret = g_new (struct context_holder, 1);
+    ret->state = 0;
+    ret->display = 0;
+    _context_holder_get_win (&ret->hdc, &ret->hglrc);
+    return ret;
+}
+
+static void
+context_holder_display_set_WHILE_ALLEGRO (struct context_holder *what, ALLEGRO_DISPLAY *display)
+{
+    if (what->state != 0)
+        _exit ("CONTEXT_HOLDER_DISPLAY_SET BUT STATE NOT 0");
+    what->display = display;
+    what->state = 1;
+}
+
+static void
+context_cogl_allegro (struct context_holder *what)
+{
+    if (what->state != 2)
+        _exit ("CONTEXT_COGL_ALLEGRO BUT STATE NOT 2");
+
+    HDC current_dc;
+    HGLRC current_hglrc;
+    _context_holder_get_win (&current_dc, &current_hglrc);
+    what->hdc = current_dc;
+    what->hglrc = current_hglrc;
+    
+    al_set_current_opengl_context (what->display);
+    
+    what->state = 1;
+}
+
+static void
+context_allegro_cogl (struct context_holder *what)
+{
+    if (what->state != 1)
+        _exit ("CONTEXT_ALLEGRO_COGL BUT STATE NOT 1");
+    
+    BOOL ret;
+    ret = wglMakeCurrent (what->hdc, what->hglrc);
+    if (!ret)
+        _exit ("MAKE_CURRENT");
+    
+    what->state = 2;
+}
+
 static void
 _cogl_setup ()
 {    
@@ -212,10 +285,9 @@ _cogl_setup ()
     
     cogl_set_framebuffer (COGL_FRAMEBUFFER (offscreen_tex64));
     
-    float vp[4];
-    cogl_get_viewport (vp);    
-    printf ("Viewport %3.0f %3.0f %3.0f %3.0f\n", vp[0], vp[1], vp[2], vp[3]);
-    
+    struct context_holder *ch;
+    ch = context_holder_new_WHILE_COGL ();
+        
     CoglColor clear_color;
     cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
     cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
@@ -241,6 +313,18 @@ _cogl_setup ()
     siz = cogl_texture_get_data (tex64, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
     printf ("Data %p\nValid %d\n", data, siz);
     
+    ALLEGRO_DISPLAY *display;
+    
+    al_set_new_display_flags(ALLEGRO_OPENGL | ALLEGRO_NOFRAME);
+    al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_REQUIRE);
+    al_set_new_display_option(ALLEGRO_SWAP_METHOD, 2, ALLEGRO_REQUIRE);
+    display = al_create_display (640, 480);
+    if(!display)
+        _exit ("DISPLAY");
+
+    context_holder_display_set_WHILE_ALLEGRO (ch, display);
+    
+    context_allegro_cogl (ch);
 }
 
 int
@@ -248,6 +332,8 @@ main (int argc, char **argv)
 {
     int tmp;
 
+    al_init ();
+    
     _cogl_setup ();
     
     printf ("COGL SETUP COMPLETE\n");
