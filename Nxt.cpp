@@ -221,9 +221,14 @@ _cogl_setup ()
     cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
     
     cogl_set_source_color4ub ('1', '1', '1', 255);
-    
-    cogl_rectangle (00, 00, 32, 32);
+    cogl_ortho (0, 64, 0, 64, -1, 1);
+    cogl_rectangle (0, 0, 2, 2);
     cogl_flush ();
+    
+    CoglMatrix mvm;
+    cogl_get_modelview_matrix (&mvm);
+    CoglMatrix mp;
+    cogl_get_projection_matrix (&mp);
     
     int siz;
     char *data;
