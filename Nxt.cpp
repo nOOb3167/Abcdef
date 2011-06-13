@@ -92,6 +92,68 @@ _cogl_setup ()
     
     --
     Doubt I really need cogl_onscreen_clutter_backend_set_size (640, 480);
+    
+    On Allegro side:
+      al_init should be OK
+      al_create_display
+        al_use_transform calls GL
+        al_clear_to_color calls GL but harmless? glClearColor / glClear
+        flip_display calls GL but harmless? SwapBuffers / glFlush
+    
+    al_set_current_display API will wglMakeCurrent
+    Let allegro create window and GL context, pass to cogl
+      Can not do that through cogl_onscreen_w32_set_foreign_window (too late) by then,
+      cogls display creation with wglCreateContext, SetPixelFormat etc will retry creating context
+    Watch out for onscreen_bind it wglMakeCurrents?
+    
+    Cogl: Constraints on the dummy pixel format: create_context -> choose_pixel_format and pixel_format_is_better
+    Create_context ensures dummy but it DOES set the display->wgl_context
+      It is the only context creation point? YES
+    Dummy only called dummy, it _is_ the real thing? -> See below on dummy_dc relating to client_dc
+    --Cogl_context_new also does cogl_display_setup so that's a third time?
+      And second time with same display (The very first cogl_display_setup is on a temp display that gets killed off),
+      however wgl_context is not recreated and dummy_hwnd/dummy_dc not recreated (guards)
+    
+    Rig the nontemp display's hwnd and dc (hwnd only is enough?)
+      Problem might be that set_foreign_window is for onscreen not display :w, implement a display_set_dummy_hwnd_and_dc?
+    Patch cogl_framebuffer_allocate not to screw with SetPixelFormat
+    
+    Check how dummy_dc relates to client_dc (CoglOnscreenWgl) and dummy_hwnd to hwnd (CoglOnscreenWin32)
+    The two interact in onscreen_init vmethod
+      onscreen_init will get 'hwnd' var either from foreign either will create, then ->hwnd and ->client_dc set from 'hwnd' var
+      Dummy does affect real, client_dc will get SetPixelFormatted same format as dummy_dc
+    
+    Remember this already
+      Cogl_framebuffer_allocate does not have anything to do with FBOs
+    
+    Cogl_framebuffer_allocate's onscreen_init call should not SetPixelFormat
+    Onscreen_init ONLY called from framebuffer_allocate
+    
+    Plan is prevent 2nd (1st is temp, 3rd is guarded)
+    GL Context creation at dummy time, then never again?
+    There is only one wglCreateContext point and it's for wgl_display->dummy_dc
+    Ok callgraph the bastard
+      cogl_renderer_check_onscreen_template (the temp)
+      cogl_display_setup
+      cogl_context_new
+        _cogl_winsys_display_setup
+          create_context
+            wglCreateContext
+      
+      cogl_framebuffer_allocate
+        _cogl_winsys_onscreen_init
+          SetPixelFormat
+    
+      cogl_renderer_check_onscreen_template (the temp)
+      cogl_display_setup
+      cogl_context_new
+        _cogl_winsys_display_setup
+          create_context
+            SetPixelFormat
+    
+    I can't see why foreign_hwnd + Inhibit SetPixelFormat would not work
+    Then just cogl_framebuffer_swap_buffers
+    
     */
 
     CoglRenderer *cogl_renderer;
