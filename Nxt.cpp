@@ -12,6 +12,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_windows.h>
 #include <allegro5/allegro_opengl.h>
@@ -197,13 +198,44 @@ _cogl_setup ()
         
     cogl_set_framebuffer (framebuffer);
     
-    float vp[4];
-    cogl_get_viewport (vp);
+    char *data_src;
+    data_src = (char *)malloc (64*64*3);
+    memset (data_src, 4, 64*64*3);
     
+    CoglHandle tex64;
+    //tex64 = cogl_texture_new_with_size (64, 64, COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_RGB_888);
+    tex64 = cogl_texture_new_from_data (64, 64, (CoglTextureFlags)(COGL_TEXTURE_NO_AUTO_MIPMAP | COGL_TEXTURE_NO_SLICING | COGL_TEXTURE_NO_ATLAS), COGL_PIXEL_FORMAT_RGB_888, COGL_PIXEL_FORMAT_RGB_888, 64*3, (guint8 *)data_src);
+    CoglHandle offscreen_tex64;
+    offscreen_tex64 = cogl_offscreen_new_to_texture (tex64);
+    if (!offscreen_tex64)
+        _exit ("OFFSCREEN_TEX64");
+    
+    cogl_set_framebuffer (COGL_FRAMEBUFFER (offscreen_tex64));
+    
+    float vp[4];
+    cogl_get_viewport (vp);    
     printf ("Viewport %3.0f %3.0f %3.0f %3.0f\n", vp[0], vp[1], vp[2], vp[3]);
     
-    cogl_rectangle (50, 50, 200, 200);
+    CoglColor clear_color;
+    cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
+    cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+    
+    cogl_set_source_color4ub ('1', '1', '1', 255);
+    
+    cogl_rectangle (00, 00, 32, 32);
     cogl_flush ();
+    
+    int siz;
+    char *data;
+    siz = cogl_texture_get_data (tex64, COGL_PIXEL_FORMAT_RGB_888, 0, NULL);
+    printf ("SIZ %d\n", siz);
+    if (!siz)
+        _exit ("SIZ");
+    
+    data = (char *)malloc (siz);
+    siz = cogl_texture_get_data (tex64, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
+    printf ("Data %p\nValid %d\n", data, siz);
+    
 }
 
 int
