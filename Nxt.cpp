@@ -222,7 +222,7 @@ _cogl_setup ()
     
     cogl_set_source_color4ub ('1', '1', '1', 255);
     cogl_ortho (0, 64, 0, 64, -1, 1);
-    cogl_rectangle (0, 0, 2, 2);
+    cogl_rectangle (64, 64, 62, 62);
     cogl_flush ();
     
     CoglMatrix mvm;
