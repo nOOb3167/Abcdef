@@ -22,12 +22,23 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <error.h>
 #include <gfx_lib_setup.h>
 
+void
+_example_draw (void)
+{
+    cogl_set_source_color4ub ('1', '1', '1', 255);
+    cogl_ortho (0, 64, 0, 64, -1, 1);
+    cogl_rectangle (64, 64, 62, 62);
+    cogl_flush ();
+}
+
 int
 main (int argc, char **argv)
 {
     gfx_lib_setup ();
     
     printf ("COGL SETUP COMPLETE\n");
+
+    _example_draw ();
 
     return EXIT_SUCCESS;
 }

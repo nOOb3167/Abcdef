@@ -28,9 +28,18 @@ _context_cogl_allegro (struct context_holder *what);
 void
 _context_allegro_cogl (struct context_holder *what);
 
+struct context_fbstate *
+_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx);
+
+void
+_cogl_setup_basic (void);
+
+void
+_create_offscreen_framebuffer (int width, int height, CoglHandle *ofs, CoglHandle *tx);
+
 
 static struct context_holder *_g_context_holder;
-
+static struct context_fbstate *_g_fbstate;
 
 void
 context_cogl_allegro (void)
@@ -109,10 +118,22 @@ _context_holder_get_win (HDC *hdc, HGLRC *hglrc)
         xexit ("CURRENT_DC");
 }
 
+struct context_fbstate *
+_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx)
+{
+    struct context_fbstate *fbs;
+    fbs = g_new (struct context_fbstate, 1);
+    fbs->offscreen = ofs;
+    fbs->texture = tx;
+    fbs->width = 64;
+    fbs->height = 64;
+    return fbs;
+}
+
 /**
  * Magic setup routine.
  * Leaves context in Cogl.
- * Sets global context holder.
+ * Sets global context holder, fbstate.
  */
 void
 gfx_lib_setup ()
@@ -145,14 +166,13 @@ _allegro_setup (ALLEGRO_DISPLAY **disp)
   al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_REQUIRE);
   al_set_new_display_option(ALLEGRO_SWAP_METHOD, 2, ALLEGRO_REQUIRE);
   d = al_create_display (640, 480);
-  g_xassert (!d);
-  g_assert (!d);
+  g_xassert (d);
 
   *disp = d;
 }
 
 void
-_cogl_setup ()
+_cogl_setup (void)
 {
     /*
     cogl_renderer_new
@@ -280,6 +300,31 @@ _cogl_setup ()
 
     */
 
+    _cogl_setup_basic ();
+
+    CoglHandle ofs, tx;
+    _create_offscreen_framebuffer (64, 64, &ofs, &tx);
+
+    /**
+     * Set global fbstate.
+     */
+    struct context_fbstate *fbs;
+    fbs = _context_fbstate_new (64, 64, ofs, tx);
+    _g_fbstate = fbs;
+
+    /**
+     * Framebuffer clearing.
+     */
+    cogl_set_framebuffer (COGL_FRAMEBUFFER (ofs));
+
+    CoglColor clear_color;
+    cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
+    cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+}
+
+void
+_cogl_setup_basic (void)
+{
     CoglRenderer *cogl_renderer;
     CoglDisplay *cogl_display;
     CoglContext *cogl_context;
@@ -311,6 +356,10 @@ _cogl_setup ()
 
     cogl_set_default_context (cogl_context);
 
+    /*
+     * Make current framebuffer be some kind of defult onscreen.
+     * Should create an offscreen FBO then set _that_ current.
+     */
     CoglOnscreen *onscreen;
     CoglFramebuffer *framebuffer;
 
@@ -320,46 +369,56 @@ _cogl_setup ()
         xexit ("COGL_FRAMEBUFFER_ALLOCATE");
 
     cogl_set_framebuffer (framebuffer);
+}
 
-    char *data_src;
-    data_src = (char *)malloc (64*64*3);
-    memset (data_src, 4, 64*64*3);
-
+/**
+ * Creates offscreen texture and buffer.
+ * Setting globals or whatever left to caller.
+ */
+void
+_create_offscreen_framebuffer (int width, int height, CoglHandle *ofs, CoglHandle *tx)
+{
     CoglHandle tex64;
-    //tex64 = cogl_texture_new_with_size (64, 64, COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_RGB_888);
-    tex64 = cogl_texture_new_from_data (64, 64, (CoglTextureFlags)(COGL_TEXTURE_NO_AUTO_MIPMAP | COGL_TEXTURE_NO_SLICING | COGL_TEXTURE_NO_ATLAS), COGL_PIXEL_FORMAT_RGB_888, COGL_PIXEL_FORMAT_RGB_888, 64*3, (guint8 *)data_src);
     CoglHandle offscreen_tex64;
+
+    g_xassert (ofs);
+    g_xassert (tx);
+
+    tex64 = cogl_texture_new_with_size (64, 64,
+            (CoglTextureFlags)(COGL_TEXTURE_NO_AUTO_MIPMAP | COGL_TEXTURE_NO_SLICING | COGL_TEXTURE_NO_ATLAS),
+            COGL_PIXEL_FORMAT_RGB_888);
+    g_xassert (tex64);
+
     offscreen_tex64 = cogl_offscreen_new_to_texture (tex64);
-    if (!offscreen_tex64)
-        xexit ("OFFSCREEN_TEX64");
+    g_xassert (offscreen_tex64);
 
-    cogl_set_framebuffer (COGL_FRAMEBUFFER (offscreen_tex64));
+    *ofs = offscreen_tex64;
+    *tx = tex64;
+}
 
+struct fbstate_data
+fbstate_get_data (void)
+{
+    struct fbstate_data fbd;
+    struct context_fbstate *fbs;
 
-
-    CoglColor clear_color;
-    cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
-    cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
-
-    cogl_set_source_color4ub ('1', '1', '1', 255);
-    cogl_ortho (0, 64, 0, 64, -1, 1);
-    cogl_rectangle (64, 64, 62, 62);
-    cogl_flush ();
-
-    CoglMatrix mvm;
-    cogl_get_modelview_matrix (&mvm);
-    CoglMatrix mp;
-    cogl_get_projection_matrix (&mp);
+    g_xassert (_g_fbstate);
+    fbs = _g_fbstate;
 
     int siz;
     char *data;
-    siz = cogl_texture_get_data (tex64, COGL_PIXEL_FORMAT_RGB_888, 0, NULL);
-    printf ("SIZ %d\n", siz);
-    if (!siz)
-        xexit ("SIZ");
+    siz = cogl_texture_get_data (fbs->texture, COGL_PIXEL_FORMAT_RGB_888, 0, NULL);
+    //printf ("SIZ %d\n", siz);
+    g_xassert (siz);
 
-    data = (char *)malloc (siz);
-    siz = cogl_texture_get_data (tex64, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
-    printf ("Data %p\nValid %d\n", data, siz);
+    data = g_new (char, siz);
+    siz = cogl_texture_get_data (fbs->texture, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
+    g_xassert (siz);
+    //printf ("Data %p\nValid %d\n", data, siz);
 
+    fbd.data = data;
+    fbd.size = siz;
+    fbd.width = fbs->width;
+    fbd.height = fbs->height;
+    return fbd;
 }

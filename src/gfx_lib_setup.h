@@ -5,12 +5,33 @@
 extern "C" {
 #endif
 
+#include <cogl/cogl.h>
+
+struct ALLEGRO_DISPLAY;
+
+
 struct context_holder
 {
     int state; // 0 = Invalid; 1 = Allegro; 2 = Cogl
     ALLEGRO_DISPLAY *display;
     HDC hdc;
     HGLRC hglrc;
+};
+
+struct context_fbstate
+{
+    CoglHandle *offscreen;
+    CoglHandle *texture;
+    int width;
+    int height;
+};
+
+struct fbstate_data
+{
+    char *data;
+    int size;
+    int width;
+    int height;
 };
 
 void
@@ -21,6 +42,9 @@ context_cogl_allegro (void);
 
 void
 context_allegro_cogl (void);
+
+struct fbstate_data
+fbstate_get_data (void);
 
 #ifdef __cplusplus
 }
