@@ -20,6 +20,7 @@ struct context_holder
 
 struct context_fbstate
 {
+    ALLEGRO_DISPLAY *display;
     CoglHandle *offscreen;
     CoglHandle *texture;
     int width;
@@ -28,6 +29,7 @@ struct context_fbstate
 
 struct fbstate_data
 {
+    ALLEGRO_DISPLAY *display;
     char *data;
     int size;
     int width;

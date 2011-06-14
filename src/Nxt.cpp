@@ -31,6 +31,17 @@ _example_draw (void)
     cogl_flush ();
 }
 
+void
+_display_loop (void)
+{
+    struct fbstate_data fbd;
+    fbd = fbstate_get_data ();
+
+    context_cogl_allegro ();
+
+
+}
+
 int
 main (int argc, char **argv)
 {
@@ -39,6 +50,8 @@ main (int argc, char **argv)
     printf ("COGL SETUP COMPLETE\n");
 
     _example_draw ();
+
+    _display_loop ();
 
     return EXIT_SUCCESS;
 }

@@ -29,7 +29,7 @@ void
 _context_allegro_cogl (struct context_holder *what);
 
 struct context_fbstate *
-_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx);
+_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx, ALLEGRO_DISPLAY *display);
 
 void
 _cogl_setup_basic (void);
@@ -119,14 +119,15 @@ _context_holder_get_win (HDC *hdc, HGLRC *hglrc)
 }
 
 struct context_fbstate *
-_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx)
+_context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx, ALLEGRO_DISPLAY *display)
 {
     struct context_fbstate *fbs;
     fbs = g_new (struct context_fbstate, 1);
+    fbs->display = display;
     fbs->offscreen = ofs;
     fbs->texture = tx;
-    fbs->width = 64;
-    fbs->height = 64;
+    fbs->width = width;
+    fbs->height = height;
     return fbs;
 }
 
@@ -139,15 +140,32 @@ void
 gfx_lib_setup ()
 {
     struct context_holder *ch;
+    struct context_fbstate *fbs;
     ALLEGRO_DISPLAY *disp;
+    CoglHandle ofs, tx;
 
-    _cogl_setup ();
+    int width = 64;
+    int height = 64;
+
+    /**
+     * Yes this is screwed up.
+     * Just treat as magic initialization sequence etc.
+     */
+
+    _cogl_setup (width, height, &ofs, &tx);
+
     ch = _context_holder_new_WHILE_COGL ();
+
     _allegro_setup (&disp);
+
     _context_holder_display_set_WHILE_ALLEGRO (ch, disp);
-    _context_allegro_cogl (ch);
+
+    fbs = _context_fbstate_new (width, height, ofs, tx, disp);
 
     _g_context_holder = ch;
+    _g_fbstate = fbs;
+
+    _context_allegro_cogl (ch);
 }
 
 /**
@@ -172,7 +190,7 @@ _allegro_setup (ALLEGRO_DISPLAY **disp)
 }
 
 void
-_cogl_setup (void)
+_cogl_setup (int width, int height, CoglHandle *ofs, CoglHandle *tx)
 {
     /*
     cogl_renderer_new
@@ -300,26 +318,25 @@ _cogl_setup (void)
 
     */
 
+    g_xassert (ofs);
+    g_xassert (tx);
+
     _cogl_setup_basic ();
 
-    CoglHandle ofs, tx;
-    _create_offscreen_framebuffer (64, 64, &ofs, &tx);
-
-    /**
-     * Set global fbstate.
-     */
-    struct context_fbstate *fbs;
-    fbs = _context_fbstate_new (64, 64, ofs, tx);
-    _g_fbstate = fbs;
+    CoglHandle ofs_loc, tx_loc;
+    _create_offscreen_framebuffer (width, height, &ofs_loc, &tx_loc);
 
     /**
      * Framebuffer clearing.
      */
-    cogl_set_framebuffer (COGL_FRAMEBUFFER (ofs));
+    cogl_set_framebuffer (COGL_FRAMEBUFFER (ofs_loc));
 
     CoglColor clear_color;
     cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
     cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+
+    *ofs = ofs_loc;
+    *tx = tx_loc;
 }
 
 void
@@ -384,7 +401,7 @@ _create_offscreen_framebuffer (int width, int height, CoglHandle *ofs, CoglHandl
     g_xassert (ofs);
     g_xassert (tx);
 
-    tex64 = cogl_texture_new_with_size (64, 64,
+    tex64 = cogl_texture_new_with_size (width, height,
             (CoglTextureFlags)(COGL_TEXTURE_NO_AUTO_MIPMAP | COGL_TEXTURE_NO_SLICING | COGL_TEXTURE_NO_ATLAS),
             COGL_PIXEL_FORMAT_RGB_888);
     g_xassert (tex64);
@@ -416,6 +433,7 @@ fbstate_get_data (void)
     g_xassert (siz);
     //printf ("Data %p\nValid %d\n", data, siz);
 
+    fbd.display = fbs->display;
     fbd.data = data;
     fbd.size = siz;
     fbd.width = fbs->width;
