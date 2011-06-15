@@ -180,9 +180,10 @@ _allegro_setup (ALLEGRO_DISPLAY **disp)
 
   al_init ();
 
-  al_set_new_display_flags(ALLEGRO_OPENGL | ALLEGRO_NOFRAME);
-  al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_REQUIRE);
-  al_set_new_display_option(ALLEGRO_SWAP_METHOD, 2, ALLEGRO_REQUIRE);
+  al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_BGR_888);
+  al_set_new_display_flags (ALLEGRO_OPENGL | ALLEGRO_NOFRAME);
+  al_set_new_display_option (ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_REQUIRE);
+  al_set_new_display_option (ALLEGRO_SWAP_METHOD, 2, ALLEGRO_REQUIRE);
   d = al_create_display (640, 480);
   g_xassert (d);
 

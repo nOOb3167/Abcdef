@@ -25,7 +25,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 void
 _example_draw (void)
 {
-    cogl_set_source_color4ub ('1', '1', '1', 255);
+    cogl_set_source_color4ub ('\xFF', '1', '1', 255);
     cogl_ortho (0, 64, 0, 64, -1, 1);
     cogl_rectangle (64, 64, 62, 62);
     cogl_flush ();
@@ -39,7 +39,23 @@ _display_loop (void)
 
     context_cogl_allegro ();
 
+    ALLEGRO_BITMAP *bmp;
+    bmp = al_create_bitmap (64, 64);
+    ALLEGRO_LOCKED_REGION *rgn;
+    rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
+    int cnt;
+    char *data;
+    for (cnt=0,data=(char *)rgn->data; cnt < 64; ++cnt,data+=rgn->pitch)
+      {
+        memcpy ((void *)data, (void *)&fbd.data[cnt*64*3], 64*3);
+      }
+    al_unlock_bitmap (bmp);
 
+    al_set_target_backbuffer (fbd.display);
+    al_draw_bitmap (bmp, 10, 10, 0);
+    al_flip_display ();
+
+    al_rest (2);
 }
 
 int
