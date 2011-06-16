@@ -28,6 +28,31 @@ _example_draw (void)
     cogl_set_source_color4ub ('\xFF', '1', '1', 255);
     cogl_ortho (0, 64, 0, 64, -1, 1);
     cogl_rectangle (64, 64, 62, 62);
+
+    struct xvtx
+    {
+      float x, y, z;
+    };
+    struct xvtx datavec[3] =
+        {
+            {0.0f, 0.0f, 0.0f},
+            {10.0f, 0.0f, 0.0f},
+            {10.0f, 10.0f, 0.0f}
+        };
+
+    CoglAttributeBuffer *bfr;
+    bfr = cogl_attribute_buffer_new (sizeof (datavec), (void *)datavec);
+    g_xassert (bfr);
+    CoglAttribute *attr;
+    attr = cogl_attribute_new (bfr, "cogl_position_in",
+                               sizeof (struct xvtx), offsetof (struct xvtx, x),
+                               3, COGL_ATTRIBUTE_TYPE_FLOAT);
+    g_xassert (attr);
+    CoglPrimitive *prim;
+    prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, 3, attr, NULL);
+    g_xassert (prim);
+    cogl_primitive_draw (prim);
+
     cogl_flush ();
 }
 
