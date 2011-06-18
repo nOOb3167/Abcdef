@@ -21,6 +21,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 
 #include <error.h>
 #include <gfx_lib_setup.h>
+#include <ai_example.h>
 
 void
 _example_draw (void)
@@ -41,7 +42,7 @@ _example_draw (void)
         };
 
     CoglAttributeBuffer *bfr;
-    bfr = cogl_attribute_buffer_new (sizeof (datavec), (void *)datavec);
+    bfr = cogl_attribute_buffer_new (sizeof (datavec), datavec);
     g_xassert (bfr);
     CoglAttribute *attr;
     attr = cogl_attribute_new (bfr, "cogl_position_in",
@@ -70,9 +71,9 @@ _display_loop (void)
     rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
     int cnt;
     char *data;
-    for (cnt=0,data=(char *)rgn->data; cnt < 64; ++cnt,data+=rgn->pitch)
+    for (cnt=0,data=rgn->data; cnt < 64; ++cnt,data+=rgn->pitch)
       {
-        memcpy ((void *)data, (void *)&fbd.data[cnt*64*3], 64*3);
+        memcpy (data, &fbd.data[cnt*64*3], 64*3);
       }
     al_unlock_bitmap (bmp);
 
@@ -91,6 +92,8 @@ main (int argc, char **argv)
     printf ("COGL SETUP COMPLETE\n");
 
     _example_draw ();
+
+    ai_import_file ("cube.obj");
 
     _display_loop ();
 
