@@ -65,7 +65,7 @@ void
 _example_draw (void)
 {
     cogl_set_source_color4ub ('\xFF', '1', '1', 255);
-    cogl_ortho (0, 64, 0, 64, -1, 1);
+    cogl_ortho (0, 64, 0, 64, -5, 5);
 
     CoglMatrix idmtx;
     cogl_matrix_init_identity (&idmtx);
@@ -158,7 +158,7 @@ main (int argc, char **argv)
 
     _example_draw ();
 
-    ai_import_file ("cube.obj");
+    ai_import_file ("c_multipart.obj");
 
     _display_loop ();
 

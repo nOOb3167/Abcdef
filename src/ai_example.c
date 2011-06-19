@@ -33,6 +33,7 @@ _stuff (const struct aiScene *scene)
   g_xassert (scene->mNumMeshes == 1);
   struct aiMesh *mesh;
   mesh = scene->mMeshes[0];
+  printf ("Total number of meshes: %d\n", scene->mNumMeshes);
   printf ("Number of faces/vertices in mesh zero: %d/%d\n", mesh->mNumFaces, mesh->mNumVertices);
   g_xassert (mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
 
