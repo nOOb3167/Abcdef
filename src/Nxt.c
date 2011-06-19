@@ -25,7 +25,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <Nxt.h>
 
 void
-nxt_draw_array (struct xvtx *verts, int count)
+nxt_draw_array (struct xvtx *verts, int verts_count, unsigned int *indices, int indices_count)
 {
   cogl_set_source_color4ub ('\xFF', '\xFF', '1', 255);
   cogl_ortho (0, 64, 0, 64, -1, 1);
@@ -35,16 +35,20 @@ nxt_draw_array (struct xvtx *verts, int count)
   cogl_set_modelview_matrix (&idmtx);
 
   CoglAttributeBuffer *bfr;
-  bfr = cogl_attribute_buffer_new (sizeof (*verts) * count, verts);
+  bfr = cogl_attribute_buffer_new (sizeof (*verts) * verts_count, verts);
   g_xassert (bfr);
   CoglAttribute *attr;
   attr = cogl_attribute_new (bfr, "cogl_position_in",
                              sizeof (struct xvtx), offsetof (struct xvtx, x),
                              3, COGL_ATTRIBUTE_TYPE_FLOAT);
   g_xassert (attr);
+  CoglIndices *idx;
+  idx = cogl_indices_new (COGL_INDICES_TYPE_UNSIGNED_INT, indices, indices_count);
+  g_xassert (idx);
   CoglPrimitive *prim;
-  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, count, attr, NULL);
+  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts_count, attr, NULL);
   g_xassert (prim);
+  cogl_primitive_set_indices (prim, idx);
 
   cogl_translate (20.0f, 20.0f, 0.0f);
   cogl_scale (5.0f, 5.0f, 1.0f);

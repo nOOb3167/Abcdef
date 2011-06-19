@@ -44,5 +44,16 @@ _stuff (const struct aiScene *scene)
       verts[cnt].y = mesh->mVertices[cnt].y;
       verts[cnt].z = mesh->mVertices[cnt].z;
     }
-  nxt_draw_array (verts, mesh->mNumVertices);
+
+  unsigned int *indices;
+  indices = g_new0 (unsigned int, mesh->mNumFaces * 3);
+  int idx;
+  for (cnt=0,idx=0; cnt<mesh->mNumFaces; ++cnt)
+    {
+      indices[idx++] = mesh->mFaces[cnt].mIndices[0];
+      indices[idx++] = mesh->mFaces[cnt].mIndices[1];
+      indices[idx++] = mesh->mFaces[cnt].mIndices[2];
+    }
+
+  nxt_draw_array (verts, mesh->mNumVertices, indices, mesh->mNumFaces * 3);
 }
