@@ -22,18 +22,52 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <error.h>
 #include <gfx_lib_setup.h>
 #include <ai_example.h>
+#include <Nxt.h>
+
+void
+nxt_draw_array (struct xvtx *verts, int count)
+{
+  cogl_set_source_color4ub ('\xFF', '\xFF', '1', 255);
+  cogl_ortho (0, 64, 0, 64, -1, 1);
+
+  CoglMatrix idmtx;
+  cogl_matrix_init_identity (&idmtx);
+  cogl_set_modelview_matrix (&idmtx);
+
+  CoglAttributeBuffer *bfr;
+  bfr = cogl_attribute_buffer_new (sizeof (*verts) * count, verts);
+  g_xassert (bfr);
+  CoglAttribute *attr;
+  attr = cogl_attribute_new (bfr, "cogl_position_in",
+                             sizeof (struct xvtx), offsetof (struct xvtx, x),
+                             3, COGL_ATTRIBUTE_TYPE_FLOAT);
+  g_xassert (attr);
+  CoglPrimitive *prim;
+  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, count, attr, NULL);
+  g_xassert (prim);
+
+  cogl_translate (20.0f, 20.0f, 0.0f);
+  cogl_scale (5.0f, 5.0f, 1.0f);
+
+  cogl_primitive_draw (prim);
+  cogl_flush ();
+  cogl_object_unref (bfr);
+  cogl_object_unref (attr);
+  cogl_object_unref (prim);
+}
 
 void
 _example_draw (void)
 {
     cogl_set_source_color4ub ('\xFF', '1', '1', 255);
     cogl_ortho (0, 64, 0, 64, -1, 1);
+
+    CoglMatrix idmtx;
+    cogl_matrix_init_identity (&idmtx);
+    cogl_set_modelview_matrix (&idmtx);
+
     cogl_rectangle (64, 64, 62, 62);
 
-    struct xvtx
-    {
-      float x, y, z;
-    };
     struct xvtx datavec[3] =
         {
             {0.0f, 0.0f, 0.0f},
@@ -55,6 +89,9 @@ _example_draw (void)
     cogl_primitive_draw (prim);
 
     cogl_flush ();
+    cogl_object_unref (bfr);
+    cogl_object_unref (attr);
+    cogl_object_unref (prim);
 }
 
 void
