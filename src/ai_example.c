@@ -20,7 +20,8 @@ ai_import_file (const char *file_name)
    * See LimitBoneWeights for shared skinning.
    */
   scene = aiImportFile (file_name,
-      aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_PreTransformVertices);
+      aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_PreTransformVertices |
+      aiProcess_JoinIdenticalVertices);
   g_xassert (scene);
 
   _stuff (scene);

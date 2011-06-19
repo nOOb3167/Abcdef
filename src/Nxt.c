@@ -55,6 +55,7 @@ nxt_draw_array (struct xvtx *verts, int verts_count, unsigned int *indices, int 
 
   cogl_primitive_draw (prim);
   cogl_flush ();
+  cogl_object_unref (idx);
   cogl_object_unref (bfr);
   cogl_object_unref (attr);
   cogl_object_unref (prim);
