@@ -66,7 +66,30 @@ _example_draw (void)
     cogl_matrix_init_identity (&idmtx);
     cogl_set_modelview_matrix (&idmtx);
 
+    const char *shd_source =
+        "void main(void) \
+        { \
+          gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); \
+        }";
+    CoglHandle shd;
+    shd = cogl_create_shader (COGL_SHADER_TYPE_FRAGMENT);
+    g_xassert (shd);
+    cogl_shader_source (shd, shd_source);
+    cogl_shader_compile (shd);
+    g_xassert (cogl_shader_is_compiled (shd));
+    CoglHandle shd_prg;
+    shd_prg = cogl_create_program ();
+    g_xassert (shd_prg);
+    cogl_program_attach_shader (shd_prg, shd);
+    cogl_program_link (shd_prg);
+    cogl_program_use (shd_prg);
+
     cogl_rectangle (64, 64, 62, 62);
+
+    cogl_program_use (COGL_INVALID_HANDLE);
+
+    cogl_object_unref (shd);
+    cogl_object_unref (shd_prg);
 
     struct xvtx datavec[3] =
         {
