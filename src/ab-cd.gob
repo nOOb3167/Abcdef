@@ -1,0 +1,21 @@
+class Ab:Cd from G:Object
+{
+ private int herp = 1;
+ public int derp = 2;
+ public void
+ nothing (self);
+ public virtual void
+ something (self);
+ public virtual void
+ xsth2 (self)
+ {
+  int i;
+  i = 0;
+ }
+ public virtual GObject *
+ constructor (self, guint n_construct_properties, GObjectConstructParam *construct_properties)
+ {
+  int j;
+  j = 0;
+ }
+}
