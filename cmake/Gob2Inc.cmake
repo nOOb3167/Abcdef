@@ -30,7 +30,7 @@ FUNCTION(GOB2IZE GOBFILE)
  ENDIF()
  #"Relative path in OUTPUT interpreted relative to the build dir corresponding to the current source dir"
  ADD_CUSTOM_COMMAND(OUTPUT "${GOBPATH}/${GOBNAME}.c"
-  COMMAND "${GOB2_EXECUTABLE}" "${GOBABS}"
+  COMMAND "${GOB2_EXECUTABLE}" "--no-touch" "${GOBABS}"
   IMPLICIT_DEPENDS
   DEPENDS "${GOBFILE}"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${GOBPATH}"

@@ -23,6 +23,7 @@ SET(AI_LNK_DIRS "C:\\tmp2\\assimp\\inst\\lib")
 INCLUDE_DIRECTORIES(
  ${CMAKE_SOURCE_DIR}
  ${CMAKE_SOURCE_DIR}/src
+ ${CMAKE_BINARY_DIR}
  ${ALLEGRO_INCLUDE_DIRS}
  ${GTK2_INCLUDE_DIRS}
  ${COGL_INCLUDE_DIRS}
@@ -42,7 +43,10 @@ ADD_SUBDIRECTORY(src)
 
 GOB2IZE(src/ab-cd.gob)
 
-ADD_EXECUTABLE(Main Main.cpp src/ab-cd.c)
+ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c)
+TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
+
+ADD_EXECUTABLE(Main Main.cpp)
 TARGET_LINK_LIBRARIES(Main ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES})
 
 ADD_EXECUTABLE(Nxt src/Nxt.c src/gfx_lib_setup.c src/error.c src/ai_example.c)

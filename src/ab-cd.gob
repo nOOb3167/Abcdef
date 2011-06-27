@@ -12,10 +12,10 @@ class Ab:Cd from G:Object
   int i;
   i = 0;
  }
- public virtual GObject *
- constructor (self, guint n_construct_properties, GObjectConstructParam *construct_properties)
+ public GObject *
+ new (void)
  {
-  int j;
-  j = 0;
+  AbCd *ret = GET_NEW;
+  return G_OBJECT(ret);
  }
 }
