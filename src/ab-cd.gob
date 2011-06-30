@@ -12,10 +12,9 @@ class Ab:Cd from G:Object
   int i;
   i = 0;
  }
- public GObject *
+ public AbCd *
  new (void)
  {
-  AbCd *ret = GET_NEW;
-  return G_OBJECT(ret);
+  return GET_NEW;
  }
 }
