@@ -144,8 +144,8 @@ gfx_lib_setup ()
     ALLEGRO_DISPLAY *disp;
     CoglHandle ofs, tx;
 
-    int width = 64;
-    int height = 64;
+    int width = 640;
+    int height = 480;
 
     /**
      * Yes this is screwed up.

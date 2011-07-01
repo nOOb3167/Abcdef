@@ -131,19 +131,19 @@ _display_loop (void)
     context_cogl_allegro ();
 
     ALLEGRO_BITMAP *bmp;
-    bmp = al_create_bitmap (64, 64);
+    bmp = al_create_bitmap (640, 480);
     ALLEGRO_LOCKED_REGION *rgn;
     rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
     int cnt;
     char *data;
-    for (cnt=0,data=rgn->data; cnt < 64; ++cnt,data+=rgn->pitch)
+    for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
       {
-        memcpy (data, &fbd.data[cnt*64*3], 64*3);
+        memcpy (data, &fbd.data[cnt*640*3], 640*3);
       }
     al_unlock_bitmap (bmp);
 
     al_set_target_backbuffer (fbd.display);
-    al_draw_bitmap (bmp, 10, 10, 0);
+    al_draw_bitmap (bmp, 0, 0, 0);
     al_flip_display ();
 
     al_rest (2);
