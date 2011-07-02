@@ -42,8 +42,9 @@ ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
 ADD_SUBDIRECTORY(src)
 
 GOB2IZE(src/ab-cd.gob)
+GOB2IZE(src/ab-cd-alt.gob)
 
-ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c)
+ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
 TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
 
 ADD_EXECUTABLE(Main Main.cpp)

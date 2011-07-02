@@ -1,0 +1,20 @@
+%header{
+#include <src/ab-cd-alt_funcs.h>
+%}
+
+class Ab:Cd:Alt from G:Object
+{
+ public virtual void
+ something (self);
+
+ class_init (class)
+ {
+  class->something = _abcdalt_something;
+ }
+
+ public AbCdAlt *
+ new (void)
+ {
+  return GET_NEW;
+ }
+}
