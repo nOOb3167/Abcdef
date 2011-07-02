@@ -158,7 +158,7 @@ main (int argc, char **argv)
 
     _example_draw ();
 
-    ai_import_file ("c_multipart.obj");
+    ai_import_file ("c_multipart.dae");
 
     _display_loop ();
 

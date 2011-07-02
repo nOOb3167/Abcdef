@@ -20,7 +20,7 @@ ai_import_file (const char *file_name)
    * See LimitBoneWeights for shared skinning.
    */
   scene = aiImportFile (file_name,
-      aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_PreTransformVertices |
+      aiProcess_Triangulate | aiProcess_SortByPType |
       aiProcess_JoinIdenticalVertices);
   g_xassert (scene);
 
@@ -30,7 +30,7 @@ ai_import_file (const char *file_name)
 void
 _stuff (const struct aiScene *scene)
 {
-  g_xassert (scene->mNumMeshes == 1);
+  g_xassert (scene->mNumMeshes >= 1);
   struct aiMesh *mesh;
   mesh = scene->mMeshes[0];
   printf ("Total number of meshes: %d\n", scene->mNumMeshes);
