@@ -39,19 +39,24 @@ LINK_DIRECTORIES(
 ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
 #ADD_DEFINITIONS(-DX_ERROR_STACK_TRACE_INSTEAD_OF_ASSERT)
 
+#Warning see about source file properties only applying to added from same directory
+FILE(GLOB XSRC_FILES "src/*.c")
+SET_SOURCE_FILES_PROPERTIES(${XSRC_FILES}
+ PROPERTIES COMPILE_FLAGS "-Wstrict-prototypes")
+
 ADD_SUBDIRECTORY(src)
 
 GOB2IZE(src/ab-cd.gob)
 GOB2IZE(src/ab-cd-alt.gob)
 GOB2IZE(src/mai-node.gob)
 
-ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c src/mai-node.c)
+ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
 TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
 
 ADD_EXECUTABLE(Main Main.cpp)
 TARGET_LINK_LIBRARIES(Main ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES})
 
-ADD_EXECUTABLE(Nxt src/Nxt.c src/gfx_lib_setup.c src/error.c src/ai_example.c)
+ADD_EXECUTABLE(Nxt src/Nxt.c src/gfx_lib_setup.c src/error.c src/ai_example.c src/mai-node.c src/mai-node_funcs.c)
 TARGET_LINK_LIBRARIES(Nxt ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 
 INSTALL(TARGETS Nxt DESTINATION ".")

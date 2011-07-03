@@ -152,6 +152,8 @@ _display_loop (void)
 int
 main (int argc, char **argv)
 {
+    g_type_init ();
+
     gfx_lib_setup ();
     
     printf ("COGL SETUP COMPLETE\n");

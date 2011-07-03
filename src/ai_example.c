@@ -5,6 +5,7 @@
 #include <aiPostProcess.h>
 #include <aiScene.h>
 
+#include <src/mai-node.h>
 #include <Nxt.h>
 #include <ai_example.h>
 
@@ -64,4 +65,9 @@ _stuff (const struct aiScene *scene)
   struct aiNode *root_node;
   root_node = scene->mRootNode;
   g_xassert (!strcmp (root_node->mName.data, "Scene"));
+
+  struct _MaiNode *mn;
+  mn = mai_node_new_from (root_node, NULL);
+  printf ("MaiNode name '%s'\n", mn->name);
+  return;
 }

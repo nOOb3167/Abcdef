@@ -11,7 +11,7 @@ static void
 _allegro_setup (ALLEGRO_DISPLAY **disp);
 
 static void
-_cogl_setup ();
+_cogl_setup (int width, int height, CoglHandle *ofs, CoglHandle *tx);
 
 static struct context_holder *
 _context_holder_new_WHILE_COGL (void);

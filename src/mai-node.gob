@@ -1,5 +1,7 @@
 %header{
-//#include <src/ai-node_funcs.h>
+//#define XGOB_VFUN
+#include <src/mai-node_funcs.h>
+//#undef XGOB_VFUN
 #include <assimp.h>
 #include <aiScene.h>
 #include <error.h>
@@ -12,32 +14,10 @@ class Mai:Node from G:Object
  
  public MaiNode *parent;
  public GPtrArray *children;
+ public char * name;
 
  class_init (class)
  {
   //class->something = _abcdalt_something;
- }
-
- public MaiNode *
- new_from (struct aiNode *from, MaiNode *parent)
- {
-  MaiNode * self = GET_NEW;
-  int cnt;
-  
-  self->parent = parent;
-  g_xassert (from->mParent == NULL ? parent == NULL : 1);
-  if (parent == NULL)
-    {
-      self->children = NULL;
-      return self;
-    }
-  
-  self->children = g_ptr_array_new_with_free_func (g_object_unref);
-  for (cnt=0; cnt<from->mNumChildren; ++cnt)
-    {
-      g_ptr_array_add (self->children, mai_node_new_from (from->mChildren[cnt], self));
-    }
-  
-  return self;
  }
 }
