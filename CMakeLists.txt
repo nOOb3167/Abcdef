@@ -43,8 +43,9 @@ ADD_SUBDIRECTORY(src)
 
 GOB2IZE(src/ab-cd.gob)
 GOB2IZE(src/ab-cd-alt.gob)
+GOB2IZE(src/mai-node.gob)
 
-ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
+ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c src/mai-node.c)
 TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
 
 ADD_EXECUTABLE(Main Main.cpp)

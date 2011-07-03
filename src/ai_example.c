@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <error.h>
 #include <assimp.h>
 #include <aiPostProcess.h>
@@ -58,4 +59,9 @@ _stuff (const struct aiScene *scene)
     }
 
   nxt_draw_array (verts, mesh->mNumVertices, indices, mesh->mNumFaces * 3);
+
+  g_xassert (scene->mRootNode);
+  struct aiNode *root_node;
+  root_node = scene->mRootNode;
+  g_xassert (!strcmp (root_node->mName.data, "Scene"));
 }
