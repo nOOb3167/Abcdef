@@ -68,6 +68,11 @@ _stuff (const struct aiScene *scene)
 
   struct _MaiNode *mn;
   mn = mai_node_new_from (root_node, NULL);
-  printf ("MaiNode name '%s'\n", mn->name);
+  printf ("Nodename '%s'\n", mn->name);
+  int tmp1;
+  for (tmp1=0; tmp1<mn->children->len; ++tmp1)
+    {
+      printf ("Subname '%s'\n", ((struct _MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
+    }
   return;
 }

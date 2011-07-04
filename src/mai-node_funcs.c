@@ -8,15 +8,9 @@ mai_node_new_from (struct aiNode *from, struct _MaiNode *parent)
   struct _MaiNode * self = GET_NEW;
   int cnt;
 
-  self->parent = parent;
   g_xassert (from->mParent == NULL ? parent == NULL : 1);
+  self->parent = parent;
   self->name = g_strdup (from->mName.data);
-  if (parent == NULL)
-    {
-      self->children = NULL;
-      return self;
-    }
-
   self->children = g_ptr_array_new_with_free_func (g_object_unref);
   for (cnt=0; cnt<from->mNumChildren; ++cnt)
     {
