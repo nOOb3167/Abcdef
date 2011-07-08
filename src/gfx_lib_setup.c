@@ -28,6 +28,12 @@ _context_cogl_allegro (struct context_holder *what);
 void
 _context_allegro_cogl (struct context_holder *what);
 
+void
+_context_switch_allegro (struct context_holder *what);
+
+void
+_context_switch_cogl (struct context_holder *what);
+
 struct context_fbstate *
 _context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx, ALLEGRO_DISPLAY *display);
 
@@ -51,6 +57,18 @@ void
 context_allegro_cogl (void)
 {
     _context_allegro_cogl (_g_context_holder);
+}
+
+void
+context_switch_allegro (void)
+{
+  _context_switch_allegro (_g_context_holder);
+}
+
+void
+context_switch_cogl (void)
+{
+  _context_switch_cogl (_g_context_holder);
 }
 
 /**
@@ -105,6 +123,38 @@ _context_allegro_cogl (struct context_holder *what)
         xexit ("MAKE_CURRENT");
 
     what->state = 2;
+}
+
+void
+_context_switch_allegro (struct context_holder *what)
+{
+  g_xassert (what->state != 0);
+  if (what->state == 1)
+      return;
+
+  HDC current_dc;
+  HGLRC current_hglrc;
+  _context_holder_get_win (&current_dc, &current_hglrc);
+  what->hdc = current_dc;
+  what->hglrc = current_hglrc;
+
+  al_set_current_opengl_context (what->display);
+
+  what->state = 1;
+}
+
+void
+_context_switch_cogl (struct context_holder *what)
+{
+  g_xassert (what->state != 0);
+  if (what->state == 2)
+    return;
+
+  BOOL ret;
+  ret = wglMakeCurrent (what->hdc, what->hglrc);
+  g_xassert (ret);
+
+  what->state = 2;
 }
 
 void

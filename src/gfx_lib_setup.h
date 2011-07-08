@@ -45,6 +45,12 @@ context_cogl_allegro (void);
 void
 context_allegro_cogl (void);
 
+void
+context_switch_allegro (void);
+
+void
+context_switch_cogl (void);
+
 struct fbstate_data
 fbstate_get_data (void);
 
