@@ -15,12 +15,18 @@ class Mai:Node from G:Object
  public virtual void
  something (self);
  
- public MaiNode *parent;
- public GPtrArray *children;
- public char * name;
- public GArray *mesh_verts;
- public GArray *mesh_indices;
- public CoglMatrix *transformation;
+ public Mai:Node *parent
+   unrefwith g_object_unref;
+ public GPtrArray *children
+   destroywith g_ptr_array_unref;
+ public char * name
+   destroywith g_free;
+ public GArray *mesh_verts
+   destroywith g_array_unref;
+ public GArray *mesh_indices
+   destroywith g_array_unref;
+ public CoglMatrix *transformation
+   destroywith g_free;
 
  class_init (class)
  {
