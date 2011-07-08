@@ -11,7 +11,7 @@
 #include <src/mai-node.h>
 
 struct _MaiNode *
-mai_node_new_from (struct aiNode *from, struct _MaiNode *parent);
+mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *parent);
 
 #endif /* MAI_NODE_FUNCS_H_ */
 #endif /* not XGOB_VFUN */

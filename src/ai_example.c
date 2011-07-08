@@ -10,13 +10,14 @@
 #include <ai_example.h>
 
 void
-_stuff (const struct aiScene *scene);
+_stuff (struct aiScene *scene);
 
 
 void
 ai_import_file (const char *file_name)
 {
   const struct aiScene *scene;
+  struct aiScene *nonconst_scene;
   /**
    * Warning: PreTransformVertices, flatten scene essentially.
    * See LimitBoneWeights for shared skinning.
@@ -25,12 +26,13 @@ ai_import_file (const char *file_name)
       aiProcess_Triangulate | aiProcess_SortByPType |
       aiProcess_JoinIdenticalVertices);
   g_xassert (scene);
+  nonconst_scene = (struct aiScene *)scene;
 
-  _stuff (scene);
+  _stuff (nonconst_scene);
 }
 
 void
-_stuff (const struct aiScene *scene)
+_stuff (struct aiScene *scene)
 {
   g_xassert (scene->mNumMeshes >= 1);
   struct aiMesh *mesh;
@@ -67,7 +69,7 @@ _stuff (const struct aiScene *scene)
   g_xassert (!strcmp (root_node->mName.data, "Scene"));
 
   struct _MaiNode *mn;
-  mn = mai_node_new_from (root_node, NULL);
+  mn = mai_node_new_from (scene, root_node, NULL);
   printf ("Nodename '%s'\n", mn->name);
   int tmp1;
   for (tmp1=0; tmp1<mn->children->len; ++tmp1)

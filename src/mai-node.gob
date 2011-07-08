@@ -4,7 +4,9 @@
 //#undef XGOB_VFUN
 #include <assimp.h>
 #include <aiScene.h>
+
 #include <error.h>
+#include <Nxt.h>
 %}
 
 class Mai:Node from G:Object
@@ -15,6 +17,8 @@ class Mai:Node from G:Object
  public MaiNode *parent;
  public GPtrArray *children;
  public char * name;
+ public GArray *mesh_verts;
+ public GArray *mesh_indices;
 
  class_init (class)
  {
