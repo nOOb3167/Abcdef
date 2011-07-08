@@ -106,3 +106,35 @@ ai_matrix_to_cogl_matrix (struct aiMatrix4x4 *ai_matrix, CoglMatrix *cogl_matrix
   cogl_matrix->zw = ai_matrix->c4;
   cogl_matrix->ww = ai_matrix->d4;
 }
+
+CoglPrimitive *
+nx_cogl_primitive_new (GArray *verts, GArray *indices)
+{
+  CoglAttributeBuffer *bfr;
+  g_xassert (verts->len > 0);
+  bfr = cogl_attribute_buffer_new (sizeof (struct xvtx) * verts->len, verts->data);
+  g_xassert (bfr);
+
+  CoglAttribute *attr;
+  attr = cogl_attribute_new (bfr, "cogl_position_in",
+                             sizeof (struct xvtx), offsetof (struct xvtx, x),
+                             3, COGL_ATTRIBUTE_TYPE_FLOAT);
+  g_xassert (attr);
+
+  CoglIndices *idx;
+  g_xassert (indices->len > 0);
+  idx = cogl_indices_new (COGL_INDICES_TYPE_UNSIGNED_INT, indices->data, indices->len);
+  g_xassert (idx);
+
+  CoglPrimitive *prim;
+  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts->len, attr, NULL);
+  g_xassert (prim);
+
+  cogl_primitive_set_indices (prim, idx);
+
+  cogl_object_unref (idx);
+  cogl_object_unref (bfr);
+  cogl_object_unref (attr);
+
+  return prim;
+}

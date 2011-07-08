@@ -3,6 +3,7 @@
 
 #include <assimp.h>
 #include <cogl_include.h>
+#include <glib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +14,10 @@ ai_import_file (const char *file_name);
 
 void
 ai_matrix_to_cogl_matrix (struct aiMatrix4x4 *ai_matrix, CoglMatrix *cogl_matrix);
+
+CoglPrimitive *
+nx_cogl_primitive_new (GArray *verts, GArray *indices);
+
 
 #ifdef __cplusplus
 }

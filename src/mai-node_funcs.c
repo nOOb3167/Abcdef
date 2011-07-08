@@ -32,10 +32,10 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *
         }
 
       g_xassert (mesh->mNumFaces > 0);
-      self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (int));
+      self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (unsigned int));
       for (cnt=0; cnt<mesh->mNumFaces; ++cnt)
         {
-          int index;
+          unsigned int index;
           index = mesh->mFaces[cnt].mIndices[0];
           g_array_append_vals (self->mesh_indices, &index, 1);
           index = mesh->mFaces[cnt].mIndices[1];
