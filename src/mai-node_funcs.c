@@ -1,3 +1,4 @@
+#include <src/ai_example.h>
 #include <src/mai-node_funcs.h>
 
 #define GET_NEW ((MaiNode *)g_object_new(mai_node_get_type(), NULL))
@@ -11,6 +12,9 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *
   g_xassert (from->mParent == NULL ? parent == NULL : 1);
   self->parent = parent;
   self->name = g_strdup (from->mName.data);
+
+  self->transformation = g_new0 (CoglMatrix, 1);
+  ai_matrix_to_cogl_matrix (&from->mTransformation, self->transformation);
 
   g_xassert (from->mNumMeshes <= 1);
   self->mesh_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
