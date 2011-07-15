@@ -53,3 +53,26 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *
 
   return self;
 }
+
+void
+mai_node_draw_recursive (struct _MaiNode * self)
+{
+  CoglPrimitive *to_draw;
+  to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);
+
+  cogl_set_source_color4ub ('\x1', '\x1', '\xFF', 255);
+  cogl_ortho (0, 64, 0, 64, -1, 1);
+
+  CoglMatrix idmtx;
+  cogl_matrix_init_identity (&idmtx);
+  cogl_set_modelview_matrix (&idmtx);
+
+  cogl_translate (20.0f, 20.0f, 0.0f);
+  cogl_scale (5.0f, 5.0f, 1.0f);
+
+  nx_cogl_primitive_draw (to_draw);
+
+  cogl_flush ();
+
+  cogl_object_unref (to_draw);
+}

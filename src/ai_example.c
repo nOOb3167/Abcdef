@@ -4,6 +4,7 @@
 #include <assimp.h>
 #include <aiPostProcess.h>
 #include <aiScene.h>
+#include <src/cogl_include.h>
 
 #include <src/mai-node.h>
 #include <Nxt.h>
@@ -76,7 +77,8 @@ _stuff (struct aiScene *scene)
     {
       printf ("Subname '%s'\n", ((struct _MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
     }
-  return;
+
+  mai_node_draw_recursive ((struct _MaiNode*)(g_ptr_array_index(mn->children, 0)));
 }
 
 void
@@ -139,4 +141,10 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices)
   cogl_object_unref (attr);
 
   return prim;
+}
+
+void
+nx_cogl_primitive_draw (CoglPrimitive* prim)
+{
+  cogl_primitive_draw (prim);
 }
