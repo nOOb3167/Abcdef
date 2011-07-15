@@ -69,16 +69,16 @@ _stuff (struct aiScene *scene)
   root_node = scene->mRootNode;
   g_xassert (!strcmp (root_node->mName.data, "Scene"));
 
-  struct _MaiNode *mn;
+  MaiNode *mn;
   mn = mai_node_new_from (scene, root_node, NULL);
   printf ("Nodename '%s'\n", mn->name);
   int tmp1;
   for (tmp1=0; tmp1<mn->children->len; ++tmp1)
     {
-      printf ("Subname '%s'\n", ((struct _MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
+      printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
     }
 
-  mai_node_draw_recursive ((struct _MaiNode*)(g_ptr_array_index(mn->children, 0)));
+  mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
 }
 
 void

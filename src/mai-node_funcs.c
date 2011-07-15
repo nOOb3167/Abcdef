@@ -3,10 +3,10 @@
 
 #define GET_NEW ((MaiNode *)g_object_new(mai_node_get_type(), NULL))
 
-struct _MaiNode *
-mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *parent)
+MaiNode *
+mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
 {
-  struct _MaiNode * self = GET_NEW;
+  MaiNode * self = GET_NEW;
   int cnt;
 
   g_xassert (from->mParent == NULL ? parent == NULL : 1);
@@ -55,7 +55,7 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, struct _MaiNode *
 }
 
 void
-mai_node_draw_recursive (struct _MaiNode * self)
+mai_node_draw_recursive (MaiNode * self)
 {
   CoglPrimitive *to_draw;
   to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);

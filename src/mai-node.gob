@@ -1,6 +1,6 @@
 %header{
 //#define XGOB_VFUN
-#include <src/mai-node_funcs.h>
+//#include <src/mai-node_funcs.h>
 //#undef XGOB_VFUN
 #include <assimp.h>
 #include <aiScene.h>
