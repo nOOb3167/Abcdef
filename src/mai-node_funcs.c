@@ -66,6 +66,7 @@ mai_node_draw_recursive (MaiNode *self)
 
   cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
   cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
+  cogl_matrix_rotate(&initial_mtx, -90.0f, 1.0f, 0.0f, 0.0f);
 
   _mai_node_draw_recursive (self, &initial_mtx);
 
