@@ -78,11 +78,22 @@ _mai_node_draw_recursive (MaiNode *self, CoglMatrix *acc_mtx)
   CoglPrimitive *to_draw;
   to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);
 
-  //CoglMatrix idmtx;
-  //cogl_matrix_init_identity (acc_mtx);
-  cogl_set_modelview_matrix (acc_mtx);
+  CoglMatrix cur_mtx;
+  cogl_matrix_init_identity (&cur_mtx);
+  cogl_matrix_multiply (&cur_mtx, &cur_mtx, acc_mtx);
+  cogl_matrix_multiply (&cur_mtx, &cur_mtx, self->transformation);
+
+  cogl_set_modelview_matrix (&cur_mtx);
 
   nx_cogl_primitive_draw (to_draw);
 
   cogl_object_unref (to_draw);
+
+  int tmp1;
+  for (tmp1=0; tmp1<self->children->len; ++tmp1)
+    {
+      MaiNode *child;
+      child = g_ptr_array_index(self->children, tmp1);
+      _mai_node_draw_recursive (child, &cur_mtx);
+    }
 }
