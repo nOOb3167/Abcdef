@@ -55,24 +55,34 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
 }
 
 void
-mai_node_draw_recursive (MaiNode * self)
+mai_node_draw_recursive (MaiNode *self)
 {
-  CoglPrimitive *to_draw;
-  to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);
+  CoglMatrix initial_mtx;
+  cogl_matrix_init_identity (&initial_mtx);
+  cogl_set_modelview_matrix (&initial_mtx);
 
   cogl_set_source_color4ub ('\x1', '\x1', '\xFF', 255);
   cogl_ortho (0, 64, 0, 64, -1, 1);
 
-  CoglMatrix idmtx;
-  cogl_matrix_init_identity (&idmtx);
-  cogl_set_modelview_matrix (&idmtx);
+  cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
+  cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
 
-  cogl_translate (20.0f, 20.0f, 0.0f);
-  cogl_scale (5.0f, 5.0f, 1.0f);
-
-  nx_cogl_primitive_draw (to_draw);
+  _mai_node_draw_recursive (self, &initial_mtx);
 
   cogl_flush ();
+}
+
+void
+_mai_node_draw_recursive (MaiNode *self, CoglMatrix *acc_mtx)
+{
+  CoglPrimitive *to_draw;
+  to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);
+
+  //CoglMatrix idmtx;
+  //cogl_matrix_init_identity (acc_mtx);
+  cogl_set_modelview_matrix (acc_mtx);
+
+  nx_cogl_primitive_draw (to_draw);
 
   cogl_object_unref (to_draw);
 }
