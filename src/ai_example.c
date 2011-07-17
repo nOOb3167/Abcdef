@@ -110,7 +110,7 @@ ai_matrix_to_cogl_matrix (struct aiMatrix4x4 *ai_matrix, CoglMatrix *cogl_matrix
 }
 
 CoglPrimitive *
-nx_cogl_primitive_new (GArray *verts, GArray *indices)
+nx_cogl_primitive_new (GArray *verts, GArray *indices, GArray *uvs)
 {
   context_switch_cogl ();
 
@@ -118,12 +118,22 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices)
   g_xassert (verts->len > 0);
   bfr = cogl_attribute_buffer_new (sizeof (struct xvtx) * verts->len, verts->data);
   g_xassert (bfr);
-
   CoglAttribute *attr;
   attr = cogl_attribute_new (bfr, "cogl_position_in",
                              sizeof (struct xvtx), offsetof (struct xvtx, x),
                              3, COGL_ATTRIBUTE_TYPE_FLOAT);
   g_xassert (attr);
+
+  CoglAttributeBuffer *bfr_uv;
+  g_xassert (uvs->len > 0);
+  bfr_uv = cogl_attribute_buffer_new (sizeof (struct xvtx) * uvs->len, uvs->data);
+  g_xassert (bfr_uv);
+
+  CoglAttribute *attr_uv;
+  attr_uv = cogl_attribute_new (bfr_uv, "cogl_tex_coord0_in",
+                             sizeof (struct xvtx), offsetof (struct xvtx, x),
+                             3, COGL_ATTRIBUTE_TYPE_FLOAT);
+  g_xassert (attr_uv);
 
   CoglIndices *idx;
   g_xassert (indices->len > 0);
@@ -131,7 +141,11 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices)
   g_xassert (idx);
 
   CoglPrimitive *prim;
-  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts->len, attr, NULL);
+  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts->len,                             attr, attr_uv, NULL);
+//  CoglAttribute *attrs_arry[2];
+//  attrs_arry[0] = attr;
+//  attrs_arry[1] = attr_uv;
+//  prim = cogl_primitive_new_with_attributes (COGL_VERTICES_MODE_TRIANGLES, verts->len, attrs_arry, 2);
   g_xassert (prim);
 
   cogl_primitive_set_indices (prim, idx);

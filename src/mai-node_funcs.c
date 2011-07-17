@@ -18,10 +18,13 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
 
   g_xassert (from->mNumMeshes <= 1);
   self->mesh_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+  self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (unsigned int));
+  self->mesh_uvs = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
   if (from->mNumMeshes == 1)
     {
       struct aiMesh *mesh;
       mesh = scene->mMeshes[from->mMeshes[0]];
+
       for (cnt=0; cnt<mesh->mNumVertices; ++cnt)
         {
           struct xvtx vert;
@@ -32,7 +35,6 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
         }
 
       g_xassert (mesh->mNumFaces > 0);
-      self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (unsigned int));
       for (cnt=0; cnt<mesh->mNumFaces; ++cnt)
         {
           unsigned int index;
@@ -42,6 +44,17 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
           g_array_append_vals (self->mesh_indices, &index, 1);
           index = mesh->mFaces[cnt].mIndices[2];
           g_array_append_vals (self->mesh_indices, &index, 1);
+        }
+
+      g_xassert (mesh->mNumUVComponents[0] == 2);
+      /* mTextureCoords[x] is mNumVertices entries in size */
+      for (cnt=0; cnt<mesh->mNumVertices; ++cnt)
+        {
+          struct xvtx uvcoord;
+          uvcoord.x = mesh->mTextureCoords[0][cnt].x;
+          uvcoord.y = mesh->mTextureCoords[0][cnt].y;
+          uvcoord.z = mesh->mTextureCoords[0][cnt].z;
+          g_array_append_vals (self->mesh_uvs, &uvcoord, 1);
         }
     }
 
@@ -77,7 +90,7 @@ void
 _mai_node_draw_recursive (MaiNode *self, CoglMatrix *acc_mtx)
 {
   CoglPrimitive *to_draw;
-  to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices);
+  to_draw = nx_cogl_primitive_new (self->mesh_verts, self->mesh_indices, self->mesh_uvs);
 
   CoglMatrix cur_mtx;
   cogl_matrix_init_identity (&cur_mtx);
