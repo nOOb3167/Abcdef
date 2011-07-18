@@ -1,6 +1,10 @@
 #ifndef NXT_H_
 #define NXT_H_
 
+#include <src/cogl_include.h>
+
+CoglHandle *g_testtex;
+
 struct xvtx
 {
   float x, y,z;

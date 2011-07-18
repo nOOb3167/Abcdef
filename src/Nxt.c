@@ -158,6 +158,9 @@ main (int argc, char **argv)
     
     printf ("COGL SETUP COMPLETE\n");
 
+    g_testtex = cogl_texture_new_from_file ("testtex.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
+    g_xassert (g_testtex != COGL_INVALID_HANDLE);
+
     _example_draw ();
 
     ai_import_file ("c_multipart_collada.dae");

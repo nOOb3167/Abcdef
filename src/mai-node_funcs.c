@@ -75,6 +75,7 @@ mai_node_draw_recursive (MaiNode *self)
   cogl_set_modelview_matrix (&initial_mtx);
 
   cogl_set_source_color4ub ('\x1', '\x1', '\xFF', 255);
+  cogl_set_source_texture (g_testtex);
   cogl_ortho (0, 64, 0, 64, -1, 1);
 
   cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
