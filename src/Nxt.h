@@ -7,7 +7,12 @@ CoglHandle *g_testtex;
 
 struct xvtx
 {
-  float x, y,z;
+  float x,y,z;
+};
+
+struct xquat
+{
+  float w,x,y,z;
 };
 
 void

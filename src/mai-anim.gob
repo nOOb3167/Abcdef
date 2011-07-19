@@ -1,0 +1,16 @@
+%header{
+#include <assimp.h>
+#include <aiScene.h>
+#include <cogl_include.h>
+
+#include <error.h>
+%}
+
+class Mai:Anim from G:Object
+{
+ public char * name
+   destroywith g_free;
+ public double duration;
+ public GArray *channels
+   destroywith g_array_unref;
+}

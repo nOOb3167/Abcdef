@@ -1,0 +1,19 @@
+%header{
+#include <assimp.h>
+#include <aiScene.h>
+#include <cogl_include.h>
+
+#include <error.h>
+%}
+
+class Mai:Node:Anim from G:Object
+{
+ public char * node_name
+   destroywith g_free;
+ public GArray *position_keys
+   destroywith g_array_unref;
+ public GArray *rotation_keys
+   destroywith g_array_unref;
+ public GArray *scaling_keys
+   destroywith g_array_unref;
+}
