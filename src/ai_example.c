@@ -16,6 +16,8 @@
 void
 _stuff (struct aiScene *scene);
 
+GHashTable *
+_nx_ai_collect_node_map (struct aiScene *scene);
 
 void
 ai_import_file (const char *file_name)
@@ -81,11 +83,44 @@ _stuff (struct aiScene *scene)
       printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
     }
 
+  GHashTable *name_node_map;
+  name_node_map = _nx_ai_collect_node_map (scene);
+
+  {
+    void pht (gpointer key, gpointer value, gpointer data)
+    {
+      printf ("KK %s\n", key);
+    }
+    g_hash_table_foreach (name_node_map, pht, NULL);
+  }
+
   g_xassert (scene->mNumAnimations >= 1);
   MaiAnim *an;
   an = mai_anim_new_from (scene, scene->mAnimations[0]);
 
   mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
+}
+
+GHashTable *
+_nx_ai_collect_node_map (struct aiScene *scene)
+{
+  GHashTable *ret;
+  ret = g_hash_table_new (g_str_hash, g_str_equal);
+
+  void _collector (GHashTable *ht, struct aiNode *node)
+  {
+    g_hash_table_insert (ht, g_strdup (node->mName.data), node);
+    if (node->mNumChildren == 0)
+      return;
+    int cnt;
+    for (cnt=0; cnt<node->mNumChildren; ++cnt)
+      _collector (ht, node->mChildren[cnt]);
+  }
+
+  g_xassert (scene->mRootNode);
+  _collector (ret, scene->mRootNode);
+
+  return ret;
 }
 
 void
