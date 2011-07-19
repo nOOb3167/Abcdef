@@ -7,6 +7,9 @@
 #include <src/cogl_include.h>
 
 #include <src/mai-node.h>
+#include <src/mai-node_funcs.h>
+#include <src/mai-anim.h>
+#include <src/mai-anim_funcs.h>
 #include <Nxt.h>
 #include <ai_example.h>
 
@@ -77,6 +80,10 @@ _stuff (struct aiScene *scene)
     {
       printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
     }
+
+  g_xassert (scene->mNumAnimations >= 1);
+  MaiAnim *an;
+  an = mai_anim_new_from (scene, scene->mAnimations[0]);
 
   mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
 }
