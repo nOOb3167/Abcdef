@@ -13,6 +13,8 @@
 #include <Nxt.h>
 #include <ai_example.h>
 
+#include <src/array_macro.h>
+
 void
 _stuff (struct aiScene *scene);
 
@@ -93,6 +95,13 @@ _stuff (struct aiScene *scene)
     }
     g_hash_table_foreach (name_node_map, pht, NULL);
   }
+
+  HaHa haha = {1234, 5678};
+  GHaHaArray *ghha;
+  ghha = g_ha_ha_array_new ();
+  g_ha_ha_array_append_val (ghha, &haha);
+  g_ha_ha_array_index (ghha, 0);
+  g_ha_ha_array_free (ghha, 1);
 
   g_xassert (scene->mNumAnimations >= 1);
   MaiAnim *an;
