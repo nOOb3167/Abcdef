@@ -17,7 +17,7 @@ void
 _stuff (struct aiScene *scene);
 
 GHashTable *
-_nx_ai_collect_node_map (struct aiScene *scene);
+_nx_mai_collect_node_map (MaiNode *from);
 
 void
 ai_import_file (const char *file_name)
@@ -84,7 +84,7 @@ _stuff (struct aiScene *scene)
     }
 
   GHashTable *name_node_map;
-  name_node_map = _nx_ai_collect_node_map (scene);
+  name_node_map = _nx_mai_collect_node_map (mn);
 
   {
     void pht (gpointer key, gpointer value, gpointer data)
@@ -102,23 +102,22 @@ _stuff (struct aiScene *scene)
 }
 
 GHashTable *
-_nx_ai_collect_node_map (struct aiScene *scene)
+_nx_mai_collect_node_map (MaiNode *from)
 {
   GHashTable *ret;
   ret = g_hash_table_new (g_str_hash, g_str_equal);
 
-  void _collector (GHashTable *ht, struct aiNode *node)
+  void _collector (GHashTable *ht, MaiNode *node)
   {
-    g_hash_table_insert (ht, g_strdup (node->mName.data), node);
-    if (node->mNumChildren == 0)
+    g_hash_table_insert (ht, g_strdup (node->name), node);
+    if (node->children->len == 0)
       return;
     int cnt;
-    for (cnt=0; cnt<node->mNumChildren; ++cnt)
-      _collector (ht, node->mChildren[cnt]);
+    for (cnt=0; cnt<node->children->len; ++cnt)
+      _collector (ht, g_ptr_array_index(node->children, cnt));
   }
 
-  g_xassert (scene->mRootNode);
-  _collector (ret, scene->mRootNode);
+  _collector (ret, from);
 
   return ret;
 }
