@@ -1,0 +1,11 @@
+class Nx:Base from G:Object
+{
+ public virtual void
+ something (self);
+
+ public NxBase *
+ new (void)
+ {
+  return GET_NEW;
+ }
+}
