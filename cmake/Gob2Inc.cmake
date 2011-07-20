@@ -29,6 +29,7 @@ FUNCTION(GOB2IZE GOBFILE)
   And ADD_SUBDIRECTORY called.")
  ENDIF()
  #"Relative path in OUTPUT interpreted relative to the build dir corresponding to the current source dir"
+ #builddir paths get created for sourcedirs with CMakeLists.txt files
  ADD_CUSTOM_COMMAND(OUTPUT "${GOBPATH}/${GOBNAME}.c"
   COMMAND "${GOB2_EXECUTABLE}" "--no-touch" "${GOBABS}"
   IMPLICIT_DEPENDS
