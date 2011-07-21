@@ -37,7 +37,7 @@ mai_model_new_from (struct aiScene *scene)
   self->name_node_map = name_node_map;
   self->nodes = mn;
 
-  self->anims = g_mai_anim_array_new ();
+  self->anims = g_ptr_array_new ();
 
   g_xassert (scene->mNumAnimations >= 1);
 
@@ -46,17 +46,34 @@ mai_model_new_from (struct aiScene *scene)
     {
       MaiAnim *an;
       an = mai_anim_new_from (scene, scene->mAnimations[0]);
-      g_mai_anim_array_append_val (self->anims, an);
+      g_ptr_array_add (self->anims, an);
     }
 
   return self;
 }
 
 MaiAnimInstance *
-mai_model_get_anim_by_name (char * name)
+mai_model_get_anim_by_name (MaiModel *self, char * name)
 {
   MaiAnimInstance *ret;
-  ret = 0;
+  MaiAnim *matching_anim;
+
+  int cnt;
+  matching_anim = NULL;
+  for (cnt=0; cnt<=self->anims->len; ++cnt)
+    {
+      MaiAnim *candidate;
+      candidate = g_ptr_array_index (self->anims, cnt);
+      if (NULL == g_strcmp0 (name, candidate->name))
+        {
+          matching_anim = candidate;
+          break;
+        }
+    }
+  g_xassert (NULL != matching_anim);
+
+  ret = mai_anim_instance_new_from_anim (matching_anim, self->name_node_map, self->nodes);
+
   return ret;
 }
 

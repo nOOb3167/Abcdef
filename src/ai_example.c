@@ -12,6 +12,8 @@
 #include <src/mai-anim_funcs.h>
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
+#include <src/mai-anim-instance.h>
+#include <src/mai-anim-instance_funcs.h>
 #include <Nxt.h>
 #include <ai_example.h>
 
@@ -83,6 +85,11 @@ _stuff (struct aiScene *scene)
 
   MaiModel *mm;
   mm = mai_model_new_from (scene);
+
+  MaiAnimInstance *mai;
+  MaiAnim *tmp_an;
+  tmp_an = g_ptr_array_index (mm->anims, 0);
+  mai = mai_model_get_anim_by_name (mm, tmp_an->name);
 
   MaiNode *mn;
   mn = mm->nodes;

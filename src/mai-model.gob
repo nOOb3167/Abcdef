@@ -15,7 +15,7 @@ class Mai:Model from G:Object
 {
  public GHashTable *name_node_map
    destroywith g_hash_table_unref;
- public GMaiAnimArray *anims
-   destroywith g_mai_anim_array_unref;
+ public GPtrArray *anims
+   destroywith g_ptr_array_unref;
  public Mai:Node *nodes;
 }
