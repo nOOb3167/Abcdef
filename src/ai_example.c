@@ -82,6 +82,11 @@ _stuff (struct aiScene *scene)
   g_ha_ha_array_append_val (ghha, &haha);
   g_ha_ha_array_index (ghha, 0);
   g_ha_ha_array_free (ghha, 1);
+  GHaHaPtrArray *gppa;
+  gppa = g_ha_ha_ptr_array_new ();
+  g_ha_ha_ptr_array_add (gppa, &haha);
+  g_ha_ha_ptr_array_index (gppa, 0);
+  g_ha_ha_ptr_array_free (gppa, 1);
 
   MaiModel *mm;
   mm = mai_model_new_from (scene);
