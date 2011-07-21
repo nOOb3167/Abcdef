@@ -34,8 +34,8 @@ mai_model_new_from (struct aiScene *scene)
     g_hash_table_foreach (name_node_map, pht, NULL);
   }
 
-  self->nodes = mn;
   self->name_node_map = name_node_map;
+  self->nodes = mn;
 
   self->anims = g_mai_anim_array_new ();
 
@@ -50,6 +50,12 @@ mai_model_new_from (struct aiScene *scene)
     }
 
   return self;
+}
+
+MaiAnim *
+mai_model_get_anim_by_name (char * name)
+{
+  g_xassert (0);
 }
 
 GHashTable *
