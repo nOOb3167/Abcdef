@@ -1,7 +1,16 @@
+%header{
+#include <src/mai-anim.h>
+#include <src/mai-anim_funcs.h>
+%}
+
 %afterdecls{
 #include <src/mai-model_funcs.c>
 %}
 
 class Mai:Model from G:Object
-{ 
+{
+ public GHashTable *name_node_map
+   destroywith g_hash_table_unref;
+ public GMaiAnimArray *anims
+   destroywith g_mai_anim_array_unref;
 }

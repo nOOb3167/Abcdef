@@ -5,9 +5,13 @@
 #include <aiScene.h>
 #include <error.h>
 #include <src/cogl_include.h>
+
+#include <src/array_macro.h>
 #include <src/mai-anim.h>
 
 MaiAnim *
 mai_anim_new_from (struct aiScene *scene, struct aiAnimation *from);
+
+XARRAY_MACRO_TYPE_DECLARE (mai_anim, MaiAnim);
 
 #endif /* MAI_ANIM_FUNCS_H_ */

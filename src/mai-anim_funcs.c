@@ -4,6 +4,8 @@
 
 #define GET_NEW ((MaiAnim *)g_object_new(mai_anim_get_type(), NULL))
 
+XARRAY_MACRO_TYPE_DEFINE (mai_anim, MaiAnim);
+
 MaiAnim*
 mai_anim_new_from (struct aiScene *scene, struct aiAnimation *from)
 {

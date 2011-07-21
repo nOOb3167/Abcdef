@@ -13,7 +13,8 @@ typedef GArray G##xupper##Array; \
 G##xupper##Array *g_##xlower##_array_new (void); \
 gchar *g_##xlower##_array_free (G##xupper##Array *array, gboolean free_segment); \
 G##xupper##Array *g_##xlower##_array_append_val (G##xupper##Array *array, xupper *data); \
-xupper g_##xlower##_array_index (G##xupper##Array *array, int index);
+xupper g_##xlower##_array_index (G##xupper##Array *array, int index); \
+void g_##xlower##_array_unref (G##xupper##Array *array);
 
 #define XARRAY_MACRO_TYPE_DEFINE(xlower, xupper) \
 G##xupper##Array *g_##xlower##_array_new (void) \
@@ -33,6 +34,10 @@ G##xupper##Array *g_##xlower##_array_append_val (G##xupper##Array *array, xupper
 xupper g_##xlower##_array_index (G##xupper##Array *array, int index) \
 { \
   return g_array_index (array, xupper, index); \
+} \
+void g_##xlower##_array_unref (G##xupper##Array *array) \
+{ \
+  g_array_unref (array); \
 }
 
 struct HaHa

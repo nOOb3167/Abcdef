@@ -1,5 +1,4 @@
-MaiModel *
-mai_model_new (void);
+#include <src/mai-model_funcs.h>
 
 MaiModel *
 mai_model_new (void)
