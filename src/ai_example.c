@@ -10,6 +10,7 @@
 #include <src/mai-node_funcs.h>
 #include <src/mai-anim.h>
 #include <src/mai-anim_funcs.h>
+#include <src/mai-model.h>
 #include <Nxt.h>
 #include <ai_example.h>
 
@@ -72,29 +73,7 @@ _stuff (struct aiScene *scene)
   nxt_draw_array (verts, mesh->mNumVertices, indices, mesh->mNumFaces * 3);
 
   g_xassert (scene->mRootNode);
-  struct aiNode *root_node;
-  root_node = scene->mRootNode;
-  g_xassert (!strcmp (root_node->mName.data, "Scene"));
-
-  MaiNode *mn;
-  mn = mai_node_new_from (scene, root_node, NULL);
-  printf ("Nodename '%s'\n", mn->name);
-  int tmp1;
-  for (tmp1=0; tmp1<mn->children->len; ++tmp1)
-    {
-      printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
-    }
-
-  GHashTable *name_node_map;
-  name_node_map = _nx_mai_collect_node_map (mn);
-
-  {
-    void pht (gpointer key, gpointer value, gpointer data)
-    {
-      printf ("KK %s\n", key);
-    }
-    g_hash_table_foreach (name_node_map, pht, NULL);
-  }
+  g_xassert (!strcmp (scene->mRootNode->mName.data, "Scene"));
 
   HaHa haha = {1234, 5678};
   GHaHaArray *ghha;
@@ -103,9 +82,11 @@ _stuff (struct aiScene *scene)
   g_ha_ha_array_index (ghha, 0);
   g_ha_ha_array_free (ghha, 1);
 
-  g_xassert (scene->mNumAnimations >= 1);
-  MaiAnim *an;
-  an = mai_anim_new_from (scene, scene->mAnimations[0]);
+  MaiModel *mm;
+  mm = mai_model_new_from (scene);
+
+  MaiNode *mn;
+  mn = mm->nodes;
 
   mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
 }
