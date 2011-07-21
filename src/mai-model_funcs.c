@@ -64,7 +64,7 @@ mai_model_get_anim_by_name (MaiModel *self, char * name)
     {
       MaiAnim *candidate;
       candidate = g_ptr_array_index (self->anims, cnt);
-      if (NULL == g_strcmp0 (name, candidate->name))
+      if (0 == g_strcmp0 (name, candidate->name))
         {
           matching_anim = candidate;
           break;
