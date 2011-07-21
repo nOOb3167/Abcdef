@@ -52,10 +52,12 @@ mai_model_new_from (struct aiScene *scene)
   return self;
 }
 
-MaiAnim *
+MaiAnimInstance *
 mai_model_get_anim_by_name (char * name)
 {
-  g_xassert (0);
+  MaiAnimInstance *ret;
+  ret = 0;
+  return ret;
 }
 
 GHashTable *

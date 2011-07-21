@@ -1,0 +1,22 @@
+%header{
+#include <src/mai-node.h>
+#include <src/mai-node_funcs.h>
+#include <src/mai-anim.h>
+#include <src/mai-anim_funcs.h>
+%}
+
+%afterdecls{
+#include <src/mai-anim-instance_funcs.c>
+%}
+
+class Mai:Anim:Instance from G:Object
+{
+ public Mai:Anim *anim
+   unrefwith g_object_unref;
+ public GHashTable *name_node_map
+   destroywith g_hash_table_unref;
+
+ /* Do I need this? name_node_map might obsolete it. */
+ public Mai:Node *nodes
+   unrefwith g_object_unref;
+}
