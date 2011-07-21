@@ -8,7 +8,7 @@ nx_derived_new (void)
 }
 
 void
-_nx_derived_something (NxDerived *self)
+_nx_derived_something (NxBase *self)
 {
   printf ("_nx_derived_something\n");
 }

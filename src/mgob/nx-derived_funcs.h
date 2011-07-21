@@ -5,6 +5,6 @@ NxDerived *
 nx_derived_new (void);
 
 void
-_nx_derived_something (NxDerived *self);
+_nx_derived_something (NxBase *self);
 
 #endif /* NX_DERIVED_FUNCS_H_ */
