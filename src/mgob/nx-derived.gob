@@ -1,0 +1,12 @@
+%header{
+#include <src/mgob/nx-base.h>
+%}
+
+class Nx:Derived from Nx:Base
+{
+ public NxDerived *
+ new (void)
+ {
+  return GET_NEW;
+ }
+}
