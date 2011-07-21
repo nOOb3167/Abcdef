@@ -2,9 +2,19 @@
 #include <src/mgob/nx-base.h>
 %}
 
+%{
+#include <src/mgob/nx-derived_funcs.c>
+%}
+
 class Nx:Derived from Nx:Base
-{
- public NxDerived *
+{ 
+ class_init (class)
+ {
+  NxBaseClass *nx_base_class = NX_BASE_CLASS(class);
+  nx_base_class->something = _nx_derived_something;
+ }
+
+ public Nx:Derived *
  new (void)
  {
   return GET_NEW;
