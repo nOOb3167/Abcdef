@@ -3,6 +3,7 @@
 
 #include <src/mgob/nx-base.h>
 #include <src/mgob/nx-derived.h>
+#include <src/mgob/nx-derived_funcs.h>
 
 int main (int argc, char **argv)
 {
