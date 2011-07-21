@@ -1,0 +1,7 @@
+%afterdecls{
+#include <src/mai-model_funcs.c>
+%}
+
+class Mai:Model from G:Object
+{ 
+}
