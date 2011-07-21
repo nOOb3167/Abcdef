@@ -11,6 +11,7 @@
 #include <src/mai-anim.h>
 #include <src/mai-anim_funcs.h>
 #include <src/mai-model.h>
+#include <src/mai-model_funcs.h>
 #include <Nxt.h>
 #include <ai_example.h>
 
@@ -19,8 +20,6 @@
 void
 _stuff (struct aiScene *scene);
 
-GHashTable *
-_nx_mai_collect_node_map (MaiNode *from);
 
 void
 ai_import_file (const char *file_name)
@@ -89,27 +88,6 @@ _stuff (struct aiScene *scene)
   mn = mm->nodes;
 
   mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
-}
-
-GHashTable *
-_nx_mai_collect_node_map (MaiNode *from)
-{
-  GHashTable *ret;
-  ret = g_hash_table_new (g_str_hash, g_str_equal);
-
-  void _collector (GHashTable *ht, MaiNode *node)
-  {
-    g_hash_table_insert (ht, g_strdup (node->name), node);
-    if (node->children->len == 0)
-      return;
-    int cnt;
-    for (cnt=0; cnt<node->children->len; ++cnt)
-      _collector (ht, g_ptr_array_index(node->children, cnt));
-  }
-
-  _collector (ret, from);
-
-  return ret;
 }
 
 void

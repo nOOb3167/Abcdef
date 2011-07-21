@@ -1,4 +1,9 @@
+#include <stdio.h>
 #include <src/mai-model_funcs.h>
+
+GHashTable *
+_nx_mai_collect_node_map (MaiNode *from);
+
 
 MaiModel *
 mai_model_new_from (struct aiScene *scene)
@@ -45,4 +50,25 @@ mai_model_new_from (struct aiScene *scene)
     }
 
   return self;
+}
+
+GHashTable *
+_nx_mai_collect_node_map (MaiNode *from)
+{
+  GHashTable *ret;
+  ret = g_hash_table_new (g_str_hash, g_str_equal);
+
+  void _collector (GHashTable *ht, MaiNode *node)
+  {
+    g_hash_table_insert (ht, g_strdup (node->name), node);
+    if (node->children->len == 0)
+      return;
+    int cnt;
+    for (cnt=0; cnt<node->children->len; ++cnt)
+      _collector (ht, g_ptr_array_index(node->children, cnt));
+  }
+
+  _collector (ret, from);
+
+  return ret;
 }
