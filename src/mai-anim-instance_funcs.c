@@ -67,7 +67,18 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
           sca = g_array_index (mni.scaling_keys, struct NxAnimKey, self->current_frame);
           cogl_matrix_init_identity (&anim_trans);
           cogl_matrix_translate (&anim_trans, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
-          printf ("Anim match | %s\n", node->name);
+          CoglQuaternion quat;
+          //CoglVector3 vec3;
+          float vals[4] = {rot.val.rot.w, rot.val.rot.x, rot.val.rot.y, rot.val.rot.z};
+          cogl_quaternion_init_from_array (&quat, vals);
+          float rotang;
+          rotang = cogl_quaternion_get_rotation_angle (&quat);
+          //cogl_quaternion_get_rotation_axis is bugged? Three vector.x lines!
+          //cogl_quaternion_get_rotation_axis (&quat, &vec3);
+          struct xvtx vec3;
+          nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &rotang, &vec3);
+          cogl_matrix_rotate (&anim_trans, rotang, vec3.x, vec3.y, vec3.z);
+          printf ("Anim match | %s | %f %f %f %f\n", node->name, rotang, vec3.x, vec3.y, vec3.z);
           break;
         }
     }

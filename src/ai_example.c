@@ -132,6 +132,29 @@ ai_matrix_to_cogl_matrix (struct aiMatrix4x4 *ai_matrix, CoglMatrix *cogl_matrix
   cogl_matrix->ww = ai_matrix->d4;
 }
 
+void
+nx_cogl_quaternion_to_rotation_axis_and_angle (CoglQuaternion *quat, float *angle_out, struct xvtx *axis_out)
+{
+  /* http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q57 */
+  float xcos_a;
+  float xangle;
+  float xsin_a;
+
+  g_xassert (angle_out);
+  g_xassert (axis_out);
+
+  xcos_a = quat->w;
+  xangle = acosf (xcos_a) *2;
+  xsin_a = sqrtf ( 1.0f - xcos_a * xcos_a);
+  if (fabsf (xsin_a) < 0.0005f)
+    xsin_a = 1.0f;
+  *angle_out = xangle * NX_RADIANS_TO_DEGREES;
+  axis_out->x = quat->x / xsin_a;
+  axis_out->y = quat->y / xsin_a;
+  axis_out->z = quat->z / xsin_a;
+}
+
+
 CoglPrimitive *
 nx_cogl_primitive_new (GArray *verts, GArray *indices, GArray *uvs)
 {
