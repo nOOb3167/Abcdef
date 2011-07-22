@@ -9,6 +9,8 @@
 
 #include <error.h>
 #include <gfx_lib_setup.h>
+#include <src/mai-model.h>
+#include <src/mai-model_funcs.h>
 #include <ma.h>
 
 void
@@ -65,6 +67,9 @@ main (int argc, char **argv)
 
     g_testtex = cogl_texture_new_from_file ("testtex.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
     g_xassert (g_testtex != COGL_INVALID_HANDLE);
+
+    MaiModel *mm;
+    mm = mai_model_new_from_file ("c_multipart_collada.dae");
 
     _display_loop ();
 

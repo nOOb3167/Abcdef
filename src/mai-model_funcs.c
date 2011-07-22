@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <src/ai_example.h>
 #include <src/mai-model_funcs.h>
+
+MaiModel *
+_mai_model_new_from_scene (struct aiScene *scene);
 
 GHashTable *
 _nx_mai_collect_node_map (MaiNode *from);
@@ -7,6 +11,37 @@ _nx_mai_collect_node_map (MaiNode *from);
 
 MaiModel *
 mai_model_new_from (struct aiScene *scene)
+{
+  MaiModel *ret;
+  ret = _mai_model_new_from_scene (scene);
+
+  printf ("Nodename '%s'\n", ret->nodes->name);
+  int tmp1;
+  for (tmp1=0; tmp1<ret->nodes->children->len; ++tmp1)
+    {
+      printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(ret->nodes->children, tmp1)))->name);
+    }
+
+  void pht (gpointer key, gpointer value, gpointer data)
+  {
+    printf ("KK %s\n", key);
+  }
+  g_hash_table_foreach (ret->name_node_map, pht, NULL);
+
+  return ret;
+}
+
+MaiModel *
+mai_model_new_from_file (const char *file_name)
+{
+  struct aiScene *scene;
+  scene = ai_scene_from_file (file_name);
+
+  return _mai_model_new_from_scene (scene);
+}
+
+MaiModel *
+_mai_model_new_from_scene (struct aiScene *scene)
 {
   MaiModel *self = GET_NEW;
 
@@ -16,23 +51,10 @@ mai_model_new_from (struct aiScene *scene)
 
   MaiNode *mn;
   mn = mai_node_new_from (scene, root_node, NULL);
-  printf ("Nodename '%s'\n", mn->name);
-  int tmp1;
-  for (tmp1=0; tmp1<mn->children->len; ++tmp1)
-    {
-      printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(mn->children, tmp1)))->name);
-    }
 
   GHashTable *name_node_map;
   name_node_map = _nx_mai_collect_node_map (mn);
 
-  {
-    void pht (gpointer key, gpointer value, gpointer data)
-    {
-      printf ("KK %s\n", key);
-    }
-    g_hash_table_foreach (name_node_map, pht, NULL);
-  }
 
   self->name_node_map = name_node_map;
   self->nodes = mn;
