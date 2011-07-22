@@ -76,7 +76,7 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
           struct xvtx vec3;
           nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &rotang, &vec3);
           cogl_matrix_rotate (&anim_trans, rotang, vec3.x, vec3.y, vec3.z);
-          printf ("Anim match | %s | %f %f %f %f\n", node->name, rotang, vec3.x, vec3.y, vec3.z);
+          //printf ("Anim match | %s | %f %f %f %f\n", node->name, rotang, vec3.x, vec3.y, vec3.z);
           break;
         }
     }
