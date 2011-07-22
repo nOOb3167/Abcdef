@@ -2,8 +2,10 @@
 #include <assimp.h>
 #include <aiScene.h>
 #include <cogl_include.h>
-
 #include <error.h>
+
+#include <src/mai-node-anim.h>
+#include <src/mai-node-anim_funcs.h>
 %}
 
 class Mai:Anim from G:Object
@@ -11,6 +13,6 @@ class Mai:Anim from G:Object
  public char * name
    destroywith g_free;
  public double duration;
- public GArray *channels
+ public GMaiNodeAnimPtrArray *channels
    destroywith g_array_unref;
 }

@@ -55,16 +55,16 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
   int cnt;
   for (cnt=0; cnt<self->anim->channels->len; ++cnt)
     {
-      MaiNodeAnim mni;
-      mni = g_array_index (self->anim->channels, MaiNodeAnim, cnt);
-      if (0 == g_strcmp0 (mni.node_name, node->name))
+      MaiNodeAnim *mni;
+      mni = g_mai_node_anim_ptr_array_index (self->anim->channels, cnt);
+      if (0 == g_strcmp0 (mni->node_name, node->name))
         {
           struct NxAnimKey pos;
           struct NxAnimKey rot;
           struct NxAnimKey sca;
-          pos = g_array_index (mni.position_keys, struct NxAnimKey, self->current_frame);
-          rot = g_array_index (mni.rotation_keys, struct NxAnimKey, self->current_frame);
-          sca = g_array_index (mni.scaling_keys, struct NxAnimKey, self->current_frame);
+          pos = g_array_index (mni->position_keys, struct NxAnimKey, self->current_frame);
+          rot = g_array_index (mni->rotation_keys, struct NxAnimKey, self->current_frame);
+          sca = g_array_index (mni->scaling_keys, struct NxAnimKey, self->current_frame);
           cogl_matrix_init_identity (&anim_trans);
           cogl_matrix_translate (&anim_trans, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
           CoglQuaternion quat;
@@ -78,13 +78,12 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
           break;
         }
     }
-  if (self->anim->channels)
 
   cogl_matrix_multiply (&cur_mtx, &cur_mtx, &anim_trans);
 
   cogl_set_modelview_matrix (&cur_mtx);
 
-  if (node->mesh_verts->len >0)
+  if (node->mesh_verts->len > 0)
     {
       nx_cogl_primitive_draw (to_draw);
 

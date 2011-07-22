@@ -2,6 +2,8 @@
 
 #define GET_NEW ((MaiNodeAnim *)g_object_new(mai_node_anim_get_type(), NULL))
 
+XPTR_ARRAY_MACRO_TYPE_DEFINE (mai_node_anim, MaiNodeAnim);
+
 MaiNodeAnim*
 mai_node_anim_new_from (struct aiScene *scene, struct aiNodeAnim *from)
 {
