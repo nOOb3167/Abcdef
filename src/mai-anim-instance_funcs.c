@@ -49,8 +49,9 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
   cogl_matrix_init_identity (&cur_mtx);
   cogl_matrix_multiply (&cur_mtx, &cur_mtx, acc_mtx);
 
-  CoglMatrix *anim_trans;
-  anim_trans = node->transformation;
+  CoglMatrix anim_trans;
+  cogl_matrix_init_identity (&anim_trans);
+  cogl_matrix_multiply (&anim_trans, &anim_trans, node->transformation);
   int cnt;
   for (cnt=0; cnt<self->anim->channels->len; ++cnt)
     {
@@ -61,13 +62,18 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
           struct NxAnimKey pos;
           struct NxAnimKey rot;
           struct NxAnimKey sca;
-          //ldkfj
+          pos = g_array_index (mni.position_keys, struct NxAnimKey, self->current_frame);
+          rot = g_array_index (mni.rotation_keys, struct NxAnimKey, self->current_frame);
+          sca = g_array_index (mni.scaling_keys, struct NxAnimKey, self->current_frame);
+          cogl_matrix_init_identity (&anim_trans);
+          cogl_matrix_translate (&anim_trans, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
           printf ("Anim match | %s\n", node->name);
+          break;
         }
     }
   if (self->anim->channels)
 
-  cogl_matrix_multiply (&cur_mtx, &cur_mtx, anim_trans);
+  cogl_matrix_multiply (&cur_mtx, &cur_mtx, &anim_trans);
 
   cogl_set_modelview_matrix (&cur_mtx);
 
