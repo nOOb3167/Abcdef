@@ -97,6 +97,7 @@ _stuff (struct aiScene *scene)
   mai = mai_model_get_anim_by_name (mm, tmp_an->name);
 
   mai_anim_instance_draw (mai);
+  g_mai = mai;
 
   MaiNode *mn;
   mn = mm->nodes;

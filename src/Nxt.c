@@ -22,6 +22,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <error.h>
 #include <gfx_lib_setup.h>
 #include <ai_example.h>
+#include <src/mai-anim-instance.h>
 #include <Nxt.h>
 
 void
@@ -125,28 +126,40 @@ _example_draw (void)
 void
 _display_loop (void)
 {
-    struct fbstate_data fbd;
-    fbd = fbstate_get_data ();
+  struct fbstate_data fbd;
+  fbd = fbstate_get_data ();
 
-    context_cogl_allegro ();
+  context_cogl_allegro ();
 
-    ALLEGRO_BITMAP *bmp;
-    bmp = al_create_bitmap (640, 480);
-    ALLEGRO_LOCKED_REGION *rgn;
-    rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
-    int cnt;
-    char *data;
-    for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
-      {
-        memcpy (data, &fbd.data[cnt*640*3], 640*3);
-      }
-    al_unlock_bitmap (bmp);
+  ALLEGRO_BITMAP *bmp;
+  bmp = al_create_bitmap (640, 480);
 
-    al_set_target_backbuffer (fbd.display);
-    al_draw_bitmap (bmp, 0, 0, 0);
-    al_flip_display ();
+  int blah;
+  for (blah=0; blah < 15; ++blah)
+    {
+      ALLEGRO_LOCKED_REGION *rgn;
+      rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
+      int cnt;
+      char *data;
+      for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
+        {
+          memcpy (data, &fbd.data[cnt*640*3], 640*3);
+        }
+      al_unlock_bitmap (bmp);
 
-    al_rest (2);
+      context_switch_cogl ();
+      g_mai->current_frame += 5;
+      mai_anim_instance_draw (g_mai);
+      context_switch_allegro ();
+
+      al_set_target_backbuffer (fbd.display);
+      al_draw_bitmap (bmp, 0, 0, 0);
+      al_flip_display ();
+
+      al_rest (0.1f);
+    }
+
+  al_rest (2);
 }
 
 int

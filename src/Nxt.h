@@ -5,6 +5,9 @@
 
 CoglHandle *g_testtex;
 
+struct _MaiAnimInstance;
+struct _MaiAnimInstance *g_mai;
+
 struct xvtx
 {
   float x,y,z;
