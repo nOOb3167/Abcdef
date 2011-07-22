@@ -126,17 +126,20 @@ _example_draw (void)
 void
 _display_loop (void)
 {
-  struct fbstate_data fbd;
-  fbd = fbstate_get_data ();
-
-  context_cogl_allegro ();
+  context_switch_allegro ();
 
   ALLEGRO_BITMAP *bmp;
   bmp = al_create_bitmap (640, 480);
 
   int blah;
-  for (blah=0; blah < 15; ++blah)
+  for (blah=0; blah < 30; ++blah)
     {
+      struct fbstate_data fbd;
+
+      context_switch_cogl ();
+      fbd = fbstate_get_data ();
+
+      context_switch_allegro ();
       ALLEGRO_LOCKED_REGION *rgn;
       rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
       int cnt;
@@ -148,18 +151,21 @@ _display_loop (void)
       al_unlock_bitmap (bmp);
 
       context_switch_cogl ();
-      g_mai->current_frame += 5;
+      CoglColor clear_color;
+      cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
+      cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+      g_mai->current_frame += 2;
       mai_anim_instance_draw (g_mai);
-      context_switch_allegro ();
 
+      context_switch_allegro ();
       al_set_target_backbuffer (fbd.display);
       al_draw_bitmap (bmp, 0, 0, 0);
       al_flip_display ();
 
-      al_rest (0.1f);
+      al_rest (0.05f);
     }
 
-  al_rest (2);
+  al_rest (2.0f);
 }
 
 int
