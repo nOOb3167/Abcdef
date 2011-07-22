@@ -1,4 +1,10 @@
+#include <stdio.h>
+#include <src/ai_example.h>
 #include <src/mai-anim-instance_funcs.h>
+
+void
+_mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_mtx);
+
 
 MaiAnimInstance *
 mai_anim_instance_new_from_anim (MaiAnim *anim, GHashTable *name_node_map, MaiNode *nodes)
@@ -8,6 +14,75 @@ mai_anim_instance_new_from_anim (MaiAnim *anim, GHashTable *name_node_map, MaiNo
   self->anim = anim;
   self->name_node_map = name_node_map;
   self->nodes = nodes;
+  self->current_frame = 0;
 
   return self;
+}
+
+void
+mai_anim_instance_draw (MaiAnimInstance * self)
+{
+  CoglMatrix initial_mtx;
+  cogl_matrix_init_identity (&initial_mtx);
+  cogl_set_modelview_matrix (&initial_mtx);
+
+  cogl_set_source_color4ub ('\x1', '\xFF', '\x1', 255);
+  cogl_set_source_texture (g_testtex);
+  cogl_ortho (0, 64, 0, 64, -1, 1);
+
+  cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
+  cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
+
+  _mai_anim_draw_recursive (self, self->nodes, &initial_mtx);
+
+  cogl_flush ();
+}
+
+void
+_mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_mtx)
+{
+  CoglPrimitive *to_draw;
+  if (node->mesh_verts->len > 0)
+    to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
+
+  CoglMatrix cur_mtx;
+  cogl_matrix_init_identity (&cur_mtx);
+  cogl_matrix_multiply (&cur_mtx, &cur_mtx, acc_mtx);
+
+  CoglMatrix *anim_trans;
+  anim_trans = node->transformation;
+  int cnt;
+  for (cnt=0; cnt<self->anim->channels->len; ++cnt)
+    {
+      MaiNodeAnim mni;
+      mni = g_array_index (self->anim->channels, MaiNodeAnim, cnt);
+      if (0 == g_strcmp0 (mni.node_name, node->name))
+        {
+          struct NxAnimKey pos;
+          struct NxAnimKey rot;
+          struct NxAnimKey sca;
+          //ldkfj
+          printf ("Anim match | %s\n", node->name);
+        }
+    }
+  if (self->anim->channels)
+
+  cogl_matrix_multiply (&cur_mtx, &cur_mtx, anim_trans);
+
+  cogl_set_modelview_matrix (&cur_mtx);
+
+  if (node->mesh_verts->len >0)
+    {
+      nx_cogl_primitive_draw (to_draw);
+
+      cogl_object_unref (to_draw);
+    }
+
+  int tmp1;
+  for (tmp1=0; tmp1<node->children->len; ++tmp1)
+    {
+      MaiNode *child;
+      child = g_ptr_array_index(node->children, tmp1);
+      _mai_anim_draw_recursive (self, child, &cur_mtx);
+    }
 }

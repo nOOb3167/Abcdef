@@ -3,6 +3,8 @@
 #include <src/mai-node_funcs.h>
 #include <src/mai-anim.h>
 #include <src/mai-anim_funcs.h>
+#include <src/mai-node-anim.h>
+#include <src/mai-node-anim_funcs.h>
 %}
 
 %afterdecls{
@@ -15,6 +17,7 @@ class Mai:Anim:Instance from G:Object
    unrefwith g_object_unref;
  public GHashTable *name_node_map
    destroywith g_hash_table_unref;
+ public int current_frame;
 
  /* Do I need this? name_node_map might obsolete it. */
  public Mai:Node *nodes

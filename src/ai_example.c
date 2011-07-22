@@ -96,10 +96,12 @@ _stuff (struct aiScene *scene)
   tmp_an = g_ptr_array_index (mm->anims, 0);
   mai = mai_model_get_anim_by_name (mm, tmp_an->name);
 
+  mai_anim_instance_draw (mai);
+
   MaiNode *mn;
   mn = mm->nodes;
 
-  mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
+  //mai_node_draw_recursive ((MaiNode*)(g_ptr_array_index(mn->children, 0)));
 }
 
 void
