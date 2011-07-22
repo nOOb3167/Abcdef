@@ -6,7 +6,10 @@
 #include <src/cogl_include.h>
 #include <error.h>
 #include <src/Nxt.h>
+#include <src/array_macro.h>
 #include <src/mai-node-anim.h>
+
+XPTR_ARRAY_MACRO_TYPE_DECLARE (mai_node_anim, MaiNodeAnim);
 
 struct NxAnimKey
 {

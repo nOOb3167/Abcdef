@@ -154,7 +154,7 @@ _display_loop (void)
       CoglColor clear_color;
       cogl_color_set_from_4ub (&clear_color, '0', '0', '0', 255);
       cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
-      g_mai->current_frame += 2;
+      g_mai->current_frame += 1;
       mai_anim_instance_draw (g_mai);
 
       context_switch_allegro ();

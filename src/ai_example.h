@@ -14,6 +14,9 @@ extern "C" {
 #define NX_DEGREES_TO_RADIANS (G_PI / 180.0f)
 #define NX_RADIANS_TO_DEGREES (180.0f / G_PI)
 
+struct aiScene *
+ai_scene_from_file (const char *file_name);
+
 void
 ai_import_file (const char *file_name);
 

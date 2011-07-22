@@ -23,14 +23,14 @@ void
 _stuff (struct aiScene *scene);
 
 
-void
-ai_import_file (const char *file_name)
+struct aiScene *
+ai_scene_from_file (const char *file_name)
 {
   const struct aiScene *scene;
   struct aiScene *nonconst_scene;
   /**
    * Warning: PreTransformVertices, flatten scene essentially.
-   * See LimitBoneWeights for shared skinning.
+   * See LimitBoneWeights for shader skinning.
    */
   scene = aiImportFile (file_name,
       aiProcess_Triangulate | aiProcess_SortByPType |
@@ -38,41 +38,21 @@ ai_import_file (const char *file_name)
   g_xassert (scene);
   nonconst_scene = (struct aiScene *)scene;
 
-  _stuff (nonconst_scene);
+  return nonconst_scene;
+}
+
+void
+ai_import_file (const char *file_name)
+{
+  struct aiScene *scene;
+  scene = ai_scene_from_file (file_name);
+
+  _stuff (scene);
 }
 
 void
 _stuff (struct aiScene *scene)
 {
-  g_xassert (scene->mNumMeshes >= 1);
-  struct aiMesh *mesh;
-  mesh = scene->mMeshes[0];
-  printf ("Total number of meshes: %d\n", scene->mNumMeshes);
-  printf ("Number of faces/vertices in mesh zero: %d/%d\n", mesh->mNumFaces, mesh->mNumVertices);
-  g_xassert (mesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE);
-
-  struct xvtx *verts;
-  verts = g_new0 (struct xvtx, mesh->mNumVertices);
-  int cnt;
-  for (cnt=0; cnt<mesh->mNumVertices; ++cnt)
-    {
-      verts[cnt].x = mesh->mVertices[cnt].x;
-      verts[cnt].y = mesh->mVertices[cnt].y;
-      verts[cnt].z = mesh->mVertices[cnt].z;
-    }
-
-  unsigned int *indices;
-  indices = g_new0 (unsigned int, mesh->mNumFaces * 3);
-  int idx;
-  for (cnt=0,idx=0; cnt<mesh->mNumFaces; ++cnt)
-    {
-      indices[idx++] = mesh->mFaces[cnt].mIndices[0];
-      indices[idx++] = mesh->mFaces[cnt].mIndices[1];
-      indices[idx++] = mesh->mFaces[cnt].mIndices[2];
-    }
-
-  nxt_draw_array (verts, mesh->mNumVertices, indices, mesh->mNumFaces * 3);
-
   g_xassert (scene->mRootNode);
   g_xassert (!strcmp (scene->mRootNode->mName.data, "Scene"));
 
@@ -93,7 +73,7 @@ _stuff (struct aiScene *scene)
 
   MaiAnimInstance *mai;
   MaiAnim *tmp_an;
-  tmp_an = g_ptr_array_index (mm->anims, 0);
+  tmp_an = g_mai_anim_ptr_array_index (mm->anims, 0);
   mai = mai_model_get_anim_by_name (mm, tmp_an->name);
 
   mai_anim_instance_draw (mai);
@@ -145,7 +125,7 @@ nx_cogl_quaternion_to_rotation_axis_and_angle (CoglQuaternion *quat, float *angl
   g_xassert (axis_out);
 
   xcos_a = quat->w;
-  xangle = acosf (xcos_a) *2;
+  xangle = acosf (xcos_a) * 2;
   xsin_a = sqrtf ( 1.0f - xcos_a * xcos_a);
   if (fabsf (xsin_a) < 0.0005f)
     xsin_a = 1.0f;
