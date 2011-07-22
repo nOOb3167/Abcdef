@@ -73,7 +73,7 @@ _stuff (struct aiScene *scene)
 
   MaiAnimInstance *mai;
   MaiAnim *tmp_an;
-  tmp_an = g_ptr_array_index (mm->anims, 0);
+  tmp_an = g_mai_anim_ptr_array_index (mm->anims, 0);
   mai = mai_model_get_anim_by_name (mm, tmp_an->name);
 
   mai_anim_instance_draw (mai);
