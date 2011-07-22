@@ -14,5 +14,5 @@ class Mai:Anim from G:Object
    destroywith g_free;
  public double duration;
  public GMaiNodeAnimPtrArray *channels
-   destroywith g_array_unref;
+   destroywith g_mai_node_anim_ptr_array_unref;
 }

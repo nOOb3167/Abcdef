@@ -125,7 +125,7 @@ nx_cogl_quaternion_to_rotation_axis_and_angle (CoglQuaternion *quat, float *angl
   g_xassert (axis_out);
 
   xcos_a = quat->w;
-  xangle = acosf (xcos_a) *2;
+  xangle = acosf (xcos_a) * 2;
   xsin_a = sqrtf ( 1.0f - xcos_a * xcos_a);
   if (fabsf (xsin_a) < 0.0005f)
     xsin_a = 1.0f;
