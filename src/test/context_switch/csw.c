@@ -12,10 +12,10 @@
 #include <Nxt.h>
 
 void
-_example_draw (void);
+_example_draw_at (int x, int y);
 
 void
-_example_draw (void)
+_example_draw_at (int x, int y)
 {
     cogl_set_source_color4ub ('\xFF', '1', '1', 255);
     cogl_ortho (0, 64, 0, 64, -5, 5);
@@ -24,55 +24,9 @@ _example_draw (void)
     cogl_matrix_init_identity (&idmtx);
     cogl_set_modelview_matrix (&idmtx);
 
-    const char *shd_source =
-        "void main(void) \
-        { \
-          gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); \
-        }";
-    CoglHandle shd;
-    shd = cogl_create_shader (COGL_SHADER_TYPE_FRAGMENT);
-    g_xassert (shd);
-    cogl_shader_source (shd, shd_source);
-    cogl_shader_compile (shd);
-    g_xassert (cogl_shader_is_compiled (shd));
-    CoglHandle shd_prg;
-    shd_prg = cogl_create_program ();
-    g_xassert (shd_prg);
-    cogl_program_attach_shader (shd_prg, shd);
-    cogl_program_link (shd_prg);
-    cogl_program_use (shd_prg);
-
-    cogl_rectangle (64, 64, 62, 62);
-
-    cogl_program_use (COGL_INVALID_HANDLE);
-
-    cogl_object_unref (shd);
-    cogl_object_unref (shd_prg);
-
-    struct xvtx datavec[3] =
-        {
-            {0.0f, 0.0f, 0.0f},
-            {10.0f, 0.0f, 0.0f},
-            {10.0f, 10.0f, 0.0f}
-        };
-
-    CoglAttributeBuffer *bfr;
-    bfr = cogl_attribute_buffer_new (sizeof (datavec), datavec);
-    g_xassert (bfr);
-    CoglAttribute *attr;
-    attr = cogl_attribute_new (bfr, "cogl_position_in",
-                               sizeof (struct xvtx), offsetof (struct xvtx, x),
-                               3, COGL_ATTRIBUTE_TYPE_FLOAT);
-    g_xassert (attr);
-    CoglPrimitive *prim;
-    prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, 3, attr, NULL);
-    g_xassert (prim);
-    cogl_primitive_draw (prim);
+    cogl_rectangle (x+1, y+1, x-1, y-1);
 
     cogl_flush ();
-    cogl_object_unref (bfr);
-    cogl_object_unref (attr);
-    cogl_object_unref (prim);
 }
 
 void
@@ -125,7 +79,7 @@ main (int argc, char **argv)
     //g_testtex = cogl_texture_new_from_file ("testtex.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
     //g_xassert (g_testtex != COGL_INVALID_HANDLE);
 
-    _example_draw ();
+    _example_draw_at (63, 63);
 
     _display_loop ();
 
