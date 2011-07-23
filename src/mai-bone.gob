@@ -17,6 +17,6 @@
 class Mai:Bone from G:Object
 {
  public char *name;
- public GNxVertexWeightArray *weights;
  public CoglMatrix *offset_matrix;
+ public GNxVertexWeightArray *weights;
 }
