@@ -50,8 +50,33 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
        * BoneNode puts it into World, Inv(Node) puts it into node.
        * Since I'm invoking primitive_draw with Node as transform, it will conveniently cancel the Inv(Node).
        */
-      //if (node->)
-      to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
+      GArray *draw_this;
+      draw_this = node->mesh_verts;
+      if (node->bones->len > 0)
+        {
+          GArray *palletted;
+          palletted = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+          int cnt;
+          for (cnt=0; cnt<node->mesh_verts->len; ++cnt)
+            {
+              struct xvtx vtx;
+              vtx = g_array_index (node->mesh_verts, struct xvtx, cnt);
+              int idx;
+              for (idx=0; idx<node->bones->len; ++idx)
+                {
+                  /**
+                   * I should be able to find the bone inside the name_node_map (Gives BoneNode).
+                   */
+                  MaiNode *bone_trans_node;
+                  bone_trans_node = g_hash_table_lookup (self->name_node_map, g_mai_bone_ptr_array_index (node->bones, idx)->name);
+                  g_xassert (bone_trans_node);
+
+                }
+              g_array_append_vals (palletted, &vtx, 1);
+            }
+          draw_this = palletted;
+        }
+      to_draw = nx_cogl_primitive_new (draw_this, node->mesh_indices, node->mesh_uvs);
     }
 
   CoglMatrix cur_mtx;
