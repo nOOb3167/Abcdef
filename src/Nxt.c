@@ -182,7 +182,7 @@ main (int argc, char **argv)
 
     _example_draw ();
 
-    ai_import_file ("c_multipart_collada.dae");
+    ai_import_file ("c_multipart_collada_skinned.dae");
 
     _display_loop ();
 
