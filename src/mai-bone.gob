@@ -1,0 +1,22 @@
+%header{
+#include <src/cogl_include.h>
+#include <Nxt.h>
+
+#include <src/mai-anim.h>
+#include <src/mai-anim_funcs.h>
+#include <src/mai-anim-instance.h>
+#include <src/mai-anim-instance_funcs.h>
+#include <src/mai-node.h>
+#include <src/mai-node_funcs.h>
+%}
+
+%afterdecls{
+#include <src/mai-bone_funcs.c>
+%}
+
+class Mai:Bone from G:Object
+{
+ public char *name;
+ public GNxVertexWeightArray *weights;
+ public CoglMatrix *offset_matrix;
+}

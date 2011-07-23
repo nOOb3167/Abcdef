@@ -43,7 +43,10 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
 {
   CoglPrimitive *to_draw;
   if (node->mesh_verts->len > 0)
-    to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
+    {
+      //if (node->)
+      to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
+    }
 
   CoglMatrix cur_mtx;
   cogl_matrix_init_identity (&cur_mtx);
