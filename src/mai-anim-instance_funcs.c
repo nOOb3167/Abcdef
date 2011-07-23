@@ -44,6 +44,12 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
   CoglPrimitive *to_draw;
   if (node->mesh_verts->len > 0)
     {
+      /**
+       * Offset->weight->BoneNode->Inv(Node) I think.
+       * Vertex starts in mesh, offset puts it into bone where it gets weight applied.
+       * BoneNode puts it into World, Inv(Node) puts it into node.
+       * Since I'm invoking primitive_draw with Node as transform, it will conveniently cancel the Inv(Node).
+       */
       //if (node->)
       to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
     }
