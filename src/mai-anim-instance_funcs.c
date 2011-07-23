@@ -82,16 +82,16 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
                       cogl_matrix_multiply (&skin_trans_mtx, tmp_node->transformation, &skin_trans_mtx);
                     }
                   CoglMatrix in_world;
-                  cogl_matrix_multiply (&in_world, &skin_trans_mtx, bone_trans_node->transformation);
+                  cogl_matrix_multiply (&in_world, bone_trans_node->transformation, &skin_trans_mtx);
                   CoglMatrix inv_node;
                   gboolean nondegenerate;
                   nondegenerate = cogl_matrix_get_inverse (node->transformation, &inv_node);
                   g_xassert (nondegenerate);
                   CoglMatrix final;
-                  cogl_matrix_multiply (&final, &in_world, &inv_node);
+                  cogl_matrix_multiply (&final, &inv_node, &in_world);
                   float pts[4] = {vtx.x, vtx.y, vtx.z, 1.0f};
-                  //cogl_matrix_transform_point (&final, &pts[0], &pts[1], &pts[2], &pts[3]);
-                  cogl_matrix_transform_point (&in_world, &pts[0], &pts[1], &pts[2], &pts[3]);
+                  cogl_matrix_transform_point (&final, &pts[0], &pts[1], &pts[2], &pts[3]);
+                  //cogl_matrix_transform_point (&in_world, &pts[0], &pts[1], &pts[2], &pts[3]);
                   printf ("%f %f\n", vtx.x, pts[0]);
                 }
               g_array_append_vals (palletted, &vtx, 1);
