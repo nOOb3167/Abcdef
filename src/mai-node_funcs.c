@@ -20,6 +20,7 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
   self->mesh_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
   self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (unsigned int));
   self->mesh_uvs = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+  self->bones = g_mai_bone_ptr_array_new ();
   if (from->mNumMeshes == 1)
     {
       struct aiMesh *mesh;
@@ -55,6 +56,13 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
           uvcoord.y = mesh->mTextureCoords[0][cnt].y;
           uvcoord.z = mesh->mTextureCoords[0][cnt].z;
           g_array_append_vals (self->mesh_uvs, &uvcoord, 1);
+        }
+
+      for (cnt=0; cnt<mesh->mNumBones; ++cnt)
+        {
+          MaiBone *bone;
+          bone = mai_bone_new_from (mesh->mBones[cnt]);
+          g_mai_bone_ptr_array_add (self->bones, bone);
         }
     }
 
