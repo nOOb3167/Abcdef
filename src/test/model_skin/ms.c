@@ -85,6 +85,7 @@ main (int argc, char **argv)
 void
 _ms_stuff (MaiModel *mm)
 {
+  MaiNode *scene_node;
   MaiNode *cube_node;
   MaiNode *bone_node;
 
@@ -94,8 +95,10 @@ _ms_stuff (MaiModel *mm)
   }
   g_hash_table_foreach (mm->name_node_map, nnmp, NULL);
 
+  scene_node = g_hash_table_lookup (mm->name_node_map, "Scene");
   cube_node = g_hash_table_lookup (mm->name_node_map, "Cube");
   bone_node = g_hash_table_lookup (mm->name_node_map, "Bone");
+  g_xassert (scene_node);
   g_xassert (cube_node);
   g_xassert (bone_node);
 
@@ -112,6 +115,8 @@ _ms_stuff (MaiModel *mm)
    * Maybe the Scene node is superfluous.
    * Assimp http://assimp.sourceforge.net/lib_html/data.html section Bones suggested algo would suggest
    *   something that would not leave the Scene node in?
+   * As far as I can tell the scene node transform is
+   *   invert z
    */
 
   /**
@@ -120,4 +125,24 @@ _ms_stuff (MaiModel *mm)
   float tmp_vtx1[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   cogl_matrix_transform_point (bone->offset_matrix, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
 
+  void acc_transform (MaiNode *node, CoglMatrix *acc_mtx)
+  {
+    if (node == NULL)
+      {
+        cogl_matrix_init_identity (acc_mtx);
+        return;
+      }
+    acc_transform (node->parent, acc_mtx);
+    cogl_matrix_multiply (acc_mtx, acc_mtx, node->transformation);
+  }
+
+  CoglMatrix bone_ws;
+  acc_transform (bone_node, &bone_ws);
+
+  /**
+   * Seems ok (Z inverted due to Scene, that's the right thing?).
+   */
+  cogl_matrix_transform_point (&bone_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
+
+  return;
 }
