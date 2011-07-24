@@ -96,7 +96,28 @@ _ms_stuff (MaiModel *mm)
 
   cube_node = g_hash_table_lookup (mm->name_node_map, "Cube");
   bone_node = g_hash_table_lookup (mm->name_node_map, "Bone");
-
   g_xassert (cube_node);
   g_xassert (bone_node);
+
+  MaiBone *bone;
+  bone = g_mai_bone_ptr_array_index (cube_node->bones, 0);
+  g_xassert (bone);
+
+  /**
+   * Confirmed bone->transform_matrix from mesh to bone space.
+   *   When translating Cube by -2y, offset_matrix also -2y.
+   * However bone space seems to be rot=identity; trans=What Blender 'n' properties key shows.
+   *
+   * XX:
+   * Maybe the Scene node is superfluous.
+   * Assimp http://assimp.sourceforge.net/lib_html/data.html section Bones suggested algo would suggest
+   *   something that would not leave the Scene node in?
+   */
+
+  /**
+   * Results of transform mesh -> bone seem ok to me.
+   */
+  float tmp_vtx1[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  cogl_matrix_transform_point (bone->offset_matrix, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
+
 }
