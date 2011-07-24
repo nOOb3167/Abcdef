@@ -3,6 +3,8 @@
 
 #define GET_NEW ((MaiNode *)g_object_new(mai_node_get_type(), NULL))
 
+XPTR_ARRAY_MACRO_TYPE_DEFINE (mai_node, MaiNode);
+
 MaiNode *
 mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
 {
@@ -66,10 +68,10 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
         }
     }
 
-  self->children = g_ptr_array_new_with_free_func (g_object_unref);
+  self->children = g_mai_node_ptr_array_new ();
   for (cnt=0; cnt<from->mNumChildren; ++cnt)
     {
-      g_ptr_array_add (self->children, mai_node_new_from (scene, from->mChildren[cnt], self));
+      g_mai_node_ptr_array_add (self->children, mai_node_new_from (scene, from->mChildren[cnt], self));
     }
 
   return self;
