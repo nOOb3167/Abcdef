@@ -13,6 +13,10 @@
 #include <src/mai-bone_funcs.h>
 %}
 
+%afterdecls{
+#include <src/mai-node_decls.c>
+%}
+
 class Mai:Node from G:Object
 {
  public virtual void
