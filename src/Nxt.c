@@ -17,15 +17,14 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <allegro5/allegro_windows.h>
 #include <allegro5/allegro_opengl.h>
 #include <allegro5/allegro_primitives.h>
-#include <cogl_include.h>
+#include <src/cogl_include.h>
 
-#include <error.h>
-#include <gfx_lib_setup.h>
-#include <ai_example.h>
+#include <src/error.h>
+#include <src/gfx_lib_setup.h>
+#include <src/ai_example.h>
 #include <src/mai-anim-instance.h>
-#include <Nxt.h>
-
-XARRAY_MACRO_TYPE_DEFINE (nx_vertex_weight, NxVertexWeight);
+#include <src/misc.h>
+#include <src/Nxt.h>
 
 void
 nxt_draw_array (struct xvtx *verts, int verts_count, unsigned int *indices, int indices_count)

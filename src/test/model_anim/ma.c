@@ -5,12 +5,13 @@
 #include <allegro5/allegro_windows.h>
 #include <allegro5/allegro_opengl.h>
 #include <allegro5/allegro_primitives.h>
-#include <cogl_include.h>
+#include <src/cogl_include.h>
 
-#include <error.h>
-#include <gfx_lib_setup.h>
+#include <src/error.h>
+#include <src/gfx_lib_setup.h>
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
+#include <src/misc.h>
 #include <ma.h>
 
 void
