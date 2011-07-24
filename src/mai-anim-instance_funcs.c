@@ -74,6 +74,16 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
                   MaiNode *tmp_node;
                   CoglMatrix skin_trans_mtx;
                   cogl_matrix_init_identity (&skin_trans_mtx);
+                  //http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
+                  //Says multiply bone offset by local node to mesh matrix "node-to-mesh matrix"
+                  /**
+                   * Blah blah
+                   *   So at each frame you need to calculate the bone matrix for each bone.
+                   *   You do this by using the bone's so-called offset matrix or inverse bind matrix.
+                   *   The offset matrix transforms from mesh coordinates to the bone's local coordinate system,
+                   *   it's a mesh-to-bone matrix.
+                   * And 10.1.1.97.1412.pdf says vi=Tiv^i=TiT^i-1v^
+                   */
                   for (tmp_node=bone_trans_node; tmp_node!=NULL; tmp_node=tmp_node->parent)
                     {
                       CoglMatrix stcpy;
