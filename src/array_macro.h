@@ -98,7 +98,7 @@ xupper *g_##xlower##_ptr_array_index (G##xupper##PtrArray *array, int index) \
 } \
 void g_##xlower##_ptr_array_unref (G##xupper##PtrArray *array) \
 { \
-  g_ptr_array_unref (array); \
+  g_ptr_array_unref (array->array); \
 }
 
 

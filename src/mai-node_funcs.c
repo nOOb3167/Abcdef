@@ -118,7 +118,7 @@ _mai_node_draw_recursive (MaiNode *self, CoglMatrix *acc_mtx)
   for (tmp1=0; tmp1<self->children->len; ++tmp1)
     {
       MaiNode *child;
-      child = g_ptr_array_index(self->children, tmp1);
+      child = g_mai_node_ptr_array_index (self->children, tmp1);
       _mai_node_draw_recursive (child, &cur_mtx);
     }
 }

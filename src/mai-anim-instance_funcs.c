@@ -174,7 +174,7 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
   for (tmp1=0; tmp1<node->children->len; ++tmp1)
     {
       MaiNode *child;
-      child = g_ptr_array_index(node->children, tmp1);
+      child = g_mai_node_ptr_array_index(node->children, tmp1);
       _mai_anim_draw_recursive (self, child, &cur_mtx);
     }
 }
