@@ -43,7 +43,85 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
 {
   CoglPrimitive *to_draw;
   if (node->mesh_verts->len > 0)
-    to_draw = nx_cogl_primitive_new (node->mesh_verts, node->mesh_indices, node->mesh_uvs);
+    {
+      /**
+       * Offset->weight->BoneNode->Inv(Node) I think.
+       * Vertex starts in mesh, offset puts it into bone where it gets weight applied.
+       * BoneNode puts it into World, Inv(Node) puts it into node.
+       * Since I'm invoking primitive_draw with Node as transform, it will conveniently cancel the Inv(Node).
+       */
+      GArray *draw_this;
+      draw_this = node->mesh_verts;
+      if (node->bones->len > 0)
+        {
+          GArray *palletted;
+          palletted = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+          int cnt;
+          for (cnt=0; cnt<node->mesh_verts->len; ++cnt)
+            {
+              struct xvtx vtx;
+              vtx = g_array_index (node->mesh_verts, struct xvtx, cnt);
+              int idx;
+              for (idx=0; idx<node->bones->len; ++idx)
+                {
+                  /**
+                   * I should be able to find the bone inside the name_node_map (Gives BoneNode).
+                   */
+                  MaiNode *bone_trans_node;
+                  bone_trans_node = g_hash_table_lookup (self->name_node_map, g_mai_bone_ptr_array_index (node->bones, idx)->name);
+                  g_xassert (bone_trans_node);
+
+                  MaiNode *tmp_node;
+                  CoglMatrix skin_trans_mtx;
+                  cogl_matrix_init_identity (&skin_trans_mtx);
+                  //http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
+                  //Says multiply bone offset by local node to mesh matrix "node-to-mesh matrix"
+                  /**
+                   * Blah blah
+                   *   So at each frame you need to calculate the bone matrix for each bone.
+                   *   You do this by using the bone's so-called offset matrix or inverse bind matrix.
+                   *   The offset matrix transforms from mesh coordinates to the bone's local coordinate system,
+                   *   it's a mesh-to-bone matrix.
+                   * And 10.1.1.97.1412.pdf says vi=Tiv^i=TiT^i-1v^
+                   */
+                  for (tmp_node=bone_trans_node; tmp_node!=NULL; tmp_node=tmp_node->parent)
+                    {
+                      CoglMatrix stcpy;
+                      cogl_matrix_init_identity (&stcpy);
+                      cogl_matrix_multiply (&stcpy, &stcpy, &skin_trans_mtx);
+                      cogl_matrix_multiply (&skin_trans_mtx, tmp_node->transformation, &stcpy);
+                    }
+                  CoglMatrix in_world;
+                  //cogl_matrix_multiply (&in_world, bone_trans_node->transformation, &skin_trans_mtx);
+                  cogl_matrix_init_identity (&in_world);
+                  cogl_matrix_multiply (&in_world, &in_world, &skin_trans_mtx);
+                  CoglMatrix pre_inv_node;
+                  CoglMatrix inv_node;
+                  gboolean nondegenerate;
+                  {
+                    for (tmp_node=node; tmp_node!=NULL; tmp_node=tmp_node->parent)
+                      {
+                        CoglMatrix stcpy;
+                        cogl_matrix_init_identity (&stcpy);
+                        cogl_matrix_multiply (&stcpy, &stcpy, &pre_inv_node);
+                        cogl_matrix_multiply (&pre_inv_node, tmp_node->transformation, &stcpy);
+                      }
+                  }
+                  nondegenerate = cogl_matrix_get_inverse (&pre_inv_node, &inv_node);
+                  g_xassert (nondegenerate);
+                  CoglMatrix final;
+                  cogl_matrix_multiply (&final, &inv_node, &in_world);
+                  float pts[4] = {vtx.x, vtx.y, vtx.z, 1.0f};
+                  cogl_matrix_transform_point (&final, &pts[0], &pts[1], &pts[2], &pts[3]);
+                  //cogl_matrix_transform_point (&in_world, &pts[0], &pts[1], &pts[2], &pts[3]);
+                  printf ("%f %f\n", vtx.y, pts[1]);
+                }
+              g_array_append_vals (palletted, &vtx, 1);
+            }
+          draw_this = palletted;
+        }
+      to_draw = nx_cogl_primitive_new (draw_this, node->mesh_indices, node->mesh_uvs);
+    }
 
   CoglMatrix cur_mtx;
   cogl_matrix_init_identity (&cur_mtx);

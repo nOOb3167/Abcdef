@@ -8,6 +8,9 @@
 
 #include <error.h>
 #include <Nxt.h>
+
+#include <src/mai-bone.h>
+#include <src/mai-bone_funcs.h>
 %}
 
 class Mai:Node from G:Object
@@ -29,6 +32,8 @@ class Mai:Node from G:Object
    destroywith g_array_unref;
  public CoglMatrix *transformation
    destroywith g_free;
+ public GMaiBonePtrArray *bones
+   destroywith g_mai_bone_ptr_array_unref;
 
  class_init (class)
  {

@@ -67,7 +67,7 @@ _mai_model_new_from_scene (struct aiScene *scene)
   for (cnt=0; cnt<scene->mNumAnimations; ++cnt)
     {
       MaiAnim *an;
-      an = mai_anim_new_from (scene, scene->mAnimations[0]);
+      an = mai_anim_new_from (scene, scene->mAnimations[cnt]);
       g_mai_anim_ptr_array_add (self->anims, an);
     }
 

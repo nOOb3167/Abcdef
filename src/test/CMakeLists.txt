@@ -13,6 +13,7 @@ ADD_EXECUTABLE(ma
  ${CMAKE_SOURCE_DIR}/src/error.c
  ${CMAKE_SOURCE_DIR}/src/ai_example.c
  ${CMAKE_SOURCE_DIR}/src/array_macro.c
+ ${CMAKE_SOURCE_DIR}/src/misc.c
  ${CMAKE_BINARY_DIR}/src/mai-model.c
  ${CMAKE_BINARY_DIR}/src/mai-anim.c
  ${CMAKE_SOURCE_DIR}/src/mai-anim_funcs.c
@@ -20,6 +21,7 @@ ADD_EXECUTABLE(ma
  ${CMAKE_SOURCE_DIR}/src/mai-node_funcs.c
  ${CMAKE_BINARY_DIR}/src/mai-node-anim.c
  ${CMAKE_SOURCE_DIR}/src/mai-node-anim_funcs.c
- ${CMAKE_BINARY_DIR}/src/mai-anim-instance.c)
+ ${CMAKE_BINARY_DIR}/src/mai-anim-instance.c
+ ${CMAKE_BINARY_DIR}/src/mai-bone.c)
 TARGET_LINK_LIBRARIES(ma ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(ma PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

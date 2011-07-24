@@ -5,11 +5,11 @@
 #include <allegro5/allegro_windows.h>
 #include <allegro5/allegro_opengl.h>
 #include <allegro5/allegro_primitives.h>
-#include <cogl_include.h>
+#include <src/cogl_include.h>
 
-#include <error.h>
-#include <gfx_lib_setup.h>
-#include <Nxt.h>
+#include <src/error.h>
+#include <src/gfx_lib_setup.h>
+#include <src/misc.h>
 
 void
 _example_draw_at (int x, int y);

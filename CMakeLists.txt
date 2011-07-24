@@ -55,6 +55,7 @@ GOB2IZE(src/mai-anim.gob)
 GOB2IZE(src/mai-node-anim.gob)
 GOB2IZE(src/mai-model.gob)
 GOB2IZE(src/mai-anim-instance.gob)
+GOB2IZE(src/mai-bone.gob)
 
 ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
 TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
@@ -62,12 +63,13 @@ TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
 ADD_EXECUTABLE(Main Main.cpp)
 TARGET_LINK_LIBRARIES(Main ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES})
 
-ADD_EXECUTABLE(Nxt src/Nxt.c src/array_macro.c src/gfx_lib_setup.c src/error.c src/ai_example.c
+ADD_EXECUTABLE(Nxt src/Nxt.c src/array_macro.c src/gfx_lib_setup.c src/error.c src/ai_example.c src/misc.c
  src/mai-node.c src/mai-node_funcs.c
  src/mai-anim.c src/mai-anim_funcs.c
  src/mai-node-anim.c src/mai-node-anim_funcs.c
  src/mai-model.c
- src/mai-anim-instance.c)
+ src/mai-anim-instance.c
+ src/mai-bone.c)
 TARGET_LINK_LIBRARIES(Nxt ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 
 INSTALL(TARGETS Nxt DESTINATION ".")
