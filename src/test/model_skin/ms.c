@@ -18,6 +18,9 @@ void
 _display_loop (void);
 
 void
+_ms_stuff (MaiModel *mm);
+
+void
 _display_loop (void)
 {
   context_switch_allegro ();
@@ -72,7 +75,28 @@ main (int argc, char **argv)
     MaiModel *mm;
     mm = mai_model_new_from_file ("c_multipart_collada_skin_ms.dae");
 
+    _ms_stuff (mm);
+
     _display_loop ();
 
     return EXIT_SUCCESS;
+}
+
+void
+_ms_stuff (MaiModel *mm)
+{
+  MaiNode *cube_node;
+  MaiNode *bone_node;
+
+  void nnmp (gpointer key, gpointer value, gpointer data)
+  {
+    printf ("nnmp %s\n", key);
+  }
+  g_hash_table_foreach (mm->name_node_map, nnmp, NULL);
+
+  cube_node = g_hash_table_lookup (mm->name_node_map, "Cube");
+  bone_node = g_hash_table_lookup (mm->name_node_map, "Bone");
+
+  g_xassert (cube_node);
+  g_xassert (bone_node);
 }
