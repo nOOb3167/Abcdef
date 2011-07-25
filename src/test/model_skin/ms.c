@@ -185,7 +185,7 @@ _ms_stuff (MaiModel *mm)
   new_verts = g_array_new (0, 1, sizeof (struct xvtx));
   CoglMatrix tmtx;
   cogl_matrix_init_identity (&tmtx);
-  cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
+  //cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
   cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
   cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
   int cnt;
@@ -202,7 +202,10 @@ _ms_stuff (MaiModel *mm)
 
   CoglPrimitive *prim;
   prim = nx_cogl_primitive_new (new_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
-  _ms_prim_draw (prim, &cube_ws);
+  //_ms_prim_draw (prim, &cube_ws);
+  CoglMatrix idmtx;
+  cogl_matrix_init_identity (&idmtx);
+  _ms_prim_draw (prim, &idmtx);
 
   return;
 }
