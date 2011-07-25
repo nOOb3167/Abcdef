@@ -185,9 +185,9 @@ _ms_stuff (MaiModel *mm)
   new_verts = g_array_new (0, 1, sizeof (struct xvtx));
   CoglMatrix tmtx;
   cogl_matrix_init_identity (&tmtx);
-  cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
-  cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
   cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
+  cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
+  cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
   int cnt;
   for (cnt=0; cnt<cube_node->mesh_verts->len; ++cnt)
     {
