@@ -181,8 +181,27 @@ _ms_stuff (MaiModel *mm)
   cogl_matrix_transform_point (&cube_ws_inv, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
   cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
 
+  GArray *new_verts;
+  new_verts = g_array_new (0, 1, sizeof (struct xvtx));
+  CoglMatrix tmtx;
+  cogl_matrix_init_identity (&tmtx);
+  cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
+  cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
+  cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
+  int cnt;
+  for (cnt=0; cnt<cube_node->mesh_verts->len; ++cnt)
+    {
+      struct xvtx cov;
+      cov = g_array_index (cube_node->mesh_verts, struct xvtx, cnt);
+      float abcd[4] = {cov.x, cov.y, cov.z, 1.0f};
+      cogl_matrix_transform_point (&tmtx, &abcd[0], &abcd[1], &abcd[2], &abcd[3]);
+      struct xvtx ncov;
+      ncov.x = abcd[0]; ncov.y = abcd[1]; ncov.z = abcd[2];
+      g_array_append_vals (new_verts, &ncov, 1);
+    }
+
   CoglPrimitive *prim;
-  prim = nx_cogl_primitive_new (cube_node->mesh_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
+  prim = nx_cogl_primitive_new (new_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
   _ms_prim_draw (prim, &cube_ws);
 
   return;
