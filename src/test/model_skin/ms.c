@@ -206,3 +206,62 @@ _ms_stuff (MaiModel *mm)
 
   return;
 }
+
+void
+nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray *verts, GArray **verts_out)
+{
+  void acc_transform (MaiNode *node, CoglMatrix *acc_mtx)
+  {
+    if (node == NULL)
+      {
+        cogl_matrix_init_identity (acc_mtx);
+        return;
+      }
+    acc_transform (node->parent, acc_mtx);
+    cogl_matrix_multiply (acc_mtx, acc_mtx, node->transformation);
+  }
+
+  MaiBone *bone;
+  MaiNode *bone_node;
+
+  g_xassert (mesh_node->bones->len > 0);
+  bone = g_mai_bone_ptr_array_index (mesh_node->bones, 0);
+  bone_node = g_hash_table_lookup (model->name_node_map, bone->name);
+  g_xassert (bone_node);
+
+  CoglMatrix bone_ws;
+  CoglMatrix mesh_node_ws;
+  CoglMatrix mesh_node_ws_inv;
+
+  acc_transform (bone_node, &bone_ws);
+  acc_transform (mesh_node, &mesh_node_ws);
+  nx_cogl_matrix_get_inverse (&mesh_node_ws, &mesh_node_ws_inv);
+
+  CoglMatrix tmtx;
+  cogl_matrix_init_identity (&tmtx);
+  cogl_matrix_multiply (&tmtx, &tmtx, &mesh_node_ws_inv);
+  cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
+  cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
+
+  GArray *new_verts;
+  new_verts = g_array_new (0, 1, sizeof (struct xvtx));
+
+  int cnt;
+  for (cnt=0; cnt<verts->len; ++cnt)
+    {
+      struct xvtx cov;
+      cov = g_array_index (verts, struct xvtx, cnt);
+      nx_skin_transform_vert (tmtx, &cov);
+      g_array_append_vals (new_verts, &cov, 1);
+    }
+
+  *verts_out = new_verts;
+}
+
+void
+nx_skin_transform_vert (CoglMatrix *tmtx, struct xvtx *vert_inout)
+{
+  float vert_f[4] = {vert_inout->x, vert_inout->y, vert_inout->z, 1.0f};
+  cogl_matrix_transform_point (&tmtx, &vert_f[0], &vert_f[1], &vert_f[2], &vert_f[3]);
+  vert_inout->x = vert_f[0]; vert_inout->y = vert_f[1]; vert_inout->z = vert_f[2];
+}
