@@ -117,6 +117,7 @@ _ms_stuff (MaiModel *mm)
    *   something that would not leave the Scene node in?
    * As far as I can tell the scene node transform is
    *   invert z
+   *   Err isn't that newz=-oldy and newy=oldz?
    */
 
   /**
@@ -141,8 +142,17 @@ _ms_stuff (MaiModel *mm)
 
   /**
    * Seems ok (Z inverted due to Scene, that's the right thing?).
+   * Err see above on swap.
    */
   cogl_matrix_transform_point (&bone_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
+
+  CoglMatrix cube_ws;
+  acc_transform (cube_node, &cube_ws);
+  CoglMatrix cube_ws_inv;
+  cogl_matrix_get_inverse (&cube_ws, &cube_ws_inv);
+
+  cogl_matrix_transform_point (&cube_ws_inv, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
+  cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
 
   return;
 }
