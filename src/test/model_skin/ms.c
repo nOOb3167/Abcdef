@@ -26,6 +26,12 @@ void
 _ms_stuff (MaiModel *mm);
 
 void
+nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray **verts_out);
+
+void
+nx_skin_transform_vert (CoglMatrix *tmtx, struct xvtx *vert_inout);
+
+void
 _display_loop (void)
 {
   context_switch_allegro ();
@@ -182,23 +188,7 @@ _ms_stuff (MaiModel *mm)
   cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
 
   GArray *new_verts;
-  new_verts = g_array_new (0, 1, sizeof (struct xvtx));
-  CoglMatrix tmtx;
-  cogl_matrix_init_identity (&tmtx);
-  cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
-  cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
-  cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
-  int cnt;
-  for (cnt=0; cnt<cube_node->mesh_verts->len; ++cnt)
-    {
-      struct xvtx cov;
-      cov = g_array_index (cube_node->mesh_verts, struct xvtx, cnt);
-      float abcd[4] = {cov.x, cov.y, cov.z, 1.0f};
-      cogl_matrix_transform_point (&tmtx, &abcd[0], &abcd[1], &abcd[2], &abcd[3]);
-      struct xvtx ncov;
-      ncov.x = abcd[0]; ncov.y = abcd[1]; ncov.z = abcd[2];
-      g_array_append_vals (new_verts, &ncov, 1);
-    }
+  nx_skin_transform (mm, cube_node, &new_verts);
 
   CoglPrimitive *prim;
   prim = nx_cogl_primitive_new (new_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
@@ -207,8 +197,11 @@ _ms_stuff (MaiModel *mm)
   return;
 }
 
+/**
+ * Should be taking an MaiAnimInstance anyway
+ */
 void
-nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray *verts, GArray **verts_out)
+nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray **verts_out)
 {
   void acc_transform (MaiNode *node, CoglMatrix *acc_mtx)
   {
@@ -247,11 +240,11 @@ nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray *verts, GArray **
   new_verts = g_array_new (0, 1, sizeof (struct xvtx));
 
   int cnt;
-  for (cnt=0; cnt<verts->len; ++cnt)
+  for (cnt=0; cnt<mesh_node->mesh_verts->len; ++cnt)
     {
       struct xvtx cov;
-      cov = g_array_index (verts, struct xvtx, cnt);
-      nx_skin_transform_vert (tmtx, &cov);
+      cov = g_array_index (mesh_node->mesh_verts, struct xvtx, cnt);
+      nx_skin_transform_vert (&tmtx, &cov);
       g_array_append_vals (new_verts, &cov, 1);
     }
 
@@ -262,6 +255,6 @@ void
 nx_skin_transform_vert (CoglMatrix *tmtx, struct xvtx *vert_inout)
 {
   float vert_f[4] = {vert_inout->x, vert_inout->y, vert_inout->z, 1.0f};
-  cogl_matrix_transform_point (&tmtx, &vert_f[0], &vert_f[1], &vert_f[2], &vert_f[3]);
+  cogl_matrix_transform_point (tmtx, &vert_f[0], &vert_f[1], &vert_f[2], &vert_f[3]);
   vert_inout->x = vert_f[0]; vert_inout->y = vert_f[1]; vert_inout->z = vert_f[2];
 }
