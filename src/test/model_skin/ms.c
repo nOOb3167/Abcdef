@@ -107,7 +107,7 @@ _ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx)
 
   cogl_set_source_color4ub ('\x1', '\xFF', '\x1', 255);
   cogl_set_source_texture (g_testtex);
-  cogl_ortho (0, 64, 0, 64, -1, 1);
+  cogl_ortho (0, 64, 0, 64, -20, 20);
 
   cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
   cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
@@ -197,7 +197,7 @@ _ms_stuff (MaiModel *mm)
   GArray *new_verts;
   MaiAnimInstance *mai;
   mai = mai_model_get_anim_by_name (mm, g_mai_anim_ptr_array_index (mm->anims, 0)->name);
-  mai->current_frame = 1;
+  mai->current_frame = 10;
   nx_skin_transform (mm,
                      mai,
                      cube_node, &new_verts);
