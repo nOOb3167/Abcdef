@@ -209,7 +209,8 @@ _ms_stuff (MaiModel *mm)
   cogl_matrix_init_identity (&idmtx);
   _ms_prim_draw (prim, &idmtx);
 
-  herp (1, 0);
+  /* p/x matrix->flags = 0x500 */
+  herp (0x500, 0);
 
   return;
 }
