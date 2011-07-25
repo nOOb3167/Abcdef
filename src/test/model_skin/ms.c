@@ -12,10 +12,15 @@
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
 #include <src/misc.h>
-#include <ma.h>
+#include <src/ai_example.h>
+
+CoglHandle *g_testtex;
 
 void
 _display_loop (void);
+
+void
+_ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx);
 
 void
 _ms_stuff (MaiModel *mm);
@@ -80,6 +85,28 @@ main (int argc, char **argv)
     _display_loop ();
 
     return EXIT_SUCCESS;
+}
+
+void
+_ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx)
+{
+  CoglMatrix initial_mtx;
+  cogl_matrix_init_identity (&initial_mtx);
+  cogl_set_modelview_matrix (&initial_mtx);
+
+  cogl_set_source_color4ub ('\x1', '\xFF', '\x1', 255);
+  cogl_set_source_texture (g_testtex);
+  cogl_ortho (0, 64, 0, 64, -1, 1);
+
+  cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
+  cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
+
+  cogl_matrix_multiply (&initial_mtx, &initial_mtx, mtx);
+  cogl_set_modelview_matrix (&initial_mtx);
+
+  nx_cogl_primitive_draw (prim);
+
+  cogl_flush ();
 }
 
 void
@@ -153,6 +180,10 @@ _ms_stuff (MaiModel *mm)
 
   cogl_matrix_transform_point (&cube_ws_inv, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
   cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
+
+  CoglPrimitive *prim;
+  prim = nx_cogl_primitive_new (cube_node->mesh_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
+  _ms_prim_draw (prim, &cube_ws);
 
   return;
 }
