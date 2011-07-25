@@ -25,8 +25,6 @@ _ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx);
 void
 _ms_stuff (MaiModel *mm);
 
-void herp (int flags, int a);
-
 void
 _display_loop (void)
 {
@@ -209,36 +207,5 @@ _ms_stuff (MaiModel *mm)
   cogl_matrix_init_identity (&idmtx);
   _ms_prim_draw (prim, &idmtx);
 
-  /* p/x matrix->flags = 0x500 */
-  herp (0x500, 0);
-
   return;
-}
-
-#define XMAT_FLAG_GENERAL        0x1
-#define XMAT_FLAG_ROTATION       0x2
-#define XMAT_FLAG_TRANSLATION    0x4
-#define XMAT_FLAG_UNIFORM_SCALE  0x8
-#define XMAT_FLAG_GENERAL_SCALE  0x10
-#define XMAT_FLAG_GENERAL_3D     0x20
-#define XMAT_FLAG_PERSPECTIVE    0x40
-#define XMAT_FLAG_SINGULAR       0x80
-
-#define XMAT_FLAGS_GEOMETRY (XMAT_FLAG_GENERAL | \
-                            XMAT_FLAG_ROTATION | \
-                            XMAT_FLAG_TRANSLATION | \
-                            XMAT_FLAG_UNIFORM_SCALE | \
-                            XMAT_FLAG_GENERAL_SCALE | \
-                            XMAT_FLAG_GENERAL_3D | \
-                            XMAT_FLAG_PERSPECTIVE | \
-                            XMAT_FLAG_SINGULAR)
-
-#define XTEST_MAT_FLAGS(mat, a)  \
-    ((XMAT_FLAGS_GEOMETRY & (~(a)) & flags) == 0)
-
-void herp (int flags, int a)
-{
-  int res;
-  res = XTEST_MAT_FLAGS(flags, a);
-  printf ("%d\n", res);
 }
