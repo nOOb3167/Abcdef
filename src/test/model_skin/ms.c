@@ -195,8 +195,11 @@ _ms_stuff (MaiModel *mm)
   g_xassert (mm->anims->len > 0);
 
   GArray *new_verts;
+  MaiAnimInstance *mai;
+  mai = mai_model_get_anim_by_name (mm, g_mai_anim_ptr_array_index (mm->anims, 0)->name);
+  mai->current_frame = 1;
   nx_skin_transform (mm,
-                     mai_model_get_anim_by_name (mm, g_mai_anim_ptr_array_index (mm->anims, 0)->name),
+                     mai,
                      cube_node, &new_verts);
 
   CoglPrimitive *prim;
