@@ -176,7 +176,7 @@ _ms_stuff (MaiModel *mm)
   CoglMatrix cube_ws;
   acc_transform (cube_node, &cube_ws);
   CoglMatrix cube_ws_inv;
-  cogl_matrix_get_inverse (&cube_ws, &cube_ws_inv);
+  nx_cogl_matrix_get_inverse (&cube_ws, &cube_ws_inv);
 
   cogl_matrix_transform_point (&cube_ws_inv, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
   cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
@@ -185,7 +185,7 @@ _ms_stuff (MaiModel *mm)
   new_verts = g_array_new (0, 1, sizeof (struct xvtx));
   CoglMatrix tmtx;
   cogl_matrix_init_identity (&tmtx);
-  //cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
+  cogl_matrix_multiply (&tmtx, &tmtx, &cube_ws_inv);
   cogl_matrix_multiply (&tmtx, &tmtx, &bone_ws);
   cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
   int cnt;
@@ -202,10 +202,7 @@ _ms_stuff (MaiModel *mm)
 
   CoglPrimitive *prim;
   prim = nx_cogl_primitive_new (new_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
-  //_ms_prim_draw (prim, &cube_ws);
-  CoglMatrix idmtx;
-  cogl_matrix_init_identity (&idmtx);
-  _ms_prim_draw (prim, &idmtx);
+  _ms_prim_draw (prim, &cube_ws);
 
   return;
 }
