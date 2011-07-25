@@ -19,7 +19,7 @@ mai_model_new_from (struct aiScene *scene)
   int tmp1;
   for (tmp1=0; tmp1<ret->nodes->children->len; ++tmp1)
     {
-      printf ("Subname '%s'\n", ((MaiNode*)(g_ptr_array_index(ret->nodes->children, tmp1)))->name);
+      printf ("Subname '%s'\n", ((MaiNode*)(g_mai_node_ptr_array_index(ret->nodes->children, tmp1)))->name);
     }
 
   void pht (gpointer key, gpointer value, gpointer data)
@@ -112,7 +112,7 @@ _nx_mai_collect_node_map (MaiNode *from)
       return;
     int cnt;
     for (cnt=0; cnt<node->children->len; ++cnt)
-      _collector (ht, g_ptr_array_index(node->children, cnt));
+      _collector (ht, g_mai_node_ptr_array_index(node->children, cnt));
   }
 
   _collector (ret, from);

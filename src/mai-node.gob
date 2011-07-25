@@ -11,6 +11,12 @@
 
 #include <src/mai-bone.h>
 #include <src/mai-bone_funcs.h>
+
+struct GMaiNodePtrArray_struct;
+%}
+
+%afterdecls{
+//#include <src/mai-node_decls.c>
 %}
 
 class Mai:Node from G:Object
@@ -20,18 +26,25 @@ class Mai:Node from G:Object
  
  public Mai:Node *parent
    unrefwith g_object_unref;
- public GPtrArray *children
-   destroywith g_ptr_array_unref;
+   
+ public struct GMaiNodePtrArray_struct *children
+   destroywith g_mai_node_ptr_array_unref;
+   
  public char * name
    destroywith g_free;
+   
  public GArray *mesh_verts
    destroywith g_array_unref;
+   
  public GArray *mesh_indices
    destroywith g_array_unref;
+   
  public GArray *mesh_uvs
    destroywith g_array_unref;
+   
  public CoglMatrix *transformation
    destroywith g_free;
+   
  public GMaiBonePtrArray *bones
    destroywith g_mai_bone_ptr_array_unref;
 

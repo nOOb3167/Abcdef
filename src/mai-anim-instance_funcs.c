@@ -86,6 +86,11 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
                    */
                   for (tmp_node=bone_trans_node; tmp_node!=NULL; tmp_node=tmp_node->parent)
                     {
+                      /* Eeh shouldn't this be incorrect? Matrix multiplication not commutative
+                       *   so cant go leaf->root with (trans, acc),
+                       *   need to go root->leaf with (acc, trans)?
+                       * (What but that uses associativity doesn't it?)
+                       */
                       CoglMatrix stcpy;
                       cogl_matrix_init_identity (&stcpy);
                       cogl_matrix_multiply (&stcpy, &stcpy, &skin_trans_mtx);
@@ -174,7 +179,7 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
   for (tmp1=0; tmp1<node->children->len; ++tmp1)
     {
       MaiNode *child;
-      child = g_ptr_array_index(node->children, tmp1);
+      child = g_mai_node_ptr_array_index(node->children, tmp1);
       _mai_anim_draw_recursive (self, child, &cur_mtx);
     }
 }

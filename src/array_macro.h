@@ -9,7 +9,12 @@
  */
 
 #define XARRAY_MACRO_TYPE_DECLARE(xlower, xupper) \
-typedef GArray G##xupper##Array; \
+struct G##xupper##Array_struct \
+{ \
+  GArray *array; \
+  guint len; \
+}; \
+typedef struct G##xupper##Array_struct G##xupper##Array; \
 G##xupper##Array *g_##xlower##_array_new (void); \
 gchar *g_##xlower##_array_free (G##xupper##Array *array, gboolean free_segment); \
 G##xupper##Array *g_##xlower##_array_append_val (G##xupper##Array *array, xupper *data); \
@@ -19,25 +24,32 @@ void g_##xlower##_array_unref (G##xupper##Array *array);
 #define XARRAY_MACRO_TYPE_DEFINE(xlower, xupper) \
 G##xupper##Array *g_##xlower##_array_new (void) \
 { \
-  GArray *ret; \
-  ret = g_array_new (0, 1, sizeof (xupper)); \
+  G##xupper##Array *ret; \
+  ret = g_new0 (G##xupper##Array, 1); \
+  ret->array = g_array_new (0, 1, sizeof (xupper)); \
+  ret->len = ret->array->len; \
   return ret; \
 } \
 gchar *g_##xlower##_array_free (G##xupper##Array *array, gboolean free_segment) \
 { \
-  return g_array_free (array, free_segment); \
+  gchar *ret; \
+  ret = g_array_free (array->array, free_segment); \
+  g_free (array); \
+  return ret; \
 } \
 G##xupper##Array *g_##xlower##_array_append_val (G##xupper##Array *array, xupper *data) \
 { \
-  return g_array_append_vals (array, data, 1); \
+  g_array_append_vals (array->array, data, 1); \
+  array->len = array->array->len; \
+  return array; \
 } \
 xupper g_##xlower##_array_index (G##xupper##Array *array, int index) \
 { \
-  return g_array_index (array, xupper, index); \
+  return g_array_index (array->array, xupper, index); \
 } \
 void g_##xlower##_array_unref (G##xupper##Array *array) \
 { \
-  g_array_unref (array); \
+  g_array_unref (array->array); \
 }
 
 
@@ -47,7 +59,12 @@ void g_##xlower##_array_unref (G##xupper##Array *array) \
  */
 
 #define XPTR_ARRAY_MACRO_TYPE_DECLARE(xlower, xupper) \
-typedef GPtrArray G##xupper##PtrArray; \
+struct G##xupper##PtrArray_struct \
+{ \
+  GPtrArray *array; \
+  guint len; \
+}; \
+typedef struct G##xupper##PtrArray_struct G##xupper##PtrArray; \
 G##xupper##PtrArray *g_##xlower##_ptr_array_new (void); \
 gpointer *g_##xlower##_ptr_array_free (G##xupper##PtrArray *array, gboolean free_segment); \
 void g_##xlower##_ptr_array_add (G##xupper##PtrArray *array, xupper *data); \
@@ -57,25 +74,31 @@ void g_##xlower##_ptr_array_unref (G##xupper##PtrArray *array);
 #define XPTR_ARRAY_MACRO_TYPE_DEFINE(xlower, xupper) \
 G##xupper##PtrArray *g_##xlower##_ptr_array_new (void) \
 { \
-  GPtrArray *ret; \
-  ret = g_ptr_array_new (); \
+  G##xupper##PtrArray *ret; \
+  ret = g_new0 (G##xupper##PtrArray, 1); \
+  ret->array = g_ptr_array_new (); \
+  ret->len = ret->array->len; \
   return ret; \
 } \
 gpointer *g_##xlower##_ptr_array_free (G##xupper##PtrArray *array, gboolean free_segment) \
 { \
-  return g_ptr_array_free (array, free_segment); \
+  gpointer *ret; \
+  ret = g_ptr_array_free (array->array, free_segment); \
+  g_free (array); \
+  return ret; \
 } \
 void g_##xlower##_ptr_array_add (G##xupper##PtrArray *array, xupper *data) \
 { \
-  g_ptr_array_add (array, data); \
+  g_ptr_array_add (array->array, data); \
+  array->len = array->array->len; \
 } \
 xupper *g_##xlower##_ptr_array_index (G##xupper##PtrArray *array, int index) \
 { \
-  return g_ptr_array_index (array, index); \
+  return g_ptr_array_index (array->array, index); \
 } \
 void g_##xlower##_ptr_array_unref (G##xupper##PtrArray *array) \
 { \
-  g_ptr_array_unref (array); \
+  g_ptr_array_unref (array->array); \
 }
 
 

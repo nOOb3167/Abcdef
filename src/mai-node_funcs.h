@@ -11,6 +11,8 @@
 #include <src/cogl_include.h>
 #include <src/mai-node.h>
 
+XPTR_ARRAY_MACRO_TYPE_DECLARE (mai_node, MaiNode);
+
 MaiNode *
 mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent);
 
