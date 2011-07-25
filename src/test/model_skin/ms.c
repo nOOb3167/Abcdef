@@ -26,7 +26,7 @@ void
 _ms_stuff (MaiModel *mm);
 
 void
-nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray **verts_out);
+nx_skin_transform (MaiModel *model, MaiAnimInstance *anim, MaiNode *mesh_node, GArray **verts_out);
 
 void
 nx_skin_transform_vert (CoglMatrix *tmtx, struct xvtx *vert_inout);
@@ -187,8 +187,12 @@ _ms_stuff (MaiModel *mm)
   cogl_matrix_transform_point (&cube_ws_inv, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
   cogl_matrix_transform_point (&cube_ws, &tmp_vtx1[0], &tmp_vtx1[1], &tmp_vtx1[2], &tmp_vtx1[3]);
 
+  g_xassert (mm->anims->len > 0);
+
   GArray *new_verts;
-  nx_skin_transform (mm, cube_node, &new_verts);
+  nx_skin_transform (mm,
+                     mai_model_get_anim_by_name (mm, g_mai_anim_ptr_array_index (mm->anims, 0)->name),
+                     cube_node, &new_verts);
 
   CoglPrimitive *prim;
   prim = nx_cogl_primitive_new (new_verts, cube_node->mesh_indices, cube_node->mesh_uvs);
@@ -201,7 +205,7 @@ _ms_stuff (MaiModel *mm)
  * Should be taking an MaiAnimInstance anyway
  */
 void
-nx_skin_transform (MaiModel *model, MaiNode *mesh_node, GArray **verts_out)
+nx_skin_transform (MaiModel *model, MaiAnimInstance *anim, MaiNode *mesh_node, GArray **verts_out)
 {
   void acc_transform (MaiNode *node, CoglMatrix *acc_mtx)
   {
