@@ -337,7 +337,11 @@ _nx_combine_keys (struct NxAnimKey pos, struct NxAnimKey rot, CoglMatrix *combin
   struct xvtx vec3;
   nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &rotang, &vec3);
   cogl_matrix_rotate (&cur_bone_mtx, rotang, vec3.x, vec3.y, vec3.z);
-  cogl_matrix_translate (&cur_bone_mtx, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
+  //cogl_matrix_translate (&cur_bone_mtx, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
+  // I think cogl has a different idea of what translation means
+  cur_bone_mtx.xw = pos.val.vec.x;
+  cur_bone_mtx.yw = pos.val.vec.y;
+  cur_bone_mtx.zw = pos.val.vec.z;
   /**
    * http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
    * Says: now build a transformation matrix from it. First rotation, thenn push position in it as well.
