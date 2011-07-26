@@ -279,7 +279,7 @@ nx_skin_transform (MaiModel *model, MaiAnimInstance *anim_instance, MaiNode *mes
 
   CoglMatrix tmtx;
   cogl_matrix_init_identity (&tmtx);
-  cogl_matrix_multiply (&tmtx, &tmtx, &mesh_node_ws_inv);
+  //cogl_matrix_multiply (&tmtx, &tmtx, &mesh_node_ws_inv);
   cogl_matrix_multiply (&tmtx, &tmtx, &cur_bone_ws);
   cogl_matrix_multiply (&tmtx, &tmtx, bone->offset_matrix);
 
@@ -316,6 +316,8 @@ nx_skin_transform (MaiModel *model, MaiAnimInstance *anim_instance, MaiNode *mes
        * But I'm doing after tmtx (which is offset_matrix&transform_aux&inverse_mesh_node)
        */
       cov.x *= vw.weight; cov.y *= vw.weight; cov.z *= vw.weight;
+      float tmp_pt = 1.0f;
+      cogl_matrix_transform_point (&mesh_node_ws_inv, &cov.x, &cov.y, &cov.z, &tmp_pt);
       g_array_append_vals (new_verts, &cov, 1);
     }
 
