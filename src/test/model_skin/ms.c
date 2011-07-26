@@ -309,6 +309,12 @@ nx_skin_transform (MaiModel *model, MaiAnimInstance *anim_instance, MaiNode *mes
       nx_skin_transform_vert (&tmtx, &cov);
       NxVertexWeight vw;
       vw = find_id (bone, cnt);
+      /**
+       * Warning in
+       * http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
+       * applying weights comes after trafo (offset_matrix&transform_aux)
+       * But I'm doing after tmtx (which is offset_matrix&transform_aux&inverse_mesh_node)
+       */
       cov.x *= vw.weight; cov.y *= vw.weight; cov.z *= vw.weight;
       g_array_append_vals (new_verts, &cov, 1);
     }
