@@ -289,9 +289,27 @@ nx_skin_transform (MaiModel *model, MaiAnimInstance *anim_instance, MaiNode *mes
   int cnt;
   for (cnt=0; cnt<mesh_node->mesh_verts->len; ++cnt)
     {
+      NxVertexWeight find_id (MaiBone *bone, int id)
+      {
+        g_xassert (id >= 0);
+        NxVertexWeight vw;
+        int cnt;
+        for (cnt=0; cnt<bone->weights->len; ++cnt)
+          {
+            vw = g_nx_vertex_weight_array_index (bone->weights, cnt);
+            if (vw.vertex_id == id)
+              break;
+          }
+        g_xassert (cnt != bone->weights->len);
+        return vw;
+      }
+
       struct xvtx cov;
       cov = g_array_index (mesh_node->mesh_verts, struct xvtx, cnt);
       nx_skin_transform_vert (&tmtx, &cov);
+      NxVertexWeight vw;
+      vw = find_id (bone, cnt);
+      cov.x *= vw.weight; cov.y *= vw.weight; cov.z *= vw.weight;
       g_array_append_vals (new_verts, &cov, 1);
     }
 
