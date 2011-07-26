@@ -107,7 +107,7 @@ _ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx)
 
   cogl_set_source_color4ub ('\x1', '\xFF', '\x1', 255);
   cogl_set_source_texture (g_testtex);
-  cogl_ortho (0, 64, 0, 64, -20, 20);
+  cogl_ortho (0, 64, 0, 64, -100, 100);
 
   cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
   cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
