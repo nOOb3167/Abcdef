@@ -93,25 +93,14 @@ ai_matrix_to_cogl_matrix (struct aiMatrix4x4 *ai_matrix, CoglMatrix *cogl_matrix
   g_xassert (cogl_matrix);
 
   /* coglRC aiRC */
-  cogl_matrix->xx = ai_matrix->a1;
-  cogl_matrix->yx = ai_matrix->b1;
-  cogl_matrix->zx = ai_matrix->c1;
-  cogl_matrix->wx = ai_matrix->d1;
+  float tmp_vals[16] = {
+      ai_matrix->a1, ai_matrix->b1, ai_matrix->c1, ai_matrix->d1,
+      ai_matrix->a2, ai_matrix->b2, ai_matrix->c2, ai_matrix->d2,
+      ai_matrix->a3, ai_matrix->b3, ai_matrix->c3, ai_matrix->d3,
+      ai_matrix->a4, ai_matrix->b4, ai_matrix->c4, ai_matrix->d4,
+  };
 
-  cogl_matrix->xy = ai_matrix->a2;
-  cogl_matrix->yy = ai_matrix->b2;
-  cogl_matrix->zy = ai_matrix->c2;
-  cogl_matrix->wy = ai_matrix->d2;
-
-  cogl_matrix->xz = ai_matrix->a3;
-  cogl_matrix->yz = ai_matrix->b3;
-  cogl_matrix->zz = ai_matrix->c3;
-  cogl_matrix->wz = ai_matrix->d3;
-
-  cogl_matrix->xw = ai_matrix->a4;
-  cogl_matrix->yw = ai_matrix->b4;
-  cogl_matrix->zw = ai_matrix->c4;
-  cogl_matrix->ww = ai_matrix->d4;
+  cogl_matrix_init_from_array (cogl_matrix, tmp_vals);
 }
 
 void
