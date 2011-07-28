@@ -351,6 +351,7 @@ _nx_combine_keys (struct NxAnimKey pos, struct NxAnimKey rot, CoglMatrix *combin
    * I think cogl has a different idea of what translation means
    * Indeed, I think the position coordinates are in parent space.
    * cogl_matrix_translate operates in current.
+   * So the needed operation is add xyz to translation part.
    * But this won't do because directly setting CoglMatrix members = undefined:
    *  cur_bone_mtx.xw = pos.val.vec.x;
    *  cur_bone_mtx.yw = pos.val.vec.y;
@@ -358,12 +359,17 @@ _nx_combine_keys (struct NxAnimKey pos, struct NxAnimKey rot, CoglMatrix *combin
    * http://assimp.sourceforge.net/lib_html/structai_node_anim.html
    *  Says order is Scaling, Rotation, Translation
   */
-
   /**
    * http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
    * Says: now build a transformation matrix from it. First rotation, thenn push position in it as well.
    * ? But is his matrix multiplication order not opposite of cogl's ?
    */
+  float tmp_floats[16];
+  memcpy (tmp_floats, cogl_matrix_get_array (&cur_bone_mtx), 16 * sizeof (float));
+  tmp_floats[12] = pos.val.vec.x;
+  tmp_floats[13] = pos.val.vec.y;
+  tmp_floats[14] = pos.val.vec.z;
+  cogl_matrix_init_from_array (&cur_bone_mtx, tmp_floats);
 
   *combined_inout = cur_bone_mtx;
 }
