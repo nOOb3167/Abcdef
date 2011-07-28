@@ -227,6 +227,10 @@ nx_skin_transform (MaiModel *model, MaiAnimInstance *anim_instance, MaiNode *mes
     cogl_matrix_multiply (acc_mtx, acc_mtx, node->transformation);
   }
 
+  /**
+   * The idea behind this is broken.
+   * Should apply all channels, applying one by replacing leaf is not enough.
+   */
   void acc_transform_cur (MaiNode *node, CoglMatrix *leaf_replacement_mtx, CoglMatrix *acc_mtx)
   {
     void acc_transform_aux (gboolean first, MaiNode *node, CoglMatrix *leaf_replacement_mtx, CoglMatrix *acc_mtx)
