@@ -107,10 +107,11 @@ _ms_prim_draw (CoglPrimitive *prim, CoglMatrix *mtx)
 
   cogl_set_source_color4ub ('\x1', '\xFF', '\x1', 255);
   cogl_set_source_texture (g_testtex);
-  cogl_ortho (0, 64, 0, 64, -100, 100);
+  cogl_ortho (0, 64, 0, 64, -200, 200);
 
-  cogl_matrix_translate (&initial_mtx, 20.0f, 20.0f, 0.0f);
-  cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 1.0f);
+  cogl_matrix_scale (&initial_mtx, 5.0f, 5.0f, 5.0f);
+  cogl_matrix_translate (&initial_mtx, 4.0f, 4.0f, 0.0f);
+
 
   cogl_matrix_multiply (&initial_mtx, &initial_mtx, mtx);
   cogl_set_modelview_matrix (&initial_mtx);
@@ -345,11 +346,19 @@ _nx_combine_keys (struct NxAnimKey pos, struct NxAnimKey rot, CoglMatrix *combin
   struct xvtx vec3;
   nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &rotang, &vec3);
   cogl_matrix_rotate (&cur_bone_mtx, rotang, vec3.x, vec3.y, vec3.z);
-  //cogl_matrix_translate (&cur_bone_mtx, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
-  // I think cogl has a different idea of what translation means
-  cur_bone_mtx.xw = pos.val.vec.x;
-  cur_bone_mtx.yw = pos.val.vec.y;
-  cur_bone_mtx.zw = pos.val.vec.z;
+  /**
+   *cogl_matrix_translate (&cur_bone_mtx, pos.val.vec.x, pos.val.vec.y, pos.val.vec.z);
+   * I think cogl has a different idea of what translation means
+   * Indeed, I think the position coordinates are in parent space.
+   * cogl_matrix_translate operates in current.
+   * But this won't do because directly setting CoglMatrix members = undefined:
+   *  cur_bone_mtx.xw = pos.val.vec.x;
+   *  cur_bone_mtx.yw = pos.val.vec.y;
+   *  cur_bone_mtx.zw = pos.val.vec.z;
+   * http://assimp.sourceforge.net/lib_html/structai_node_anim.html
+   *  Says order is Scaling, Rotation, Translation
+  */
+
   /**
    * http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745
    * Says: now build a transformation matrix from it. First rotation, thenn push position in it as well.
