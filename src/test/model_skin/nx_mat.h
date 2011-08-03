@@ -1,6 +1,12 @@
 #ifndef NX_MAT_H_
 #define NX_MAT_H_
 
+struct NxVec4
+{
+  float vals[4];
+};
+typedef struct NxVec4 NxVec4;
+
 struct NxMat
 {
   float vals[16];
