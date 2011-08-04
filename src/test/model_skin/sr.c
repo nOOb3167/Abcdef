@@ -23,12 +23,43 @@ sr_project_one (NxMat *mst, NxVec4 *vec_inout)
   *vec_inout = temp;
 }
 
+void
+sr_draw_tri (NxMat *mst, NxVec4 pts[3])
+{
+  ALLEGRO_COLOR clr;
+  clr = al_map_rgb (255, 0, 0);
+
+  NxVec4 cur;
+  NxVec4 nxt;
+  cur = pts[0];
+  sr_project_one (mst, &cur);
+  nxt = pts[1];
+  sr_project_one (mst, &nxt);
+  al_draw_line (cur.vals[0], cur.vals[1], nxt.vals[0], nxt.vals[1],
+                clr, 1.0f);
+
+  cur = pts[1];
+  sr_project_one (mst, &cur);
+  nxt = pts[2];
+  sr_project_one (mst, &nxt);
+  al_draw_line (cur.vals[0], cur.vals[1], nxt.vals[0], nxt.vals[1],
+                clr, 1.0f);
+
+  cur = pts[2];
+  sr_project_one (mst, &cur);
+  nxt = pts[0];
+  sr_project_one (mst, &nxt);
+  al_draw_line (cur.vals[0], cur.vals[1], nxt.vals[0], nxt.vals[1],
+                clr, 1.0f);
+}
+
 int
 main (int argc, char **argv)
 {
   ALLEGRO_DISPLAY *display;
 
   al_init ();
+  al_init_primitives_addon ();
 
   display = al_create_display (100, 100);
   g_xassert (display);
@@ -48,9 +79,19 @@ main (int argc, char **argv)
 
   NxMat p_mat;
   nx_mat_projection (&p_mat, 1.0f);
+  nx_mat_scale (&p_mat, 10.0f, 10.0f, 1.0f);
+  nx_mat_translation (&p_mat, 1.0f, 1.0f, 0.0f);
   NxVec4 vec = {1.0f, 1.0f, -1.0f, 1.0f};
 
   sr_project_one (&p_mat, &vec);
+
+  NxVec4 tri[] = {
+      {0.0f, 0.0f, -1.0f, 1.0f},
+      {1.0f, 0.0f, -1.0f, 1.0f},
+      {1.0f, 1.0f, -1.0f, 1.0f}
+  };
+
+  sr_draw_tri (&p_mat, tri);
 
   al_flip_display ();
 

@@ -27,6 +27,9 @@ nx_mat_init_identity (NxMat *what)
 void
 nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b)
 {
+  NxMat tmp;
+  tmp = *a;
+
   int i,j;
   for (i=0; i<4; ++i)
     for (j=0; j<4; ++j)
@@ -34,26 +37,36 @@ nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b)
         int t, sum;
         NX_MAT_ELT (result, i, j) = 0.0f;
         for (t=0; t<4; ++t)
-          NX_MAT_ELT (result, i, j) += NX_MAT_ELT (a, i, t) * NX_MAT_ELT (b, t, j);
+          NX_MAT_ELT (result, i, j) += NX_MAT_ELT (&tmp, i, t) * NX_MAT_ELT (b, t, j);
       }
 }
 
 void
 nx_mat_translation (NxMat *what, float x, float y, float z)
 {
-  nx_mat_init_identity (what);
-  what->vals[12] = x;
-  what->vals[13] = y;
-  what->vals[14] = z;
+  NxMat tmp;
+  nx_mat_init_identity (&tmp);
+  NX_MAT_ELT (&tmp, 0, 3) = x;
+  NX_MAT_ELT (&tmp, 1, 3) = y;
+  NX_MAT_ELT (&tmp, 2, 3) = z;
+
+  nx_mat_multiply (what, what, &tmp);
 }
 
 void
 nx_mat_scale (NxMat *what, float x, float y, float z)
 {
-  nx_mat_init_identity (what);
-  what->vals[0] = x;
+  NxMat tmp;
+  nx_mat_init_identity (&tmp);
+
+  NX_MAT_ELT (&tmp, 0, 0) = x;
+  NX_MAT_ELT (&tmp, 1, 1) = y;
+  NX_MAT_ELT (&tmp, 2, 2) = z;
+  /*what->vals[0] = x;
   what->vals[5] = y;
-  what->vals[10] = z;
+  what->vals[10] = z;*/
+
+  nx_mat_multiply (what, what, &tmp);
 }
 
 void
