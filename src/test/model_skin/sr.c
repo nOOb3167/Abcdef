@@ -8,6 +8,8 @@
 
 #include <glib.h>
 #include <src/error.h>
+#include <src/mai-model.h>
+#include <src/mai-model_funcs.h>
 #include <nx_mat.h>
 
 void
@@ -58,6 +60,8 @@ main (int argc, char **argv)
 {
   ALLEGRO_DISPLAY *display;
 
+  g_type_init ();
+
   al_init ();
   al_init_primitives_addon ();
 
@@ -75,13 +79,22 @@ main (int argc, char **argv)
 
   al_set_target_backbuffer (display);
 
-  al_draw_bitmap (bmp, 20, 20, 0);
+  MaiModel *model;
+  model = mai_model_new_from_file ("c_multipart_collada_skin_ms.dae");
+  MaiNode *mesh_node;
+  mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
+  g_xassert (mesh_node);
+
+  /**
+   * Plan
+   *   Go make a node drawing function.
+   *   Draws meshes and node direction vectors.
+   */
 
   NxMat p_mat;
   nx_mat_projection (&p_mat, 1.0f);
   nx_mat_scale (&p_mat, 10.0f, 10.0f, 1.0f);
   nx_mat_translation (&p_mat, 1.0f, 1.0f, 0.0f);
-  nx_mat_rotate (&p_mat, 30.0f, 0.0f, 0.0f, 1.0f);
   NxVec4 vec = {1.0f, 1.0f, -1.0f, 1.0f};
 
   sr_project_one (&p_mat, &vec);
@@ -92,11 +105,17 @@ main (int argc, char **argv)
       {1.0f, 1.0f, -1.0f, 1.0f}
   };
 
-  sr_draw_tri (&p_mat, tri);
-
-  al_flip_display ();
-
-  al_rest (1);
+  int frame;
+  for (frame=0; frame<60; ++frame)
+    {
+      al_clear_to_color (al_map_rgb (0, 0, 0));
+      NxMat r_mat;
+      r_mat = p_mat;
+      nx_mat_rotate (&r_mat, 1.0f * frame, 0.0f, 0.3f, 1.0f);
+      sr_draw_tri (&r_mat, tri);
+      al_flip_display ();
+      al_rest (0.05f);
+    }
 
   return EXIT_SUCCESS;
 }
