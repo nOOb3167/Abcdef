@@ -1,3 +1,5 @@
+#include <math.h>
+#include <glib.h>
 #include <nx_mat.h>
 
 void
@@ -104,4 +106,45 @@ nx_mat_transform (NxMat *what, NxVec4 *vec_inout)
     }
 
   *vec_inout = temp;
+}
+
+void
+nx_mat_rotate (NxMat *matrix,
+                    float angle,
+                    float x,
+                    float y,
+                    float z)
+{
+  NxMat rotation;
+  NxMat result;
+  float c, s;
+
+  nx_mat_init_identity (&rotation);
+
+  angle *= G_PI / 180.0f;
+  c = cosf (angle);
+  s = sinf (angle);
+
+  NX_MAT_ELT (&rotation, 0, 0) = x * x * (1.0f - c) + c;
+  NX_MAT_ELT (&rotation, 1, 0) = y * x * (1.0f - c) + z * s;
+  NX_MAT_ELT (&rotation, 2, 0) = x * z * (1.0f - c) - y * s;
+  NX_MAT_ELT (&rotation, 3, 0) = 0.0f;
+
+  NX_MAT_ELT (&rotation, 0, 1) = x * y * (1.0f - c) - z * s;
+  NX_MAT_ELT (&rotation, 1, 1) = y * y * (1.0f - c) + c;
+  NX_MAT_ELT (&rotation, 2, 1) = y * z * (1.0f - c) + x * s;
+  NX_MAT_ELT (&rotation, 3, 1) = 0.0f;
+
+  NX_MAT_ELT (&rotation, 0, 2) = x * z * (1.0f - c) + y * s;
+  NX_MAT_ELT (&rotation, 1, 2) = y * z * (1.0f - c) - x * s;
+  NX_MAT_ELT (&rotation, 2, 2) = z * z * (1.0f - c) + c;
+  NX_MAT_ELT (&rotation, 3, 2) = 0.0f;
+
+  NX_MAT_ELT (&rotation, 0, 3) = 0.0f;
+  NX_MAT_ELT (&rotation, 1, 3) = 0.0f;
+  NX_MAT_ELT (&rotation, 2, 3) = 0.0f;
+  NX_MAT_ELT (&rotation, 3, 3) = 1.0f;
+
+  nx_mat_multiply (&result, matrix, &rotation);
+  *matrix = result;
 }

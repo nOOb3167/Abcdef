@@ -81,6 +81,7 @@ main (int argc, char **argv)
   nx_mat_projection (&p_mat, 1.0f);
   nx_mat_scale (&p_mat, 10.0f, 10.0f, 1.0f);
   nx_mat_translation (&p_mat, 1.0f, 1.0f, 0.0f);
+  nx_mat_rotate (&p_mat, 30.0f, 0.0f, 0.0f, 1.0f);
   NxVec4 vec = {1.0f, 1.0f, -1.0f, 1.0f};
 
   sr_project_one (&p_mat, &vec);

@@ -34,4 +34,11 @@ nx_mat_projection (NxMat *what, float near);
 void
 nx_mat_transform (NxMat *what, NxVec4 *vec_inout);
 
+void
+nx_mat_rotate (NxMat *matrix,
+                    float angle,
+                    float x,
+                    float y,
+                    float z);
+
 #endif /* NX_MAT_H_ */
