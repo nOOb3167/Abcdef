@@ -55,6 +55,29 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
                 clr, 1.0f);
 }
 
+void
+sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
+{
+  g_xassert (indices->len > 0);
+  g_xassert ((indices->len % 3) == 0);
+  int cnt;
+  for (cnt=0; cnt<indices->len; cnt+=3)
+    {
+      unsigned int idx;
+      struct xvtx vert;
+      NxVec4 xv[3];
+      int cnt2;
+      for (cnt2=0; cnt2<3; ++cnt2)
+        {
+          idx = g_array_index (indices, unsigned int, cnt+cnt2);
+          g_xassert (idx < verts->len);
+          vert = g_array_index (verts, struct xvtx, idx);
+          xv[cnt2].vals[0] = vert.x; xv[cnt2].vals[1] = vert.y; xv[cnt2].vals[2] = vert.z; xv[cnt2].vals[3] = 1.0f;
+        }
+      sr_draw_tri (mst, xv);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -99,6 +122,11 @@ main (int argc, char **argv)
 
   sr_project_one (&p_mat, &vec);
 
+  NxMat z_mat;
+  nx_mat_projection (&z_mat, 0.5f);
+  nx_mat_scale (&z_mat, 5.0f, 5.0f, 1.0f);
+  nx_mat_translation (&z_mat, 4.0f, 5.0f, -1.5f);
+
   NxVec4 tri[] = {
       {0.0f, 0.0f, -1.0f, 1.0f},
       {1.0f, 0.0f, -1.0f, 1.0f},
@@ -113,6 +141,9 @@ main (int argc, char **argv)
       r_mat = p_mat;
       nx_mat_rotate (&r_mat, 1.0f * frame, 0.0f, 0.3f, 1.0f);
       sr_draw_tri (&r_mat, tri);
+
+      sr_draw_node (&z_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+
       al_flip_display ();
       al_rest (0.05f);
     }
