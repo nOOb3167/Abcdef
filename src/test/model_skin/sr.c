@@ -32,7 +32,7 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
   clr = al_map_rgb (255, 0, 0);
 
   float sf;
-  sf = 5.0f;
+  sf = 20.0f;
   float ofx, ofy;
   ofx = 50.0f; ofy = 50.0f;
 
@@ -122,6 +122,7 @@ main (int argc, char **argv)
 
   NxMat z_mat;
   nx_mat_projection (&z_mat, -1.0f);
+  nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
   //nx_mat_scale (&z_mat, 5.0f, 5.0f, 5.0f);
   //nx_mat_translation (&z_mat, -4.0f, -5.0f, 2.0f);
 
