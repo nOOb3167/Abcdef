@@ -34,30 +34,23 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
   float sf;
   sf = 5.0f;
   float ofx, ofy;
-  ofx = 20.0f; ofy = 20.0f;
+  ofx = 50.0f; ofy = 50.0f;
 
-  NxVec4 cur;
-  NxVec4 nxt;
-  cur = pts[0];
-  sr_project_one (mst, &cur);
-  nxt = pts[1];
-  sr_project_one (mst, &nxt);
-  al_draw_line (cur.vals[0]*sf+ofx, cur.vals[1]*sf+ofy, nxt.vals[0]*sf+ofx, nxt.vals[1]*sf+ofy,
-                clr, 1.0f);
+  NxVec4 projs[3];
+  projs[0] = pts[0]; projs[1] = pts[1]; projs[2] = pts[2];
+  sr_project_one (mst, &projs[0]);
+  sr_project_one (mst, &projs[1]);
+  sr_project_one (mst, &projs[2]);
 
-  cur = pts[1];
-  sr_project_one (mst, &cur);
-  nxt = pts[2];
-  sr_project_one (mst, &nxt);
-  al_draw_line (cur.vals[0]*sf+ofx, cur.vals[1]*sf+ofy, nxt.vals[0]*sf+ofx, nxt.vals[1]*sf+ofy,
-                clr, 1.0f);
-
-  cur = pts[2];
-  sr_project_one (mst, &cur);
-  nxt = pts[0];
-  sr_project_one (mst, &nxt);
-  al_draw_line (cur.vals[0]*sf+ofx, cur.vals[1]*sf+ofy, nxt.vals[0]*sf+ofx, nxt.vals[1]*sf+ofy,
-                clr, 1.0f);
+  int cnt;
+  for (cnt=0; cnt<3; ++cnt)
+    {
+      int cur, nxt;
+      cur = cnt; nxt = (cnt + 1) % 3;
+      al_draw_line (projs[cur].vals[0]*sf+ofx, projs[cur].vals[1]*sf+ofx,
+                    projs[nxt].vals[0]*sf+ofx, projs[nxt].vals[1]*sf+ofx,
+                    clr, 1.0f);
+    }
 }
 
 void
@@ -128,7 +121,7 @@ main (int argc, char **argv)
   sr_project_one (&p_mat, &vec);
 
   NxMat z_mat;
-  nx_mat_projection (&z_mat, 1.0f);
+  nx_mat_projection (&z_mat, -1.0f);
   //nx_mat_scale (&z_mat, 5.0f, 5.0f, 5.0f);
   //nx_mat_translation (&z_mat, -4.0f, -5.0f, 2.0f);
 
@@ -147,7 +140,10 @@ main (int argc, char **argv)
       nx_mat_rotate (&r_mat, 1.0f * frame, 0.0f, 0.3f, 1.0f);
       sr_draw_tri (&r_mat, tri);
 
-      sr_draw_node (&z_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      NxMat w_mat;
+      w_mat = z_mat;
+      nx_mat_rotate (&w_mat, 2.0f * frame, 0.0f, 0.0f, 1.0f);
+      sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 
       al_flip_display ();
       al_rest (0.05f);

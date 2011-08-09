@@ -7,6 +7,9 @@ struct NxVec4
 };
 typedef struct NxVec4 NxVec4;
 
+void
+nx_vec_normalize (NxVec4 *out, NxVec4 *in);
+
 struct NxMat
 {
   float vals[16];

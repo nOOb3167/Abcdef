@@ -1,6 +1,23 @@
 #include <math.h>
 #include <glib.h>
+#include <src/error.h>
 #include <nx_mat.h>
+
+void
+nx_vec_normalize (NxVec4 *out, NxVec4 *in)
+{
+  float len;
+  len = sqrtf (in->vals[0] * in->vals[0] +
+               in->vals[1] * in->vals[1] +
+               in->vals[2] * in->vals[2]);
+  /**
+   * Lol floating point comparison
+   */
+  g_xassert (len > 0.0f);
+  out->vals[0] = in->vals[0] / len;
+  out->vals[1] = in->vals[1] / len;
+  out->vals[2] = in->vals[2] / len;
+}
 
 void
 nx_mat_init_identity (NxMat *what)
