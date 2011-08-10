@@ -4,12 +4,16 @@
 #include <nx_mat.h>
 
 void
-nx_vec_normalize (NxVec4 *out, NxVec4 *in)
+nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
 {
+  /**
+   * Don't need a tmp vec to support out == in.. I think
+   */
   float len;
   len = sqrtf (in->vals[0] * in->vals[0] +
                in->vals[1] * in->vals[1] +
-               in->vals[2] * in->vals[2]);
+               in->vals[2] * in->vals[2] +
+               in->vals[3] * in->vals[3]);
   /**
    * Lol floating point comparison
    */
@@ -17,6 +21,7 @@ nx_vec_normalize (NxVec4 *out, NxVec4 *in)
   out->vals[0] = in->vals[0] / len;
   out->vals[1] = in->vals[1] / len;
   out->vals[2] = in->vals[2] / len;
+  out->vals[2] = in->vals[3] / len;
 }
 
 void
@@ -65,6 +70,7 @@ nx_mat_translation (NxMat *what, float x, float y, float z)
 {
   NxMat tmp;
   nx_mat_init_identity (&tmp);
+
   NX_MAT_ELT (&tmp, 0, 3) = x;
   NX_MAT_ELT (&tmp, 1, 3) = y;
   NX_MAT_ELT (&tmp, 2, 3) = z;
@@ -96,6 +102,15 @@ nx_mat_projection (NxMat *what, float near)
   NX_MAT_ELT (what, 1, 1) = near;
   NX_MAT_ELT (what, 3, 2) = -1.0f;
   NX_MAT_ELT (what, 3, 3) = 0.0f;
+}
+
+void
+nx_mat_ortho (NxMat *what)
+{
+  nx_mat_init_identity (what);
+  /**
+   * O_O
+   */
 }
 
 void

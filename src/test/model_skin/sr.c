@@ -121,7 +121,8 @@ main (int argc, char **argv)
   sr_project_one (&p_mat, &vec);
 
   NxMat z_mat;
-  nx_mat_projection (&z_mat, -1.0f);
+  //nx_mat_projection (&z_mat, -1.0f);
+  nx_mat_ortho (&z_mat);
   nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
   //nx_mat_scale (&z_mat, 5.0f, 5.0f, 5.0f);
   //nx_mat_translation (&z_mat, -4.0f, -5.0f, 2.0f);
@@ -143,7 +144,10 @@ main (int argc, char **argv)
 
       NxMat w_mat;
       w_mat = z_mat;
-      nx_mat_rotate (&w_mat, 2.0f * frame, 0.0f, 0.0f, 1.0f);
+      NxVec4 rotvec = {0.0f, 1.0f, 1.0f, 0.0f};
+      nx_vec_normalize4 (&rotvec, &rotvec);
+      nx_mat_rotate (&w_mat, 2.0f * frame,
+          rotvec.vals[0], rotvec.vals[1], rotvec.vals[2]);
       sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 
       al_flip_display ();

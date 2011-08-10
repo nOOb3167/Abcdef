@@ -8,7 +8,7 @@ struct NxVec4
 typedef struct NxVec4 NxVec4;
 
 void
-nx_vec_normalize (NxVec4 *out, NxVec4 *in);
+nx_vec_normalize4 (NxVec4 *out, NxVec4 *in);
 
 struct NxMat
 {
@@ -33,6 +33,9 @@ nx_mat_scale (NxMat *what, float x, float y, float z);
 
 void
 nx_mat_projection (NxMat *what, float near);
+
+void
+nx_mat_ortho (NxMat *what);
 
 void
 nx_mat_transform (NxMat *what, NxVec4 *vec_inout);
