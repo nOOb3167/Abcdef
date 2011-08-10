@@ -21,7 +21,7 @@ nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
   out->vals[0] = in->vals[0] / len;
   out->vals[1] = in->vals[1] / len;
   out->vals[2] = in->vals[2] / len;
-  out->vals[2] = in->vals[3] / len;
+  out->vals[3] = in->vals[3] / len;
 }
 
 void
