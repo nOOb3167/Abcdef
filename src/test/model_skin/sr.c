@@ -121,11 +121,9 @@ main (int argc, char **argv)
   sr_project_one (&p_mat, &vec);
 
   NxMat z_mat;
-  //nx_mat_projection (&z_mat, -1.0f);
-  nx_mat_ortho (&z_mat);
+  nx_mat_projection (&z_mat, -1.0f);
+  //nx_mat_ortho (&z_mat);
   nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
-  //nx_mat_scale (&z_mat, 5.0f, 5.0f, 5.0f);
-  //nx_mat_translation (&z_mat, -4.0f, -5.0f, 2.0f);
 
   NxVec4 tri[] = {
       {0.0f, 0.0f, -1.0f, 1.0f},
