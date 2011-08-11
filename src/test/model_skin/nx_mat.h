@@ -1,6 +1,8 @@
 #ifndef NX_MAT_H_
 #define NX_MAT_H_
 
+#include <assimp.h>
+
 struct NxVec4
 {
   float vals[4];
@@ -18,9 +20,13 @@ typedef struct NxMat NxMat;
 
 #define NX_MAT_ELT(m,r,c) \
   ((m)->vals[(4*(c))+(r)])
+#define NX_MAT_SWAP_ROWS(a,b) { float *_tmp = (a); (a)=(b); (b)=_tmp; }
 
 void
 nx_mat_init_identity (NxMat *what);
+
+void
+nx_mat_init_from_array (NxMat *what, float floats[]);
 
 void
 nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b);
@@ -46,5 +52,14 @@ nx_mat_rotate (NxMat *matrix,
                     float x,
                     float y,
                     float z);
+
+void
+nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix);
+
+int
+nx_mat_get_inverse (NxMat *mat, NxMat *inv_out);
+
+int
+_nx_mat_invert_matrix_general (NxMat *matrix, NxMat *inv_out);
 
 #endif /* NX_MAT_H_ */

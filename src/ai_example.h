@@ -15,7 +15,7 @@ extern "C" {
 #define NX_RADIANS_TO_DEGREES (180.0f / G_PI)
 
 #define NX_MAT(m,r,c) (m)[(c)*4+(r)]
-#define NX_SWAP_ROWS(a, b) { float *_tmp = a; (a)=(b); (b)=_tmp; }
+#define NX_SWAP_ROWS(a, b) { float *_tmp = (a); (a)=(b); (b)=_tmp; }
 
 struct aiScene *
 ai_scene_from_file (const char *file_name);
