@@ -10,6 +10,12 @@ struct NxVec4
 typedef struct NxVec4 NxVec4;
 
 void
+nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+void
+nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in);
 
 struct NxMat

@@ -26,6 +26,31 @@ sr_project_one (NxMat *mst, NxVec4 *vec_inout)
 }
 
 void
+sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
+{
+  ALLEGRO_COLOR clr;
+  clr = al_map_rgb (0, 255, 0);
+
+  float sf;
+  sf = 20.0f;
+  float ofx, ofy;
+  ofx = 50.0f; ofy = 50.0f;
+
+  NxVec4 start, end;
+  start = *pos;
+  nx_vec_add (&end, pos, dir);
+
+  NxVec4 projs[2];
+  projs[0] = start;
+  projs[1] = end;
+  sr_project_one (mst, &projs[0]);
+  sr_project_one (mst, &projs[1]);
+  al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
+                projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
+                clr, 1.0f);
+}
+
+void
 sr_draw_tri (NxMat *mst, NxVec4 pts[3])
 {
   ALLEGRO_COLOR clr;
@@ -147,6 +172,8 @@ main (int argc, char **argv)
       nx_mat_rotate (&w_mat, 2.0f * frame,
           rotvec.vals[0], rotvec.vals[1], rotvec.vals[2]);
       sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}};
+      sr_draw_unit_vec_at (&w_mat, &uvecs[0], &uvecs[1]);
 
       al_flip_display ();
       al_rest (0.05f);

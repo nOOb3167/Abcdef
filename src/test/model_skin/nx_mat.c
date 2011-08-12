@@ -4,6 +4,15 @@
 #include <nx_mat.h>
 
 void
+nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b)
+{
+  result->vals[0] = a->vals[0] + b->vals [0];
+  result->vals[1] = a->vals[1] + b->vals [1];
+  result->vals[2] = a->vals[2] + b->vals [2];
+  result->vals[3] = a->vals[3] + b->vals [3];
+}
+
+void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
 {
   /**
