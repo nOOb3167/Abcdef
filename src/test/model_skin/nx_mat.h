@@ -13,6 +13,9 @@ void
 nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
+nx_vec_sub (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+void
 nx_vec_negate (NxVec4 *result, NxVec4 *vec);
 
 void
