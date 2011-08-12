@@ -146,6 +146,9 @@ main (int argc, char **argv)
   al_init ();
   al_init_primitives_addon ();
 
+  al_install_keyboard ();
+  al_install_mouse ();
+
   display = al_create_display (100, 100);
   g_xassert (display);
 
@@ -191,6 +194,8 @@ main (int argc, char **argv)
       {1.0f, 1.0f, -1.0f, 1.0f}
   };
 
+  ALLEGRO_KEYBOARD_STATE aks;
+
   int frame;
   for (frame=0; frame<60; ++frame)
     {
@@ -200,11 +205,22 @@ main (int argc, char **argv)
       nx_mat_rotate (&r_mat, 1.0f * frame, 0.0f, 0.3f, 1.0f);
       sr_draw_tri (&r_mat, tri);
 
+      al_get_keyboard_state (&aks);
+      int left;
+      left = al_key_down (&aks, ALLEGRO_KEY_A);
+      left = !!left;
+
+      if (al_key_down (&aks, ALLEGRO_KEY_ESCAPE))
+        {
+          printf ("Escape\n");
+          exit (0);
+        }
+
       NxMat w_mat;
       w_mat = z_mat;
       NxVec4 rotvec = {0.0f, 1.0f, 1.0f, 0.0f};
       nx_vec_normalize4 (&rotvec, &rotvec);
-      nx_mat_rotate (&w_mat, 2.0f * frame,
+      nx_mat_rotate (&w_mat, left * 2.0f * frame,
           rotvec.vals[0], rotvec.vals[1], rotvec.vals[2]);
       sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
