@@ -27,6 +27,9 @@ nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in);
 
+void
+nx_vec_normalize3 (NxVec4 *out, NxVec4 *in);
+
 struct NxMat
 {
   float vals[16];

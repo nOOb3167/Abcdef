@@ -31,7 +31,7 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   ALLEGRO_COLOR clr;
   clr = al_map_rgb (0, 255, 0);
   ALLEGRO_COLOR clr2;
-  clr2 = al_map_rgb (255, 255, 0);
+  clr2 = al_map_rgb (0, 255, 0);
 
 
   float sf;
@@ -56,30 +56,32 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   NxVec4 z_dir = {0.0f, 0.0f, 1.0f, 1.0f};
   NxVec4 orth_f;
   nx_vec_cross_product (&orth_f, &s_dir, &z_dir);
-  nx_vec_normalize4 (&orth_f, &orth_f);
-  nx_vec_scale (&orth_f, &orth_f, 0.2f);
+  nx_vec_normalize3 (&orth_f, &orth_f);
+  nx_vec_scale (&orth_f, &orth_f, 0.15f);
 
   NxVec4 ivec;
-  nx_vec_scale (&ivec, &s_dir, 0.8f);
+  nx_vec_scale (&ivec, &s_dir, 0.85f);
   nx_vec_add (&ivec, &s_pos, &ivec);
 
   al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
                 projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
                 clr, 1.0f);
 
+  NxVec4 projs2[2];
+
   NxVec4 upper, lower;
   nx_vec_add (&upper, &ivec, &orth_f);
-  projs[0] = projs[1];
-  projs[1] = upper;
-  al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
-                projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
+  projs2[0] = projs[1];
+  projs2[1] = upper;
+  al_draw_line (projs2[0].vals[0]*sf+ofx, projs2[0].vals[1]*sf+ofx,
+                projs2[1].vals[0]*sf+ofx, projs2[1].vals[1]*sf+ofx,
                 clr2, 1.0f);
   nx_vec_negate (&orth_f, &orth_f);
   nx_vec_add (&lower, &ivec, &orth_f);
-  projs[0] = projs[1];
-  projs[1] = lower;
-  al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
-                projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
+  projs2[0] = projs[1];
+  projs2[1] = lower;
+  al_draw_line (projs2[0].vals[0]*sf+ofx, projs2[0].vals[1]*sf+ofx,
+                projs2[1].vals[0]*sf+ofx, projs2[1].vals[1]*sf+ofx,
                 clr2, 1.0f);
 }
 

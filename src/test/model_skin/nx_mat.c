@@ -47,6 +47,7 @@ nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b)
   tmp.vals[0] = a->vals[1] * b->vals[2] - a->vals[2] * b->vals[1];
   tmp.vals[1] = a->vals[2] * b->vals[0] - a->vals[0] * b->vals[2];
   tmp.vals[2] = a->vals[0] * b->vals[1] - a->vals[1] * b->vals[0];
+  tmp.vals[3] = 0.0f;
   *result = tmp;
 }
 
@@ -70,6 +71,22 @@ nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
   out->vals[2] = in->vals[2] / len;
   out->vals[3] = in->vals[3] / len;
 }
+
+void
+nx_vec_normalize3 (NxVec4 *out, NxVec4 *in)
+{
+  float len;
+  len = sqrtf (in->vals[0] * in->vals[0] +
+               in->vals[1] * in->vals[1] +
+               in->vals[2] * in->vals[2]);
+  g_xassert (len > 0.0f);
+  out->vals[0] = in->vals[0] / len;
+  out->vals[1] = in->vals[1] / len;
+  out->vals[2] = in->vals[2] / len;
+  g_xassert (in->vals[3] == 0.0f);
+  /* out->vals[3] = 0.0f; */
+}
+
 
 void
 nx_mat_init_identity (NxMat *what)
