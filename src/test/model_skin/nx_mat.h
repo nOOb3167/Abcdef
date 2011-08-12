@@ -13,6 +13,12 @@ void
 nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
+nx_vec_negate (NxVec4 *result, NxVec4 *vec);
+
+void
+nx_vec_scale (NxVec4 *result, NxVec4 *vec, float scale);
+
+void
 nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void

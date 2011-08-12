@@ -38,16 +38,47 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
 
   NxVec4 start, end;
   start = *pos;
-  nx_vec_add (&end, pos, dir);
+  nx_vec_add (&end, &start, dir);
 
   NxVec4 projs[2];
   projs[0] = start;
   projs[1] = end;
   sr_project_one (mst, &projs[0]);
   sr_project_one (mst, &projs[1]);
+
+  NxVec4 z_dir = {0.0f, 0.0f, 1.0f, 1.0f};
+  NxVec4 orth_dir_f;
+  nx_vec_cross_product (&orth_dir_f, dir, &z_dir);
+  nx_vec_normalize4 (&orth_dir_f, &orth_dir_f);
+  nx_vec_scale (&orth_dir_f, &orth_dir_f, 0.2f);
+
+  NxVec4 idir;
+  nx_vec_scale (&idir, dir, 0.8f);
+  NxVec4 ivec;
+  nx_vec_add (&ivec, &start, &idir);
+
   al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
                 projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
                 clr, 1.0f);
+
+  NxVec4 upper, lower;
+  nx_vec_add (&upper, &ivec, &orth_dir_f);
+  projs[0] = ivec;
+  projs[1] = upper;
+  sr_project_one (mst, &projs[0]);
+  sr_project_one (mst, &projs[1]);
+//  al_draw_line (projs[0].vals[0]*sf+ofx, projs[0].vals[1]*sf+ofx,
+//                projs[1].vals[0]*sf+ofx, projs[1].vals[1]*sf+ofx,
+//                clr, 1.0f);
+  nx_vec_negate (&orth_dir_f, &orth_dir_f);
+  nx_vec_add (&lower, &ivec, &orth_dir_f);
+  projs[0] = ivec;
+  projs[1] = lower;
+  sr_project_one (mst, &projs[0]);
+  sr_project_one (mst, &projs[1]);
+//  al_draw_line (ivec.vals[0]*sf+ofx, ivec.vals[1]*sf+ofx,
+//                lower.vals[0]*sf+ofx, lower.vals[1]*sf+ofx,
+//                clr, 1.0f);
 }
 
 void
@@ -172,7 +203,7 @@ main (int argc, char **argv)
       nx_mat_rotate (&w_mat, 2.0f * frame,
           rotvec.vals[0], rotvec.vals[1], rotvec.vals[2]);
       sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
-      NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}};
+      NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       sr_draw_unit_vec_at (&w_mat, &uvecs[0], &uvecs[1]);
 
       al_flip_display ();

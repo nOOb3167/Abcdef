@@ -13,6 +13,35 @@ nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b)
 }
 
 void
+nx_vec_negate (NxVec4 *result, NxVec4 *vec)
+{
+  result->vals[0] = -vec->vals[0];
+  result->vals[1] = -vec->vals[1];
+  result->vals[2] = -vec->vals[2];
+  result->vals[3] = -vec->vals[3];
+}
+
+void
+nx_vec_scale (NxVec4 *result, NxVec4 *vec, float scale)
+{
+  result->vals[0] = scale * vec->vals[0];
+  result->vals[1] = scale * vec->vals[1];
+  result->vals[2] = scale * vec->vals[2];
+  result->vals[3] = scale * vec->vals[3];
+}
+
+void
+nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b)
+{
+  NxVec4 tmp;
+
+  tmp.vals[0] = a->vals[1] * b->vals[2] - a->vals[2] * b->vals[1];
+  tmp.vals[1] = a->vals[2] * b->vals[0] - a->vals[0] * b->vals[2];
+  tmp.vals[2] = a->vals[0] * b->vals[1] - a->vals[1] * b->vals[0];
+  *result = tmp;
+}
+
+void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
 {
   /**
