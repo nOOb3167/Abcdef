@@ -11,6 +11,7 @@
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
 #include <nx_mat.h>
+#include <sr.h>
 
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout)
