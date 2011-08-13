@@ -142,11 +142,15 @@ sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
 void
 sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
 {
-  int left, right;
+  int left, right, up, down;
   left = al_key_down (aks, ALLEGRO_KEY_A);
   left = !!left;
   right = al_key_down (aks, ALLEGRO_KEY_D);
   right = !!right;
+  up = al_key_down (aks, ALLEGRO_KEY_W);
+  up = !!up;
+  down= al_key_down (aks, ALLEGRO_KEY_S);
+  down= !!down;
 
   if (al_key_down (aks, ALLEGRO_KEY_ESCAPE))
     {
@@ -157,16 +161,18 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
   NxMat w_mat;
   w_mat = g_state->p_mat;
   if (left)
-    {
-      g_state->yaw += 2.0f;
-    }
+    g_state->yaw += 2.0f;
   if (right)
-    {
-      g_state->yaw -= 2.0f;
-    }
+    g_state->yaw -= 2.0f;
+  if (up)
+    g_state->pitch += 2.0f;
+  if (down)
+    g_state->pitch -= 2.0f;
 
   nx_mat_rotate (&w_mat, g_state->yaw,
       0.0f, 1.0f, 0.0f);
+  nx_mat_rotate (&w_mat, g_state->pitch,
+      1.0f, 0.0f, 0.0f);
 
   g_state->w_mat = w_mat;
 }
