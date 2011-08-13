@@ -1,6 +1,12 @@
 #ifndef SR_H_
 #define SR_H_
 
+struct NxState
+{
+  float yaw, pitch, roll;
+  NxMat p_mat, w_mat;
+};
+
 /*
  * Should be only the node info (As needed for animations / skinning
  * Should be easy to copy
@@ -26,7 +32,8 @@ struct SrNode
 
 struct SrModel
 {
-  struct SrNode nodes[];
+  char *name;
+  struct SrNode *nodes[];
 };
 
 #endif /* SR_H_ */

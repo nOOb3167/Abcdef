@@ -13,6 +13,8 @@
 #include <nx_mat.h>
 #include <sr.h>
 
+struct NxState *g_state;
+
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout)
 {
@@ -137,12 +139,58 @@ sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
     }
 }
 
+void
+sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
+{
+  int left, right;
+  left = al_key_down (aks, ALLEGRO_KEY_A);
+  left = !!left;
+  right = al_key_down (aks, ALLEGRO_KEY_D);
+  right = !!right;
+
+  if (al_key_down (aks, ALLEGRO_KEY_ESCAPE))
+    {
+      printf ("Escape\n");
+      exit (0);
+    }
+
+  NxMat w_mat;
+  w_mat = g_state->p_mat;
+  if (left)
+    {
+      g_state->yaw += 2.0f;
+    }
+  if (right)
+    {
+      g_state->yaw -= 2.0f;
+    }
+
+  nx_mat_rotate (&w_mat, g_state->yaw,
+      0.0f, 1.0f, 0.0f);
+
+  g_state->w_mat = w_mat;
+}
+
 int
 main (int argc, char **argv)
 {
   ALLEGRO_DISPLAY *display;
 
   g_type_init ();
+
+  /**
+   * Initialize g_state
+   */
+  struct NxState state = {0};
+  g_state = g_new0 (struct NxState, 1);
+  *g_state = state;
+
+  NxMat z_mat;
+  nx_mat_projection (&z_mat, -1.0f);
+  //nx_mat_ortho (&z_mat);
+  nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
+  g_state->p_mat = z_mat;
+  g_state->w_mat = z_mat;
 
   al_init ();
   al_init_primitives_addon ();
@@ -152,15 +200,6 @@ main (int argc, char **argv)
 
   display = al_create_display (100, 100);
   g_xassert (display);
-
-  ALLEGRO_BITMAP *bmp;
-  ALLEGRO_COLOR clr;
-  bmp = al_create_bitmap (10, 10);
-  g_xassert (bmp);
-  clr = al_map_rgb (255, 0, 0);
-
-  al_set_target_bitmap (bmp);
-  al_clear_to_color (clr);
 
   al_set_target_backbuffer (display);
 
@@ -176,56 +215,17 @@ main (int argc, char **argv)
    *   Draws meshes and node direction vectors.
    */
 
-  NxMat p_mat;
-  nx_mat_projection (&p_mat, 1.0f);
-  nx_mat_scale (&p_mat, 10.0f, 10.0f, 1.0f);
-  nx_mat_translation (&p_mat, 1.0f, 1.0f, 0.0f);
-  NxVec4 vec = {1.0f, 1.0f, -1.0f, 1.0f};
-
-  sr_project_one (&p_mat, &vec);
-
-  NxMat z_mat;
-  nx_mat_projection (&z_mat, -1.0f);
-  //nx_mat_ortho (&z_mat);
-  nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
-
-  NxVec4 tri[] = {
-      {0.0f, 0.0f, -1.0f, 1.0f},
-      {1.0f, 0.0f, -1.0f, 1.0f},
-      {1.0f, 1.0f, -1.0f, 1.0f}
-  };
-
   ALLEGRO_KEYBOARD_STATE aks;
 
   int frame;
   for (frame=0; frame<60; ++frame)
     {
-      al_clear_to_color (al_map_rgb (0, 0, 0));
-      NxMat r_mat;
-      r_mat = p_mat;
-      nx_mat_rotate (&r_mat, 1.0f * frame, 0.0f, 0.3f, 1.0f);
-      sr_draw_tri (&r_mat, tri);
-
       al_get_keyboard_state (&aks);
-      int left;
-      left = al_key_down (&aks, ALLEGRO_KEY_A);
-      left = !!left;
-
-      if (al_key_down (&aks, ALLEGRO_KEY_ESCAPE))
-        {
-          printf ("Escape\n");
-          exit (0);
-        }
-
-      NxMat w_mat;
-      w_mat = z_mat;
-      NxVec4 rotvec = {0.0f, 1.0f, 1.0f, 0.0f};
-      nx_vec_normalize4 (&rotvec, &rotvec);
-      nx_mat_rotate (&w_mat, left * 2.0f * frame,
-          rotvec.vals[0], rotvec.vals[1], rotvec.vals[2]);
-      sr_draw_node (&w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      sr_update_global_ypr (&aks);
+      al_clear_to_color (al_map_rgb (0, 0, 0));
+      sr_draw_node (&g_state->w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
-      sr_draw_unit_vec_at (&w_mat, &uvecs[0], &uvecs[1]);
+      sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
 
       al_flip_display ();
       al_rest (0.05f);
