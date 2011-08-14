@@ -177,6 +177,29 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
   g_state->w_mat = w_mat;
 }
 
+void sr_weight_dump (MaiModel *model)
+{
+  MaiNode *mesh_node;
+  mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
+  g_xassert (mesh_node);
+  g_xassert (mesh_node->bones->len == 2);
+
+  int cnt;
+  for (cnt=0; cnt<mesh_node->bones->len; ++cnt)
+    {
+      MaiBone *bone;
+      bone = g_mai_bone_ptr_array_index (mesh_node->bones, cnt);
+      printf ("Bone %s\n", bone->name);
+      int idx;
+      for (idx=0; idx<bone->weights->len; ++idx)
+        {
+          NxVertexWeight wt;
+          wt = g_nx_vertex_weight_array_index (bone->weights, idx);
+          printf ("%d: %f\n", wt.vertex_id, wt.weight);
+        }
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -210,10 +233,12 @@ main (int argc, char **argv)
   al_set_target_backbuffer (display);
 
   MaiModel *model;
-  model = mai_model_new_from_file ("c_multipart_collada_skin_ms.dae");
+  model = mai_model_new_from_file ("c_sr_weight.dae");
   MaiNode *mesh_node;
   mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mesh_node);
+
+  sr_weight_dump (model);
 
   /**
    * Plan
