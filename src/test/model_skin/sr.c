@@ -250,6 +250,29 @@ sr_weight_dump (MaiModel *model)
     }
 }
 
+void
+sr_skeletal (MaiModel *model)
+{
+  MaiAnimInstance *mai;
+
+  g_xassert (model->anims->len == 1);
+  mai = mai_anim_instance_new_from_anim (
+                                         g_mai_anim_ptr_array_index (model->anims, 0),
+                                         model->name_node_map,
+                                         model->nodes);
+
+  struct SrNodeGraph *sr_model;
+  sr_model_from_mai_model (&sr_model, model);
+  struct SrNode *cube_node;
+  cube_node = g_hash_table_lookup (sr_model->name_node_map, "Cube");
+  g_xassert (cube_node);
+
+  struct SrNodeGraph *sr_model_copy;
+  sr_node_graph_copy (&sr_model_copy, sr_model);
+  g_xassert (sr_model_copy);
+
+}
+
 int
 main (int argc, char **argv)
 {
@@ -289,16 +312,6 @@ main (int argc, char **argv)
   g_xassert (mesh_node);
 
   sr_weight_dump (model);
-
-  struct SrNodeGraph *sr_model;
-  sr_model_from_mai_model (&sr_model, model);
-  struct SrNode *cube_node;
-  cube_node = g_hash_table_lookup (sr_model->name_node_map, "Cube");
-  g_xassert (cube_node);
-
-  struct SrNodeGraph *sr_model_copy;
-  sr_node_graph_copy (&sr_model_copy, sr_model);
-  g_xassert (sr_model_copy);
 
   /**
    * Plan
