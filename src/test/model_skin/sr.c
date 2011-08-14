@@ -10,6 +10,8 @@
 #include <src/error.h>
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
+#include <src/mai-node-anim.h>
+#include <src/mai-node-anim_funcs.h>
 #include <nx_mat.h>
 #include <sr.h>
 
@@ -251,8 +253,87 @@ sr_weight_dump (MaiModel *model)
 }
 
 void
+sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
+{
+  void
+  sr_update_channel (MaiNodeAnim *man)
+  {
+    void
+    sr_compose_mtx (NxMat *result)
+    {
+      /**
+       * Stick to AnimEvaluator.cpp AnimEvaluator::Evaluate order.
+       * Namely:
+       *   Start with Rotation, apply 3x3 scale, set translation
+       */
+      struct NxAnimKey pos, rot, sca;
+      pos = g_array_index (man->position_keys, struct NxAnimKey, mai->current_frame);
+      rot = g_array_index (man->rotation_keys, struct NxAnimKey, mai->current_frame);
+      sca = g_array_index (man->scaling_keys, struct NxAnimKey, mai->current_frame);
+
+      NxMat mat;
+      nx_mat_init_identity (&mat);
+
+      float angle;
+      struct xvtx axis;
+      CoglQuaternion quat;
+      quat.w = rot.val.rot.w;
+      quat.x = rot.val.rot.x;
+      quat.y = rot.val.rot.y;
+      quat.z = rot.val.rot.z;
+      nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &angle, &axis);
+      nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
+
+      NX_MAT_ELT (&mat, 0, 0) *= sca.val.vec.x;
+      NX_MAT_ELT (&mat, 1, 0) *= sca.val.vec.x;
+      NX_MAT_ELT (&mat, 2, 0) *= sca.val.vec.x;
+      NX_MAT_ELT (&mat, 0, 1) *= sca.val.vec.y;
+      NX_MAT_ELT (&mat, 1, 1) *= sca.val.vec.y;
+      NX_MAT_ELT (&mat, 2, 1) *= sca.val.vec.y;
+      NX_MAT_ELT (&mat, 0, 2) *= sca.val.vec.z;
+      NX_MAT_ELT (&mat, 1, 2) *= sca.val.vec.z;
+      NX_MAT_ELT (&mat, 2, 2) *= sca.val.vec.z;
+
+      NX_MAT_ELT (&mat, 0, 3) *= pos.val.vec.x;
+      NX_MAT_ELT (&mat, 1, 3) *= pos.val.vec.y;
+      NX_MAT_ELT (&mat, 2, 3) *= pos.val.vec.z;
+
+      *result = mat;
+    }
+
+    MaiNode *mn;
+    struct SrNode *sn;
+
+    sn = g_hash_table_lookup (graph->name_node_map, man->node_name);
+    g_xassert (sn);
+
+    NxMat current_mat;
+    sr_compose_mtx (&current_mat);
+
+    sn->transformation = current_mat;
+  }
+
+  MaiAnim *ma;
+  ma = mai->anim;
+
+  for (int cnt = 0; cnt < ma->channels->len; ++cnt)
+    {
+      sr_update_channel (g_mai_node_anim_ptr_array_index (
+          ma->channels, cnt));
+    }
+}
+
+void
 sr_skeletal (MaiModel *model)
 {
+  void
+  sr_bone_mtx (NxMat *result, MaiBone *bone)
+  {
+    NxMat offset_mtx;
+    nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
+
+  }
+
   MaiAnimInstance *mai;
 
   g_xassert (model->anims->len == 1);
@@ -271,6 +352,21 @@ sr_skeletal (MaiModel *model)
   sr_node_graph_copy (&sr_model_copy, sr_model);
   g_xassert (sr_model_copy);
 
+  sr_update_node_graph (mai, sr_model_copy);
+
+  /**
+   * Warning implicit mesh selection
+   */
+  MaiNode *mn;
+  mn = g_hash_table_lookup (model->name_node_map, "Cube");
+  g_xassert (mn);
+  for (int cnt = 0; cnt < mn->bones; ++cnt)
+    {
+      MaiBone *bone;
+      bone = g_mai_bone_ptr_array_index (mn->bones, cnt);
+      NxMat bone_mtx;
+      sr_bone_mtx (&bone_mtx, bone);
+    }
 }
 
 int
