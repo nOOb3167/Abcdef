@@ -178,7 +178,7 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
 }
 
 struct SrNode *
-_sr_node_walk (struct SrModel *mdl, MaiNode *nde_foreign)
+_sr_node_walk (struct SrNodeGraph *mdl, MaiNode *nde_foreign)
 {
   struct SrNode *ret;
 
@@ -210,13 +210,14 @@ _sr_node_walk (struct SrModel *mdl, MaiNode *nde_foreign)
 }
 
 void
-sr_model_from_mai_model (struct SrModel **result, MaiModel *model)
+sr_model_from_mai_model (struct SrNodeGraph **result, MaiModel *model)
 {
-  struct SrModel *ret;
+  struct SrNodeGraph *ret;
 
   g_xassert (model->nodes);
 
-  ret = g_new0 (struct SrModel, 1);
+  ret = g_malloc0 (sizeof (*ret));
+
   ret->name = "Err No Such Thing";
   ret->name_node_map = g_hash_table_new (g_str_hash, g_str_equal);
   ret->nodes_len = 1;
@@ -289,11 +290,15 @@ main (int argc, char **argv)
 
   sr_weight_dump (model);
 
-  struct SrModel *sr_model;
+  struct SrNodeGraph *sr_model;
   sr_model_from_mai_model (&sr_model, model);
   struct SrNode *cube_node;
   cube_node = g_hash_table_lookup (sr_model->name_node_map, "Cube");
   g_xassert (cube_node);
+
+  struct SrNodeGraph *sr_model_copy;
+  sr_node_graph_copy (&sr_model_copy, sr_model);
+  g_xassert (sr_model_copy);
 
   /**
    * Plan
@@ -318,6 +323,39 @@ main (int argc, char **argv)
     }
 
   return EXIT_SUCCESS;
+}
+
+struct SrNode *
+_sr_copy_node_walk (struct SrNodeGraph *mdl, struct SrNode *nde)
+{
+  struct SrNode *ret;
+
+  ret = g_malloc0 (sizeof (*ret));
+
+  /**
+   * Lol not ref counted or actually copied
+   */
+  ret->child_names = nde->child_names;
+  ret->child_names_len = nde->child_names_len;
+  ret->name = g_strdup (nde->name);
+  ret->parent_name = g_strdup (nde->parent_name);
+  ret->transformation = nde->transformation;
+
+  return ret;
+}
+
+void
+sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what)
+{
+  struct SrNodeGraph *ret;
+
+  ret = g_malloc0 (sizeof (*ret));
+  ret->name = what->name;
+  ret->name_node_map = g_hash_table_ref (what->name_node_map);
+  ret->nodes_len = what->nodes_len;
+  ret->nodes = _sr_copy_node_walk (what, what->nodes);
+
+  *result = ret;
 }
 
 void

@@ -34,13 +34,16 @@ struct SrNode
    */
 };
 
-struct SrModel
+struct SrNodeGraph
 {
   char *name;
   int nodes_len;
   struct SrNode *nodes;
   GHashTable *name_node_map;
 };
+
+void
+sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what);
 
 void
 nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
