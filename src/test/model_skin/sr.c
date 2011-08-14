@@ -177,7 +177,56 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
   g_state->w_mat = w_mat;
 }
 
-void sr_weight_dump (MaiModel *model)
+struct SrNode *
+_sr_node_walk (struct SrModel *mdl, MaiNode *nde_foreign)
+{
+  struct SrNode *ret;
+
+  ret = g_malloc0 (sizeof (*ret));
+
+  g_hash_table_insert (mdl->name_node_map, nde_foreign->name, ret);
+
+  ret->name = nde_foreign->name;
+  ret->parent_name = nde_foreign->parent ? nde_foreign->parent->name : NULL;
+  nx_mat_from_cogl_matrix (&ret->transformation, nde_foreign->transformation);
+
+  ret->child_names_len = nde_foreign->children->len;
+  ret->child_names = g_malloc0_n (nde_foreign->children->len, sizeof (*ret->child_names));
+
+  int cnt;
+  for (cnt=0; cnt<nde_foreign->children->len; ++cnt)
+    {
+      MaiNode *nnde;
+      struct SrNode *xnnde;
+
+      nnde = g_mai_node_ptr_array_index (nde_foreign->children, cnt);
+      g_xassert (nnde);
+
+      xnnde = _sr_node_walk (mdl, nnde);
+      ret->child_names[cnt] = xnnde->name;
+    }
+
+  return ret;
+}
+
+void
+sr_model_from_mai_model (struct SrModel **result, MaiModel *model)
+{
+  struct SrModel *ret;
+
+  g_xassert (model->nodes);
+
+  ret = g_new0 (struct SrModel, 1);
+  ret->name = "Err No Such Thing";
+  ret->name_node_map = g_hash_table_new (g_str_hash, g_str_equal);
+  ret->nodes_len = 1;
+  ret->nodes = _sr_node_walk (ret, model->nodes);
+
+  *result = ret;
+}
+
+void
+sr_weight_dump (MaiModel *model)
 {
   MaiNode *mesh_node;
   mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
@@ -240,6 +289,12 @@ main (int argc, char **argv)
 
   sr_weight_dump (model);
 
+  struct SrModel *sr_model;
+  sr_model_from_mai_model (&sr_model, model);
+  struct SrNode *cube_node;
+  cube_node = g_hash_table_lookup (sr_model->name_node_map, "Cube");
+  g_xassert (cube_node);
+
   /**
    * Plan
    *   Go make a node drawing function.
@@ -263,4 +318,20 @@ main (int argc, char **argv)
     }
 
   return EXIT_SUCCESS;
+}
+
+void
+nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix)
+{
+  g_xassert (mat);
+  g_xassert (cogl_matrix);
+
+  float tmp_vals[16] = {
+      cogl_matrix->xx, cogl_matrix->yx, cogl_matrix->zx, cogl_matrix->wx,
+      cogl_matrix->xy, cogl_matrix->yy, cogl_matrix->zy, cogl_matrix->wy,
+      cogl_matrix->xz, cogl_matrix->yz, cogl_matrix->zz, cogl_matrix->wz,
+      cogl_matrix->xw, cogl_matrix->yw, cogl_matrix->zw, cogl_matrix->ww,
+  };
+
+  nx_mat_init_from_array (mat, tmp_vals);
 }

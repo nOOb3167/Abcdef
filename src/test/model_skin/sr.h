@@ -1,6 +1,9 @@
 #ifndef SR_H_
 #define SR_H_
 
+#include <glib.h>
+#include <nx_mat.h>
+
 struct NxState
 {
   float yaw, pitch, roll;
@@ -13,11 +16,12 @@ struct NxState
  */
 struct SrNode
 {
-  struct SrModel *model;
+  char *name;
+  char *parent_name;
+  int child_names_len;
+  char **child_names;
 
-  int idx;
-  int parent_idx;
-  int child_idxs[];
+  NxMat transformation;
   /**
    * NO Nodes should only hold transform data
    *   ie for acc_transform related
@@ -33,7 +37,12 @@ struct SrNode
 struct SrModel
 {
   char *name;
-  struct SrNode *nodes[];
+  int nodes_len;
+  struct SrNode *nodes;
+  GHashTable *name_node_map;
 };
+
+void
+nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
 
 #endif /* SR_H_ */
