@@ -275,7 +275,7 @@ nx_mat_get_inverse (NxMat *mat, NxMat *inv_out)
 
   int ret;
   NxMat inv;
-  ret = _nx_invert_matrix_general (mat, inv);
+  ret = _nx_mat_invert_matrix_general (mat, &inv);
   nx_mat_init_from_array (inv_out, inv.vals);
   return ret;
 }

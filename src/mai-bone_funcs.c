@@ -1,3 +1,4 @@
+#include <src/ai_example.h>
 #include <src/mai-bone_funcs.h>
 
 XPTR_ARRAY_MACRO_TYPE_DEFINE (mai_bone, MaiBone);

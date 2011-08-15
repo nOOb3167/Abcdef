@@ -8,6 +8,7 @@
 
 #include <glib.h>
 #include <src/error.h>
+#include <src/ai_example.h>
 #include <src/mai-model.h>
 #include <src/mai-model_funcs.h>
 #include <src/mai-node-anim.h>
@@ -356,17 +357,17 @@ sr_skeletal (MaiModel *model)
       _sr_node_accumulate (struct SrNode *cur_src)
       {
         NxMat par_mtx;
-        struct SrNode par_node;
+        struct SrNode *par_node;
 
         nx_mat_init_identity (&par_mtx);
 
-        par_node = g_hash_table_lookup (cur_src->parent_name, "Cube");
+        par_node = g_hash_table_lookup (sr_model->name_node_map, cur_src->parent_name);
         if (0 != par_node)
           return par_mtx;
 
         NxMat result;
         par_mtx = _sr_node_accumulate (par_node);
-        nx_mat_multiply(&result, par_mtx, cur_src->transformation);
+        nx_mat_multiply(&result, &par_mtx, &cur_src->transformation);
         return result;
       }
 
@@ -381,7 +382,7 @@ sr_skeletal (MaiModel *model)
     g_xassert (tmp);
 
     NxMat bone_ws;
-    bone_ws = sr_node_accumulate (tmp);
+    sr_node_accumulate (&bone_ws, tmp);
 
     /**
      * Probably also want inverse mesh node but whatever
@@ -398,7 +399,7 @@ sr_skeletal (MaiModel *model)
   MaiNode *mn;
   mn = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mn);
-  for (int cnt = 0; cnt < mn->bones; ++cnt)
+  for (int cnt = 0; cnt < mn->bones->len; ++cnt)
     {
       MaiBone *bone;
       bone = g_mai_bone_ptr_array_index (mn->bones, cnt);

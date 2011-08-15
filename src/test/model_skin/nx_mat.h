@@ -80,4 +80,7 @@ nx_mat_get_inverse (NxMat *mat, NxMat *inv_out);
 int
 _nx_mat_invert_matrix_general (NxMat *matrix, NxMat *inv_out);
 
+int
+_nx_mat_invert_matrix_general (NxMat *matrix, NxMat *inv_out);
+
 #endif /* NX_MAT_H_ */

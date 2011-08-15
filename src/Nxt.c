@@ -23,6 +23,7 @@ cogl_display_setup -> display_setup -> winsys -> context_create
 #include <src/gfx_lib_setup.h>
 #include <src/ai_example.h>
 #include <src/mai-anim-instance.h>
+#include <src/mai-anim-instance_funcs.h>
 #include <src/misc.h>
 #include <src/Nxt.h>
 
