@@ -1,3 +1,10 @@
+#SOMETHING ABOUT ADD_CUSTOM_COMMAND ONLY AFFECTING TARGETS IN SAME SUBDIRECTORY AS GOB2INC CALLED
+#PUT EVERYTHING AT TOPLEVEL IN CMAKELISTS
+##NO WILL FAIL UNLESS TOPLEVEL build (generates ab-cd.c) -> SUBDIRECTORY (requests ab-cd.c)
+##Basically don't request GOB2IZE generated files from subdirectories, only make targets from toplevel thanks
+###Not toplevel, but same level as the GOB2IZE?
+###Maybe putting GOB2IZEs into subdirs might work
+
 IF(EXISTS "${CMAKE_BINARY_DIR}/PathsCustomInclude.cmake")
  INCLUDE("${CMAKE_BINARY_DIR}/PathsCustomInclude.cmake")
 ENDIF()
@@ -35,7 +42,7 @@ FUNCTION(GOB2IZE GOBFILE)
  ENDIF()
  #"Relative path in OUTPUT interpreted relative to the build dir corresponding to the current source dir"
  #builddir paths get created for sourcedirs with CMakeLists.txt files
- ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_BINARY_DIR}/${GOBPATH}/${GOBNAME}.c"
+ ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_BINARY_DIR}/${GOBPATH}/${GOBNAME}.c" "${CMAKE_BINARY_DIR}/${GOBPATH}/${GOBNAME}.h"
   COMMAND "${GOB2_EXECUTABLE}" "--no-touch" "${GOBABS}"
   IMPLICIT_DEPENDS
   DEPENDS "${GOBFILE}"
