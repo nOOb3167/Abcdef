@@ -326,14 +326,6 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
 void
 sr_skeletal (MaiModel *model)
 {
-  void
-  sr_bone_mtx (NxMat *result, MaiBone *bone)
-  {
-    NxMat offset_mtx;
-    nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
-
-  }
-
   MaiAnimInstance *mai;
 
   g_xassert (model->anims->len == 1);
@@ -353,6 +345,52 @@ sr_skeletal (MaiModel *model)
   g_xassert (sr_model_copy);
 
   sr_update_node_graph (mai, sr_model_copy);
+
+  void
+  sr_bone_mtx (NxMat *result, MaiBone *bone)
+  {
+    void
+    sr_node_accumulate (NxMat *result, struct SrNode *src)
+    {
+      NxMat
+      _sr_node_accumulate (struct SrNode *cur_src)
+      {
+        NxMat par_mtx;
+        struct SrNode par_node;
+
+        nx_mat_init_identity (&par_mtx);
+
+        par_node = g_hash_table_lookup (cur_src->parent_name, "Cube");
+        if (0 != par_node)
+          return par_mtx;
+
+        NxMat result;
+        par_mtx = _sr_node_accumulate (par_node);
+        nx_mat_multiply(&result, par_mtx, cur_src->transformation);
+        return result;
+      }
+
+      *result = _sr_node_accumulate (src);
+    }
+
+    NxMat offset_mtx;
+    nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
+
+    struct SrNode *tmp;
+    tmp = g_hash_table_lookup (sr_model->name_node_map, "Cube");
+    g_xassert (tmp);
+
+    NxMat bone_ws;
+    bone_ws = sr_node_accumulate (tmp);
+
+    /**
+     * Probably also want inverse mesh node but whatever
+     */
+    NxMat bone_mtx;
+    nx_mat_multiply (&bone_mtx, &bone_ws, &offset_mtx);
+
+    *result = bone_mtx;
+  }
 
   /**
    * Warning implicit mesh selection
