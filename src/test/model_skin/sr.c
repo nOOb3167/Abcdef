@@ -348,7 +348,7 @@ sr_skeletal (MaiModel *model)
   sr_update_node_graph (mai, sr_model_copy);
 
   void
-  sr_bone_mtx (NxMat *result, MaiBone *bone)
+  sr_bone_mtx (NxMat *result, MaiBone *bone, struct SrNode *inv_mesh_node)
   {
     void
     sr_node_accumulate (NxMat *result, struct SrNode *src)
@@ -378,17 +378,22 @@ sr_skeletal (MaiModel *model)
     nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
 
     struct SrNode *tmp;
-    tmp = g_hash_table_lookup (sr_model->name_node_map, "Cube");
+    tmp = g_hash_table_lookup (sr_model->name_node_map, bone->name);
     g_xassert (tmp);
 
     NxMat bone_ws;
     sr_node_accumulate (&bone_ws, tmp);
+
+    NxMat inv_mesh_ws;
+    sr_node_accumulate (&inv_mesh_ws, inv_mesh_node);
+    nx_mat_get_inverse (&inv_mesh_ws, &inv_mesh_ws);
 
     /**
      * Probably also want inverse mesh node but whatever
      */
     NxMat bone_mtx;
     nx_mat_multiply (&bone_mtx, &bone_ws, &offset_mtx);
+    nx_mat_multiply (&bone_mtx, &bone_mtx, &inv_mesh_ws);
 
     *result = bone_mtx;
   }
@@ -399,12 +404,36 @@ sr_skeletal (MaiModel *model)
   MaiNode *mn;
   mn = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mn);
+  struct SrNode *mn_sr;
+  mn_sr = g_hash_table_lookup (sr_model->name_node_map, "Cube");
+  g_xassert (mn_sr);
+
+  /* (string, NxMat *) */
+  GHashTable *name_bone_mtx_map;
+  name_bone_mtx_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+
   for (int cnt = 0; cnt < mn->bones->len; ++cnt)
     {
       MaiBone *bone;
       bone = g_mai_bone_ptr_array_index (mn->bones, cnt);
-      NxMat bone_mtx;
-      sr_bone_mtx (&bone_mtx, bone);
+      NxMat *bone_mtx;
+      bone_mtx = g_malloc0 (sizeof (*bone_mtx));
+      sr_bone_mtx (bone_mtx, bone, mn_sr);
+
+      g_hash_table_insert (name_bone_mtx_map, g_strdup (bone->name), bone_mtx);
+    }
+
+  /**
+   * Now go transform some verts
+   */
+  g_xassert (mn->mesh_verts->len);
+  for (int cnt = 0; cnt < mn->mesh_verts->len; ++cnt)
+    {
+      struct xvtx v1;
+      NxVec4 v2;
+
+      v1 = g_array_index (mn->mesh_verts, struct xvtx, cnt);
+      v2 = (typeof (v2)) {v1.x, v1.y, v1.z, 1.0f};
     }
 }
 
