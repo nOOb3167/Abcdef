@@ -427,18 +427,18 @@ sr_skeletal (MaiModel *model)
   /* In for(vtx) loop, link bone->name with name_bone_mtx map
    * then bone->weights[vtx] for weight */
   GPtrArray *vbmap;
-  vbmap = g_ptr_array_new_with_free_func (g_ptr_array_unref);
+  vbmap = g_ptr_array_new ();
 
   for (int cnt = 0; cnt < mn->mesh_verts->len; ++cnt)
     {
-      g_ptr_array_add (g_ptr_array_new ());
+      g_ptr_array_add (vbmap, g_ptr_array_new ());
     }
 
   for (int cnt = 0; cnt < mn->bones->len; ++cnt)
     {
       MaiBone *bone;
       bone = g_mai_bone_ptr_array_index (mn->bones, cnt);
-      for (int vid = 0; vid < bone->weights; ++vid)
+      for (int vid = 0; vid < bone->weights->len; ++vid)
         {
           NxVertexWeight vw;
           vw = g_nx_vertex_weight_array_index (bone->weights, vid);
@@ -461,6 +461,22 @@ sr_skeletal (MaiModel *model)
 
       v1 = g_array_index (mn->mesh_verts, struct xvtx, cnt);
       v2 = (typeof (v2)) {v1.x, v1.y, v1.z, 1.0f};
+
+      GPtrArray *varr;
+      varr = g_ptr_array_index (vbmap, cnt);
+      g_xassert (("Verts referenced by no bones dont get transform",varr->len));
+      for (int bid = 0; bid < varr->len; ++bid)
+        {
+          MaiBone *bone;
+          bone = g_ptr_array_index (varr, bid);
+
+          NxMat *bone_mtx;
+          bone_mtx = g_hash_table_lookup (name_bone_mtx_map, bone->name);
+          g_xassert (bone_mtx);
+
+          NxVertexWeight vertex_weight;
+          vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
+        }
     }
 }
 
