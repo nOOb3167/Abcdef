@@ -423,6 +423,33 @@ sr_skeletal (MaiModel *model)
       g_hash_table_insert (name_bone_mtx_map, g_strdup (bone->name), bone_mtx);
     }
 
+  /* (vert_id, (dummy, MaiBone *)) */
+  /* In for(vtx) loop, link bone->name with name_bone_mtx map
+   * then bone->weights[vtx] for weight */
+  GPtrArray *vbmap;
+  vbmap = g_ptr_array_new_with_free_func (g_ptr_array_unref);
+
+  for (int cnt = 0; cnt < mn->mesh_verts->len; ++cnt)
+    {
+      g_ptr_array_add (g_ptr_array_new ());
+    }
+
+  for (int cnt = 0; cnt < mn->bones->len; ++cnt)
+    {
+      MaiBone *bone;
+      bone = g_mai_bone_ptr_array_index (mn->bones, cnt);
+      for (int vid = 0; vid < bone->weights; ++vid)
+        {
+          NxVertexWeight vw;
+          vw = g_nx_vertex_weight_array_index (bone->weights, vid);
+          g_xassert (vw.vertex_id < vbmap->len);
+
+          GPtrArray *varr;
+          varr = g_ptr_array_index (vbmap, vw.vertex_id);
+          g_ptr_array_add (varr, bone);
+        }
+    }
+
   /**
    * Now go transform some verts
    */
