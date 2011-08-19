@@ -341,11 +341,20 @@ sr_skeletal (MaiModel *model)
   cube_node = g_hash_table_lookup (sr_model->name_node_map, "Cube");
   g_xassert (cube_node);
 
+  /**
+   * The copy routine is bad. Really bad.
+   * sr_model does not survive update_node_graph.
+   * What happens is sr_node_graph_copy does just
+   * g_hash_table_ref, it should make a new one and populate
+   * similar to _sr_node_walk.
+   */
+  /*
   struct SrNodeGraph *sr_model_copy;
   sr_node_graph_copy (&sr_model_copy, sr_model);
   g_xassert (sr_model_copy);
 
   sr_update_node_graph (mai, sr_model_copy);
+  */
 
   void
   sr_bone_mtx (NxMat *result, MaiBone *bone, struct SrNode *inv_mesh_node)
@@ -358,12 +367,26 @@ sr_skeletal (MaiModel *model)
       {
         NxMat par_mtx;
         struct SrNode *par_node;
+        gboolean found;
 
         nx_mat_init_identity (&par_mtx);
 
-        par_node = g_hash_table_lookup (sr_model->name_node_map, cur_src->parent_name);
-        if (0 != par_node)
+        /**
+         * Name can be NULL (For topmost/root node).
+         * lookup_extended can handle search for NULL keys.
+         * Whereas lookup just segfaults.
+         * Quoting documentation: "You can actually pass NULL for lookup_key"
+         * But that seems a lie, I get segfaults anyway so guard against NULL.
+         */
+        if (0 == cur_src->parent_name)
+          found = 0;
+        else
+          found = g_hash_table_lookup_extended (sr_model->name_node_map, cur_src->parent_name,
+                                                 NULL, (void **)&par_node);
+        if (0 == found)
           return par_mtx;
+
+        g_xassert (par_node);
 
         NxMat result;
         par_mtx = _sr_node_accumulate (par_node);
@@ -390,9 +413,13 @@ sr_skeletal (MaiModel *model)
 
     /**
      * Probably also want inverse mesh node but whatever
+     *
+     * Edit:
+     *   Shouldn't it be offset_mtx -> bone_ws -> inv_mesh_ws, missing bone_ws?
      */
     NxMat bone_mtx;
     nx_mat_multiply (&bone_mtx, &bone_ws, &offset_mtx);
+    nx_mat_multiply (&bone_mtx, &bone_mtx, &bone_ws);
     nx_mat_multiply (&bone_mtx, &bone_mtx, &inv_mesh_ws);
 
     *result = bone_mtx;
