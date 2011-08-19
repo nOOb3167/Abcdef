@@ -462,6 +462,9 @@ sr_skeletal (MaiModel *model)
       v1 = g_array_index (mn->mesh_verts, struct xvtx, cnt);
       v2 = (typeof (v2)) {v1.x, v1.y, v1.z, 1.0f};
 
+      NxVec4 cumulative;
+      cumulative = (typeof (cumulative)) {0.0f, 0.0f, 0.0f, 0.0f};
+
       GPtrArray *varr;
       varr = g_ptr_array_index (vbmap, cnt);
       g_xassert (("Verts referenced by no bones dont get transform",varr->len));
@@ -476,6 +479,15 @@ sr_skeletal (MaiModel *model)
 
           NxVertexWeight vertex_weight;
           vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
+
+          NxVec4 partial;
+          partial = v2;
+          nx_mat_transform (bone_mtx, &partial);
+          nx_vec_scale (&partial, &partial, vertex_weight.weight);
+
+          nx_vec_add (&cumulative, &cumulative, &partial);
+
+          int a = floor(0);
         }
     }
 }
@@ -519,6 +531,8 @@ main (int argc, char **argv)
   g_xassert (mesh_node);
 
   sr_weight_dump (model);
+
+  sr_skeletal (model);
 
   /**
    * Plan
