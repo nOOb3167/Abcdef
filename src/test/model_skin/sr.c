@@ -325,7 +325,7 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
 }
 
 void
-sr_skeletal (MaiModel *model)
+sr_skeletal (MaiModel *model, GArray *trans_verts_f)
 {
   MaiAnimInstance *mai;
 
@@ -348,13 +348,11 @@ sr_skeletal (MaiModel *model)
    * g_hash_table_ref, it should make a new one and populate
    * similar to _sr_node_walk.
    */
-  /*
   struct SrNodeGraph *sr_model_copy;
   sr_node_graph_copy (&sr_model_copy, sr_model);
   g_xassert (sr_model_copy);
 
   sr_update_node_graph (mai, sr_model_copy);
-  */
 
   void
   sr_bone_mtx (NxMat *result, MaiBone *bone, struct SrNode *inv_mesh_node)
@@ -517,6 +515,9 @@ sr_skeletal (MaiModel *model)
 
           int a = floor(0);
         }
+
+      struct xvtx vout = {cumulative.vals[0], cumulative.vals[1], cumulative.vals[2]};
+      g_array_append_vals (trans_verts_f, &vout, 1);
     }
 }
 
@@ -560,7 +561,9 @@ main (int argc, char **argv)
 
   sr_weight_dump (model);
 
-  sr_skeletal (model);
+  GArray *trans_verts;
+  trans_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+  sr_skeletal (model, trans_verts);
 
   /**
    * Plan
@@ -576,7 +579,7 @@ main (int argc, char **argv)
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);
       al_clear_to_color (al_map_rgb (0, 0, 0));
-      sr_draw_node (&g_state->w_mat, mesh_node->mesh_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      sr_draw_node (&g_state->w_mat, trans_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
 
@@ -588,20 +591,35 @@ main (int argc, char **argv)
 }
 
 struct SrNode *
-_sr_copy_node_walk (struct SrNodeGraph *mdl, struct SrNode *nde)
+_sr_copy_node_walk (struct SrNodeGraph *res_mdl,
+                    struct SrNodeGraph *orig_mdl,
+                    struct SrNode *nde)
 {
   struct SrNode *ret;
 
   ret = g_malloc0 (sizeof (*ret));
 
+  g_hash_table_insert (res_mdl->name_node_map, g_strdup (nde->name), ret);
+
   /**
    * Lol not ref counted or actually copied
    */
-  ret->child_names = nde->child_names;
+
+  ret->child_names = g_malloc0 (sizeof (*ret->child_names) * nde->child_names_len);
+  memcpy (ret->child_names, nde->child_names, sizeof (*ret->child_names) * nde->child_names_len);
+
   ret->child_names_len = nde->child_names_len;
   ret->name = g_strdup (nde->name);
   ret->parent_name = g_strdup (nde->parent_name);
   ret->transformation = nde->transformation;
+
+  for (int cnt = 0; cnt < ret->child_names_len; ++cnt)
+    {
+      struct SrNode *tc;
+      tc = g_hash_table_lookup (orig_mdl->name_node_map, ret->child_names[cnt]);
+      g_xassert (tc);
+      _sr_copy_node_walk (res_mdl, orig_mdl, tc);
+    }
 
   return ret;
 }
@@ -612,10 +630,10 @@ sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what)
   struct SrNodeGraph *ret;
 
   ret = g_malloc0 (sizeof (*ret));
-  ret->name = what->name;
-  ret->name_node_map = g_hash_table_ref (what->name_node_map);
+  ret->name = g_strdup (what->name);
+  ret->name_node_map = g_hash_table_new (g_str_hash, g_str_equal);
   ret->nodes_len = what->nodes_len;
-  ret->nodes = _sr_copy_node_walk (what, what->nodes);
+  ret->nodes = _sr_copy_node_walk (ret, what, what->nodes);
 
   *result = ret;
 }
