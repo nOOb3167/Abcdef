@@ -295,9 +295,9 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       NX_MAT_ELT (&mat, 1, 2) *= sca.val.vec.z;
       NX_MAT_ELT (&mat, 2, 2) *= sca.val.vec.z;
 
-      NX_MAT_ELT (&mat, 0, 3) *= pos.val.vec.x;
-      NX_MAT_ELT (&mat, 1, 3) *= pos.val.vec.y;
-      NX_MAT_ELT (&mat, 2, 3) *= pos.val.vec.z;
+      NX_MAT_ELT (&mat, 0, 3) = pos.val.vec.x;
+      NX_MAT_ELT (&mat, 1, 3) = pos.val.vec.y;
+      NX_MAT_ELT (&mat, 2, 3) = pos.val.vec.z;
 
       *result = mat;
     }
