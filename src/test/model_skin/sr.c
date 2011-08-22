@@ -124,14 +124,12 @@ sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
 {
   g_xassert (indices->len > 0);
   g_xassert ((indices->len % 3) == 0);
-  int cnt;
-  for (cnt=0; cnt<indices->len; cnt+=3)
+  for (int cnt = 0; cnt < indices->len; cnt += 3)
     {
       unsigned int idx;
       struct xvtx vert;
       NxVec4 xv[3];
-      int cnt2;
-      for (cnt2=0; cnt2<3; ++cnt2)
+      for (int cnt2 = 0; cnt2 < 3; ++cnt2)
         {
           idx = g_array_index (indices, unsigned int, cnt+cnt2);
           g_xassert (idx < verts->len);
@@ -140,6 +138,25 @@ sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
         }
       sr_draw_tri (mst, xv);
     }
+}
+
+void
+sr_skeletal_draw_node_trans (NxMat *mst,
+                             struct SrNodeGraph *sr_model,
+                             MaiNode *mesh_node,
+                             GArray *verts)
+{
+  struct SrNode *mesh_node_sr;
+  mesh_node_sr = g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
+  g_xassert (mesh_node_sr);
+
+  NxMat mesh_node_ws;
+  sr_node_accumulate (sr_model, mesh_node_sr, &mesh_node_ws);
+
+  NxMat combined;
+  nx_mat_multiply (&combined, mst, mesh_node_ws);
+
+  sr_draw_node (combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 }
 
 void
@@ -613,7 +630,12 @@ main (int argc, char **argv)
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);
       al_clear_to_color (al_map_rgb (0, 0, 0));
-      sr_draw_node (&g_state->w_mat, trans_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      //sr_draw_node (&g_state->w_mat, trans_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+      /**
+       * Hmm this is a problem, have sr_skeletal_anim
+       * return the SrNodeGraph.
+       */
+      sr_skeletal_draw_node_trans (&g_state->w_mat, xxx, mesh_node, trans_verts);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
 
