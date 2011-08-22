@@ -154,9 +154,9 @@ sr_skeletal_draw_node_trans (NxMat *mst,
   sr_node_accumulate (sr_model, mesh_node_sr, &mesh_node_ws);
 
   NxMat combined;
-  nx_mat_multiply (&combined, mst, mesh_node_ws);
+  nx_mat_multiply (&combined, mst, &mesh_node_ws);
 
-  sr_draw_node (combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+  sr_draw_node (&combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 }
 
 void
@@ -372,7 +372,7 @@ sr_node_accumulate (struct SrNodeGraph *sr_model,
       found = g_hash_table_lookup_extended (sr_model->name_node_map, cur_src->parent_name,
                                              NULL, (void **)&par_node);
     if (0 == found)
-      return par_mtx;
+      return cur_src->transformation;
 
     g_xassert (par_node);
 
@@ -537,25 +537,34 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
 }
 
 void
+sr_node_graph_from_model (MaiModel *model,
+                          struct SrNodeGraph **sr_model_out)
+{
+  struct SrNodeGraph *sr_model;
+  sr_model_from_mai_model (&sr_model, model);
+
+  *sr_model_out = sr_model;
+}
+
+void
 sr_skeletal_anim (MaiModel *model,
                   MaiAnimInstance *mai,
                   MaiNode *mesh_node,
+                  struct SrNodeGraph *sr_model_io,
                   GArray **trans_verts_out)
 {
   /**
    * Do not modify the reference MaiNode structures.
    * Make a copy.
    */
-  struct SrNodeGraph *sr_model;
-  sr_model_from_mai_model (&sr_model, model);
   struct SrNode *mesh_node_sr;
-  mesh_node_sr= g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
+  mesh_node_sr= g_hash_table_lookup (sr_model_io->name_node_map, mesh_node->name);
   g_xassert (mesh_node_sr);
 
-  sr_update_node_graph (mai, sr_model);
+  sr_update_node_graph (mai, sr_model_io);
 
   GHashTable *name_bone_mtx_map;
-  sr_bone_matrices (sr_model, mesh_node_sr, mesh_node, &name_bone_mtx_map);
+  sr_bone_matrices (sr_model_io, mesh_node_sr, mesh_node, &name_bone_mtx_map);
 
   GPtrArray *vbmap;
   sr_vertex_bones (mesh_node, &vbmap);
@@ -613,14 +622,11 @@ main (int argc, char **argv)
 
   sr_weight_dump (model);
 
-  GArray *trans_verts;
-  sr_skeletal_anim (model, mai, mesh_node, &trans_verts);
+  struct SrNodeGraph *sr_model;
+  sr_node_graph_from_model (model, &sr_model);
 
-  /**
-   * Plan
-   *   Go make a node drawing function.
-   *   Draws meshes and node direction vectors.
-   */
+  GArray *trans_verts;
+  sr_skeletal_anim (model, mai, mesh_node, sr_model, &trans_verts);
 
   ALLEGRO_KEYBOARD_STATE aks;
 
@@ -635,7 +641,7 @@ main (int argc, char **argv)
        * Hmm this is a problem, have sr_skeletal_anim
        * return the SrNodeGraph.
        */
-      sr_skeletal_draw_node_trans (&g_state->w_mat, xxx, mesh_node, trans_verts);
+      sr_skeletal_draw_node_trans (&g_state->w_mat, sr_model, mesh_node, trans_verts);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
 

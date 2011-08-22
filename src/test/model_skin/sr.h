@@ -48,4 +48,9 @@ sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what);
 void
 nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
 
+void
+sr_node_accumulate (struct SrNodeGraph *sr_model,
+                    struct SrNode *src,
+                    NxMat *result);
+
 #endif /* SR_H_ */
