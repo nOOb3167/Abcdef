@@ -593,8 +593,8 @@ main (int argc, char **argv)
   *g_state = state;
 
   NxMat z_mat;
-  nx_mat_projection (&z_mat, -1.0f);
-  //nx_mat_ortho (&z_mat);
+  //nx_mat_projection (&z_mat, -1.0f);
+  nx_mat_ortho (&z_mat);
   nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
   g_state->p_mat = z_mat;
   g_state->w_mat = z_mat;
@@ -628,8 +628,11 @@ main (int argc, char **argv)
   struct SrNodeGraph *sr_model;
   sr_node_graph_from_model (model, &sr_model);
 
-  GArray *trans_verts;
-  sr_skeletal_anim (model, mai, mesh_node, sr_model, &trans_verts);
+//  struct SrNodeGraph *aux_sr_model;
+//  sr_node_graph_copy (&aux_sr_model, sr_model);
+//
+//  GArray *trans_verts;
+//  sr_skeletal_anim (model, mai, mesh_node, aux_sr_model, &trans_verts);
 
   ALLEGRO_KEYBOARD_STATE aks;
 
@@ -639,12 +642,16 @@ main (int argc, char **argv)
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);
       al_clear_to_color (al_map_rgb (0, 0, 0));
-      //sr_draw_node (&g_state->w_mat, trans_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
-      /**
-       * Hmm this is a problem, have sr_skeletal_anim
-       * return the SrNodeGraph.
-       */
-      sr_skeletal_draw_node_trans (&g_state->w_mat, sr_model, mesh_node, trans_verts);
+
+      struct SrNodeGraph *aux_sr_model;
+      sr_node_graph_copy (&aux_sr_model, sr_model);
+
+      GArray *trans_verts;
+      sr_skeletal_anim (model, mai, mesh_node, aux_sr_model, &trans_verts);
+
+      mai->current_frame += mai->current_frame >= 30 ? -30 : 1;
+
+      sr_skeletal_draw_node_trans (&g_state->w_mat, aux_sr_model, mesh_node, trans_verts);
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
 
@@ -665,10 +672,6 @@ _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
   ret = g_malloc0 (sizeof (*ret));
 
   g_hash_table_insert (res_mdl->name_node_map, g_strdup (nde->name), ret);
-
-  /**
-   * Lol not ref counted or actually copied
-   */
 
   ret->child_names = g_malloc0 (sizeof (*ret->child_names) * nde->child_names_len);
   memcpy (ret->child_names, nde->child_names, sizeof (*ret->child_names) * nde->child_names_len);
