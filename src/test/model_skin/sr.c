@@ -410,12 +410,15 @@ sr_bone_matrix (struct SrNodeGraph *sr_model,
    *
    * Edit:
    *   Shouldn't it be offset_mtx -> bone_ws -> inv_mesh_ws, missing bone_ws?
+   * Edit2:
+   *   Is the order not reversed? -> It was.
+   *   Also only first and second args to multiply can be the same.
    */
   NxMat bone_mtx;
   nx_mat_init_identity (&bone_mtx);
-  nx_mat_multiply (&bone_mtx, &bone_mtx, &offset_mtx);
-  nx_mat_multiply (&bone_mtx, &bone_mtx, &bone_ws);
   nx_mat_multiply (&bone_mtx, &bone_mtx, &inv_mesh_ws);
+  nx_mat_multiply (&bone_mtx, &bone_mtx, &bone_ws);
+  nx_mat_multiply (&bone_mtx, &bone_mtx, &offset_mtx);
 
   *result_out = bone_mtx;
 }
