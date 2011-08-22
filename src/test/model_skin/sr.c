@@ -521,11 +521,10 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
 
 void
 sr_skeletal_anim (MaiModel *model,
+                  MaiAnimInstance *mai,
                   MaiNode *mesh_node,
                   GArray **trans_verts_out)
 {
-  MaiAnimInstance *mai;
-
   /**
    * Do not modify the reference MaiNode structures.
    * Make a copy.
@@ -536,17 +535,7 @@ sr_skeletal_anim (MaiModel *model,
   mesh_node_sr= g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
   g_xassert (mesh_node_sr);
 
-  /**
-   * Only applying the 1st animation for now.
-   */
-  g_xassert (model->anims->len > 0);
-  mai = mai_anim_instance_new_from_anim (
-                                         g_mai_anim_ptr_array_index (model->anims, 0),
-                                         model->name_node_map,
-                                         model->nodes);
-
-  //FIXME
-  //sr_update_node_graph (mai, sr_model_copy);
+  sr_update_node_graph (mai, sr_model);
 
   GHashTable *name_bone_mtx_map;
   sr_bone_matrices (sr_model, mesh_node_sr, mesh_node, &name_bone_mtx_map);
@@ -598,10 +587,17 @@ main (int argc, char **argv)
   mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mesh_node);
 
+  MaiAnimInstance *mai;
+  g_xassert (model->anims->len > 0);
+  mai = mai_anim_instance_new_from_anim (
+                                         g_mai_anim_ptr_array_index (model->anims, 0),
+                                         model->name_node_map,
+                                         model->nodes);
+
   sr_weight_dump (model);
 
   GArray *trans_verts;
-  sr_skeletal_anim (model, mesh_node, &trans_verts);
+  sr_skeletal_anim (model, mai, mesh_node, &trans_verts);
 
   /**
    * Plan
