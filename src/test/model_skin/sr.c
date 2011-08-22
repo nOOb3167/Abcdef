@@ -324,6 +324,242 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
     }
 }
 
+/**
+ * Accumulate transformation matrices from a specified node
+ * up to the root node, multiplying them.
+ */
+void
+sr_node_accumulate (struct SrNodeGraph *sr_model,
+                    struct SrNode *src,
+                    NxMat *result)
+{
+  NxMat
+  _sr_node_accumulate (struct SrNode *cur_src)
+  {
+    NxMat par_mtx;
+    struct SrNode *par_node;
+    gboolean found;
+
+    nx_mat_init_identity (&par_mtx);
+
+    /**
+     * Name can be NULL (For topmost/root node).
+     * lookup_extended can handle search for NULL keys.
+     * Whereas lookup just segfaults.
+     * Quoting documentation: "You can actually pass NULL for lookup_key"
+     * But that seems a lie, I get segfaults anyway so guard against NULL.
+     */
+    if (0 == cur_src->parent_name)
+      found = 0;
+    else
+      found = g_hash_table_lookup_extended (sr_model->name_node_map, cur_src->parent_name,
+                                             NULL, (void **)&par_node);
+    if (0 == found)
+      return par_mtx;
+
+    g_xassert (par_node);
+
+    NxMat result;
+    par_mtx = _sr_node_accumulate (par_node);
+    nx_mat_multiply(&result, &par_mtx, &cur_src->transformation);
+    return result;
+  }
+
+  *result = _sr_node_accumulate (src);
+}
+
+void
+sr_bone_matrix (struct SrNodeGraph *sr_model,
+                struct SrNode *mesh_node,
+                MaiBone *bone,
+                NxMat *result_out)
+{
+  NxMat offset_mtx;
+  nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
+
+  struct SrNode *tmp;
+  tmp = g_hash_table_lookup (sr_model->name_node_map, bone->name);
+  g_xassert (tmp);
+
+  NxMat bone_ws;
+  sr_node_accumulate (sr_model, tmp, &bone_ws);
+
+  NxMat inv_mesh_ws;
+  sr_node_accumulate (sr_model, mesh_node, &inv_mesh_ws);
+  nx_mat_get_inverse (&inv_mesh_ws, &inv_mesh_ws);
+
+  /**
+   * Probably also want inverse mesh node but whatever
+   *
+   * Edit:
+   *   Shouldn't it be offset_mtx -> bone_ws -> inv_mesh_ws, missing bone_ws?
+   */
+  NxMat bone_mtx;
+  nx_mat_init_identity (&bone_mtx);
+  nx_mat_multiply (&bone_mtx, &bone_mtx, &offset_mtx);
+  nx_mat_multiply (&bone_mtx, &bone_mtx, &bone_ws);
+  nx_mat_multiply (&bone_mtx, &bone_mtx, &inv_mesh_ws);
+
+  *result_out = bone_mtx;
+}
+
+/**
+ * Calculate matrices for each of the mesh node's bones
+ * and return them in a hash table, mapped to names.
+ * Bone matrix is offset_matrix * bone_worldspace * inverse_mesh_worldspace.
+ */
+void
+sr_bone_matrices (struct SrNodeGraph *sr_model,
+                  struct SrNode *mesh_node_sr,
+                  MaiNode *mesh_node,
+                  GHashTable **nbm_out)
+{
+  /* (string, NxMat *) */
+  GHashTable *name_bone_mtx_map;
+  name_bone_mtx_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+
+  for (int cnt = 0; cnt < mesh_node->bones->len; ++cnt)
+    {
+      MaiBone *bone;
+      bone = g_mai_bone_ptr_array_index (mesh_node->bones, cnt);
+      NxMat *bone_mtx;
+      bone_mtx = g_malloc0 (sizeof (*bone_mtx));
+      sr_bone_matrix (sr_model, mesh_node_sr, bone, bone_mtx);
+
+      g_hash_table_insert (name_bone_mtx_map, g_strdup (bone->name), bone_mtx);
+    }
+
+  *nbm_out = name_bone_mtx_map;
+}
+
+void
+sr_vertex_bones (MaiNode *mesh_node, GPtrArray **vbmap_out)
+{
+  /* (vert_id, (dummy, MaiBone *)) */
+  /* In for(vtx) loop, link bone->name with name_bone_mtx map
+   * then bone->weights[vtx] for weight */
+  GPtrArray *vbmap;
+  vbmap = g_ptr_array_new ();
+
+  for (int cnt = 0; cnt < mesh_node->mesh_verts->len; ++cnt)
+    {
+      g_ptr_array_add (vbmap, g_ptr_array_new ());
+    }
+
+  for (int cnt = 0; cnt < mesh_node->bones->len; ++cnt)
+    {
+      MaiBone *bone;
+      bone = g_mai_bone_ptr_array_index (mesh_node->bones, cnt);
+      for (int vid = 0; vid < bone->weights->len; ++vid)
+        {
+          NxVertexWeight vw;
+          vw = g_nx_vertex_weight_array_index (bone->weights, vid);
+          g_xassert (vw.vertex_id < vbmap->len);
+
+          GPtrArray *varr;
+          varr = g_ptr_array_index (vbmap, vw.vertex_id);
+          g_ptr_array_add (varr, bone);
+        }
+    }
+
+  *vbmap_out = vbmap;
+}
+
+void
+sr_vertex_transform_calculate (MaiNode *mesh_node,
+                               GPtrArray *vbmap,
+                               GHashTable *name_bone_mtx_map,
+                               GArray **trans_verts_out)
+{
+  g_xassert (mesh_node->mesh_verts->len);
+
+  GArray *trans_verts;
+  trans_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
+
+  for (int cnt = 0; cnt < mesh_node->mesh_verts->len; ++cnt)
+    {
+      struct xvtx v1;
+      NxVec4 v2;
+
+      v1 = g_array_index (mesh_node->mesh_verts, struct xvtx, cnt);
+      v2 = (typeof (v2)) {v1.x, v1.y, v1.z, 1.0f};
+
+      NxVec4 cumulative;
+      cumulative = (typeof (cumulative)) {0.0f, 0.0f, 0.0f, 0.0f};
+
+      GPtrArray *varr;
+      varr = g_ptr_array_index (vbmap, cnt);
+      g_xassert (("Verts referenced by no bones dont get transform",varr->len));
+      for (int bid = 0; bid < varr->len; ++bid)
+        {
+          MaiBone *bone;
+          bone = g_ptr_array_index (varr, bid);
+
+          NxMat *bone_mtx;
+          bone_mtx = g_hash_table_lookup (name_bone_mtx_map, bone->name);
+          g_xassert (bone_mtx);
+
+          NxVertexWeight vertex_weight;
+          vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
+
+          NxVec4 partial;
+          partial = v2;
+          nx_mat_transform (bone_mtx, &partial);
+          nx_vec_scale (&partial, &partial, vertex_weight.weight);
+
+          nx_vec_add (&cumulative, &cumulative, &partial);
+
+          int a = floor(0);
+        }
+
+      struct xvtx vout = {cumulative.vals[0], cumulative.vals[1], cumulative.vals[2]};
+      g_array_append_vals (trans_verts, &vout, 1);
+    }
+
+  *trans_verts_out = trans_verts;
+}
+
+void
+sr_skeletal_anim (MaiModel *model,
+                  MaiNode *mesh_node,
+                  GArray **trans_verts_out)
+{
+  MaiAnimInstance *mai;
+
+  /**
+   * Do not modify the reference MaiNode structures.
+   * Make a copy.
+   */
+  struct SrNodeGraph *sr_model;
+  sr_model_from_mai_model (&sr_model, model);
+  struct SrNode *mesh_node_sr;
+  mesh_node_sr= g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
+  g_xassert (mesh_node_sr);
+
+  /**
+   * Only applying the 1st animation for now.
+   */
+  g_xassert (model->anims->len > 0);
+  mai = mai_anim_instance_new_from_anim (
+                                         g_mai_anim_ptr_array_index (model->anims, 0),
+                                         model->name_node_map,
+                                         model->nodes);
+
+  //FIXME
+  //sr_update_node_graph (mai, sr_model_copy);
+
+  GHashTable *name_bone_mtx_map;
+  sr_bone_matrices (sr_model, mesh_node_sr, mesh_node, &name_bone_mtx_map);
+
+  GPtrArray *vbmap;
+  sr_vertex_bones (mesh_node, &vbmap);
+
+  GArray *trans_verts;
+  sr_vertex_transform_calculate (mesh_node, vbmap, name_bone_mtx_map, &trans_verts);
+
+  *trans_verts_out = trans_verts;
+}
+
 void
 sr_skeletal (MaiModel *model, GArray *trans_verts_f)
 {
@@ -564,6 +800,9 @@ main (int argc, char **argv)
   GArray *trans_verts;
   trans_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
   sr_skeletal (model, trans_verts);
+
+  GArray *trans_verts_2;
+  sr_skeletal_anim (model, mesh_node, &trans_verts_2);
 
   /**
    * Plan
