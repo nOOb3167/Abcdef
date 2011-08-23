@@ -150,11 +150,20 @@ sr_skeletal_draw_node_trans (NxMat *mst,
   mesh_node_sr = g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
   g_xassert (mesh_node_sr);
 
+  /**
+   * Compensate for different coordinate system.
+   */
+  NxMat compensating;
+  nx_mat_init_identity (&compensating);
+  nx_mat_scale (&compensating, 1.0f, -1.0f, 1.0f);
+  nx_mat_translation (&compensating, 0.0f, 1.5f, 0.0f);
+
   NxMat mesh_node_ws;
   sr_node_accumulate (sr_model, mesh_node_sr, &mesh_node_ws);
 
   NxMat combined;
   nx_mat_multiply (&combined, mst, &mesh_node_ws);
+  nx_mat_multiply (&combined, &combined, &compensating);
 
   sr_draw_node (&combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 }
@@ -594,7 +603,9 @@ main (int argc, char **argv)
 
   NxMat z_mat;
 
-  //nx_mat_projection (&z_mat, -1.0f);
+  nx_mat_projection (&z_mat, -1.0f);
+  //nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
+  //NX_MAT_ELT (&z_mat, 2, 3) = -3.0f;
 
   /**
    * Experimental findings:
@@ -602,9 +613,11 @@ main (int argc, char **argv)
    *   Z up, Y towards, X right, X has to be inverted, Y has to be inverted.
    *   But why is the translation on positive Z?
    */
+  /*
   nx_mat_ortho (&z_mat);
   nx_mat_scale (&z_mat, -1.0f, -1.0f, 1.0f);
   nx_mat_translation (&z_mat, 0.0f, 0.0f, 3.0f);
+  */
 
   //nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
   g_state->p_mat = z_mat;
@@ -663,8 +676,12 @@ main (int argc, char **argv)
       mai->current_frame += mai->current_frame >= 30 ? -30 : 1;
 
       sr_skeletal_draw_node_trans (&g_state->w_mat, aux_sr_model, mesh_node, trans_verts);
+
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
-      sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
+      NxMat uvmat;
+      uvmat = g_state->w_mat;
+      nx_mat_translation (&uvmat, 0.0f, 0.0f, -3.0f);
+      sr_draw_unit_vec_at (&uvmat, &uvecs[0], &uvecs[1]);
 
       al_flip_display ();
       al_rest (0.05f);
