@@ -157,9 +157,6 @@ nx_mat_scale (NxMat *what, float x, float y, float z)
   NX_MAT_ELT (&tmp, 0, 0) = x;
   NX_MAT_ELT (&tmp, 1, 1) = y;
   NX_MAT_ELT (&tmp, 2, 2) = z;
-  /*what->vals[0] = x;
-  what->vals[5] = y;
-  what->vals[10] = z;*/
 
   nx_mat_multiply (what, what, &tmp);
 }

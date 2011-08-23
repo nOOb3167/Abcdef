@@ -593,9 +593,20 @@ main (int argc, char **argv)
   *g_state = state;
 
   NxMat z_mat;
+
   //nx_mat_projection (&z_mat, -1.0f);
+
+  /**
+   * Experimental findings:
+   *   For the identity ortho matrix to match blender's
+   *   Z up, Y towards, X right, X has to be inverted, Y has to be inverted.
+   *   But why is the translation on positive Z?
+   */
   nx_mat_ortho (&z_mat);
-  nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
+  nx_mat_scale (&z_mat, -1.0f, -1.0f, 1.0f);
+  nx_mat_translation (&z_mat, 0.0f, 0.0f, 3.0f);
+
+  //nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
   g_state->p_mat = z_mat;
   g_state->w_mat = z_mat;
 
