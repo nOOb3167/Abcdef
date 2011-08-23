@@ -78,6 +78,7 @@ INSTALL(TARGETS Nxt DESTINATION ".")
 
 INCLUDE_DIRECTORIES(src/test/model_skin)
 ADD_EXECUTABLE(sr
+ src/test/model_skin/sr_main.c
  src/test/model_skin/sr.c
  src/test/model_skin/nx_mat.c
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
