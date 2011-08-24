@@ -77,7 +77,7 @@ main (int argc, char **argv)
       GArray *trans_verts;
       sr_skeletal_anim (model, mai, mesh_node, aux_sr_model, &trans_verts);
 
-      mai->current_frame += mai->current_frame >= 30 ? -30 : 1;
+      mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
       /**
        * Allegro drawing origin top left.
