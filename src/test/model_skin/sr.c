@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include <glib.h>
 #include <src/error.h>
@@ -16,13 +17,22 @@ struct NxState *g_state;
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout)
 {
+  /**
+   * NDC frustum is -1.0f ... 1.0f for all coordinates (x,y,z).
+   * Coordinates outside these ranges are not on screen.
+   */
   NxVec4 temp;
   temp = *vec_inout;
+
   nx_mat_transform (mst, &temp);
+
+  g_xassert (fabs(temp.vals[3]) > 0.0001f);
+
   temp.vals[0] /= temp.vals[3];
   temp.vals[1] /= temp.vals[3];
   temp.vals[2] /= temp.vals[3];
   temp.vals[3] = 1.0f;
+
   *vec_inout = temp;
 }
 

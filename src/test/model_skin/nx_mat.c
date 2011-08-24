@@ -136,6 +136,12 @@ nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b)
 }
 
 void
+nx_mat_translate (NxMat *what, float x, float y, float z)
+{
+  nx_mat_translation (what, x, y, z);
+}
+
+void
 nx_mat_translation (NxMat *what, float x, float y, float z)
 {
   NxMat tmp;
@@ -167,6 +173,26 @@ nx_mat_projection (NxMat *what, float near)
   nx_mat_init_identity (what);
   NX_MAT_ELT (what, 0, 0) = near;
   NX_MAT_ELT (what, 1, 1) = near;
+  NX_MAT_ELT (what, 3, 2) = -1.0f;
+  NX_MAT_ELT (what, 3, 3) = 0.0f;
+}
+
+void
+nx_mat_projection_ndc (NxMat *what,
+                       float l, float r,
+                       float t, float b,
+                       float n, float f)
+{
+  /**
+   * http://www.songho.ca/opengl/gl_projectionmatrix.html
+   */
+  nx_mat_init_identity (what);
+  NX_MAT_ELT (what, 0, 0) = (2 * n) / (r - l);
+  NX_MAT_ELT (what, 0, 2) = (r + l) / (r - l);
+  NX_MAT_ELT (what, 1, 1) = (2 * n) / (t - b);
+  NX_MAT_ELT (what, 1, 2) = (t + b) / (t - b);
+  NX_MAT_ELT (what, 2, 2) = (- (f + n)) / (f - n);
+  NX_MAT_ELT (what, 2, 3) = (- (2 * f * n)) / (f - n);
   NX_MAT_ELT (what, 3, 2) = -1.0f;
   NX_MAT_ELT (what, 3, 3) = 0.0f;
 }

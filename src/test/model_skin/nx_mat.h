@@ -50,6 +50,9 @@ void
 nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b);
 
 void
+nx_mat_translate (NxMat *what, float x, float y, float z);
+
+void
 nx_mat_translation (NxMat *what, float x, float y, float z);
 
 void
@@ -57,6 +60,12 @@ nx_mat_scale (NxMat *what, float x, float y, float z);
 
 void
 nx_mat_projection (NxMat *what, float near);
+
+void
+nx_mat_projection_ndc (NxMat *what,
+                       float l, float r,
+                       float t, float b,
+                       float n, float f);
 
 void
 nx_mat_ortho (NxMat *what);
