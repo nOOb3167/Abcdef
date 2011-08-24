@@ -74,6 +74,7 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   NxVec4 start, end;
   start = *pos;
   nx_vec_add3 (&end, &start, dir);
+  end.vals[3] = 1.0f;
 
   NxVec4 projs[2];
   projs[0] = start;
@@ -135,15 +136,19 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
   clr = al_map_rgb (255, 0, 0);
 
   float sf;
-  sf = 20.0f;
+  sf = 1.0f;
   float ofx, ofy;
-  ofx = 50.0f; ofy = 50.0f;
+  ofx = 0.0f;
+  ofy = 0.0f;
 
   NxVec4 projs[3];
   projs[0] = pts[0]; projs[1] = pts[1]; projs[2] = pts[2];
   sr_project_one (mst, &projs[0]);
   sr_project_one (mst, &projs[1]);
   sr_project_one (mst, &projs[2]);
+  sr_viewport_one (&projs[0]);
+  sr_viewport_one (&projs[1]);
+  sr_viewport_one (&projs[2]);
 
   int cnt;
   for (cnt=0; cnt<3; ++cnt)
@@ -227,9 +232,9 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
   NxMat w_mat;
   w_mat = g_state->p_mat;
   if (left)
-    g_state->yaw += 2.0f;
-  if (right)
     g_state->yaw -= 2.0f;
+  if (right)
+    g_state->yaw += 2.0f;
   if (up)
     g_state->pitch += 2.0f;
   if (down)
