@@ -192,20 +192,11 @@ sr_skeletal_draw_node_trans (NxMat *mst,
   mesh_node_sr = g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
   g_xassert (mesh_node_sr);
 
-  /**
-   * Compensate for different coordinate system.
-   */
-  NxMat compensating;
-  nx_mat_init_identity (&compensating);
-  nx_mat_scale (&compensating, 1.0f, -1.0f, 1.0f);
-  nx_mat_translation (&compensating, 0.0f, 1.5f, 0.0f);
-
   NxMat mesh_node_ws;
   sr_node_accumulate (sr_model, mesh_node_sr, &mesh_node_ws);
 
   NxMat combined;
   nx_mat_multiply (&combined, mst, &mesh_node_ws);
-  nx_mat_multiply (&combined, &combined, &compensating);
 
   sr_draw_node (&combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 }
@@ -610,6 +601,7 @@ sr_skeletal_anim (MaiModel *model,
   /**
    * Do not modify the reference MaiNode structures.
    * Make a copy.
+   * (Caller responsible for the copy.)
    */
   struct SrNode *mesh_node_sr;
   mesh_node_sr= g_hash_table_lookup (sr_model_io->name_node_map, mesh_node->name);

@@ -85,9 +85,11 @@ main (int argc, char **argv)
        */
       NxMat comp;
       comp = g_state->w_mat;
-      nx_mat_scale (&comp, -1.0f, -1.0f, 1.0f);
+      nx_mat_scale (&comp, -1.0f, -1.0f, -1.0f);
 
       sr_skeletal_draw_node_trans (&comp, aux_sr_model, mesh_node, trans_verts);
+
+      //sr_node_graph_draw (&comp, aux_sr_model);
 
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}};
       NxMat uvmat;
