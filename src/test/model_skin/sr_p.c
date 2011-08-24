@@ -62,6 +62,8 @@ main (int argc, char **argv)
   struct SrNodeGraph *sr_model;
   sr_node_graph_from_model (model, &sr_model);
 
+  sr_weight_dump (model);
+
   int frame;
   for (frame=0; frame<60; ++frame)
     {
