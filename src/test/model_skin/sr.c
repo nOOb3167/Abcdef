@@ -73,7 +73,7 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
 
   NxVec4 start, end;
   start = *pos;
-  nx_vec_add (&end, &start, dir);
+  nx_vec_add3 (&end, &start, dir);
 
   NxVec4 projs[2];
   projs[0] = start;
@@ -91,7 +91,16 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   NxVec4 orth_f;
   nx_vec_cross_product (&orth_f, &s_dir, &z_dir);
   nx_vec_normalize3 (&orth_f, &orth_f);
-  nx_vec_scale (&orth_f, &orth_f, 0.15f);
+  /**
+   * orth_f is unit vector so scaling it by 0.15f makes it length 0.15f.
+   * Since it will be drawn in window coordinates, for example 0 to 100,
+   * that is not a lot.
+   * Made proportional to the input vector's window space length instead.
+   */
+  /* nx_vec_scale (&orth_f, &orth_f, 0.15f); */
+  float wslen;
+  wslen = nx_vec_len (&s_dir);
+  nx_vec_scale (&orth_f, &orth_f, 0.1f * wslen);
 
   NxVec4 ivec;
   nx_vec_scale (&ivec, &s_dir, 0.85f);

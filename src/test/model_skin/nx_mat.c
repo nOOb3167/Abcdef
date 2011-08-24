@@ -13,6 +13,15 @@ nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b)
 }
 
 void
+nx_vec_add3 (NxVec4 *result, NxVec4 *a, NxVec4 *b)
+{
+  result->vals[0] = a->vals[0] + b->vals [0];
+  result->vals[1] = a->vals[1] + b->vals [1];
+  result->vals[2] = a->vals[2] + b->vals [2];
+  result->vals[3] = 0.0f;
+}
+
+void
 nx_vec_sub (NxVec4 *result, NxVec4 *a, NxVec4 *b)
 {
   result->vals[0] = a->vals[0] - b->vals [0];
@@ -51,6 +60,18 @@ nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b)
   *result = tmp;
 }
 
+float
+nx_vec_len (NxVec4 *in)
+{
+  float len;
+  len = sqrtf (in->vals[0] * in->vals[0] +
+               in->vals[1] * in->vals[1] +
+               in->vals[2] * in->vals[2] +
+               in->vals[3] * in->vals[3]);
+
+  return len;
+}
+
 void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
 {
@@ -58,10 +79,8 @@ nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
    * Don't need a tmp vec to support out == in.. I think
    */
   float len;
-  len = sqrtf (in->vals[0] * in->vals[0] +
-               in->vals[1] * in->vals[1] +
-               in->vals[2] * in->vals[2] +
-               in->vals[3] * in->vals[3]);
+  len = nx_vec_len (in);
+
   /**
    * Lol floating point comparison
    */

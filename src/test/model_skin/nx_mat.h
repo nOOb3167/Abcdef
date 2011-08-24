@@ -13,6 +13,9 @@ void
 nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
+nx_vec_add3 (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+void
 nx_vec_sub (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
@@ -23,6 +26,9 @@ nx_vec_scale (NxVec4 *result, NxVec4 *vec, float scale);
 
 void
 nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+float
+nx_vec_len (NxVec4 *in);
 
 void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in);
