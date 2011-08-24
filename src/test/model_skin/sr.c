@@ -37,6 +37,27 @@ sr_project_one (NxMat *mst, NxVec4 *vec_inout)
 }
 
 void
+sr_viewport_one (NxVec4 *vec_inout)
+{
+  /**
+   * http://www.songho.ca/opengl/gl_transform.html
+   * NDC to viewport.
+   */
+  NxVec4 temp;
+  temp = *vec_inout;
+
+  temp.vals[0] = ((g_state->vp_w / 2) * temp.vals[0]) +
+                 (g_state->vp_x + (g_state->vp_w / 2));
+  temp.vals[1] = ((g_state->vp_h / 2) * temp.vals[1]) +
+                 (g_state->vp_y + (g_state->vp_h / 2));
+  temp.vals[2] = ((g_state->dr_f - g_state->dr_n) / 2) * temp.vals[2] +
+                 ((g_state->dr_f + g_state->dr_n) / 2);
+  temp.vals[3] = 1.0f;
+
+  *vec_inout = temp;
+}
+
+void
 sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
 {
   ALLEGRO_COLOR clr;
@@ -44,11 +65,11 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   ALLEGRO_COLOR clr2;
   clr2 = al_map_rgb (0, 255, 0);
 
-
   float sf;
-  sf = 20.0f;
+  sf = 1.0f;
   float ofx, ofy;
-  ofx = 50.0f; ofy = 50.0f;
+  ofx = 0.0f;
+  ofy = 0.0f;
 
   NxVec4 start, end;
   start = *pos;
@@ -59,6 +80,8 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   projs[1] = end;
   sr_project_one (mst, &projs[0]);
   sr_project_one (mst, &projs[1]);
+  sr_viewport_one (&projs[0]);
+  sr_viewport_one (&projs[1]);
 
   NxVec4 s_pos;
   NxVec4 s_dir;

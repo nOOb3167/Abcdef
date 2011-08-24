@@ -17,6 +17,8 @@ struct NxState
 {
   float yaw, pitch, roll;
   NxMat p_mat, w_mat;
+  float dr_n, dr_f;
+  float vp_w, vp_h, vp_x, vp_y;
 };
 
 /*
@@ -56,6 +58,9 @@ nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
 
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout);
+
+void
+sr_viewport_one (NxVec4 *vec_inout);
 
 void
 sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir);

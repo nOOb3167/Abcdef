@@ -18,9 +18,16 @@ main (int argc, char **argv)
   g_state = g_new0 (struct NxState, 1);
   *g_state = state;
 
+  g_state->dr_n = 0.1f;
+  g_state->dr_f = 100.0f;
+  g_state->vp_w = 100.0f;
+  g_state->vp_h = 100.0f;
+  g_state->vp_x = 0.0f;
+  g_state->vp_y = 0.0f;
+
   NxMat z_mat;
 
-  nx_mat_projection_ndc (&z_mat, -1.0f, 1.0f, 1.0f, -1.0f, 0.1f, 100.0f);
+  nx_mat_projection_ndc (&z_mat, -1.0f, 1.0f, 1.0f, -1.0f, g_state->dr_n, g_state->dr_f);
   nx_mat_translate (&z_mat, 0.0f, 0.0f, -1.0f);
 
   g_state->p_mat = z_mat;
