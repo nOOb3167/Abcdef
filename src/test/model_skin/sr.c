@@ -666,6 +666,46 @@ sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what)
 }
 
 void
+_sr_node_graph_draw_one (struct SrNodeGraph *sr_model,
+                         NxMat *mst, NxMat *acc,
+                         struct SrNode *node)
+{
+  NxMat tra, comb;
+  nx_mat_multiply (&tra, acc, &node->transformation);
+  nx_mat_multiply (&comb, mst, &tra);
+
+  NxVec4 start = {0.0f, 0.0f, 0.0f, 1.0f};
+  NxVec4 end = {1.0f, 0.0f, 0.0f, 1.0f};
+  /**
+   *  Not separating mst and acc, I'm combining them in comb so no need.
+   *  nx_mat_transform (&tra, &start);
+   *  nx_mat_transform (&tra, &end);
+   */
+
+  sr_draw_unit_vec_at (&comb, &start, &end);
+
+  for (int cnt = 0; cnt < node->child_names_len; ++cnt)
+    {
+      struct SrNode *child;
+      child = g_hash_table_lookup (sr_model->name_node_map, node->child_names[cnt]);
+      g_xassert (child);
+
+      _sr_node_graph_draw_one (sr_model, mst, &tra, child);
+    }
+}
+
+void
+sr_node_graph_draw (NxMat *mst, struct SrNodeGraph *sr_model)
+{
+  g_xassert (sr_model->nodes_len == 1);
+
+  NxMat id;
+  nx_mat_init_identity (&id);
+
+  _sr_node_graph_draw_one (sr_model, mst, &id, &sr_model->nodes[0]);
+}
+
+void
 nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix)
 {
   g_xassert (mat);

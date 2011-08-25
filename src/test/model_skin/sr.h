@@ -137,4 +137,12 @@ _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
 void
 sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what);
 
+void
+_sr_node_graph_draw_one (struct SrNodeGraph *sr_model,
+                         NxMat *mst, NxMat *acc,
+                         struct SrNode *node);
+
+void
+sr_node_graph_draw (NxMat *mst, struct SrNodeGraph *sr_model);
+
 #endif /* SR_H_ */
