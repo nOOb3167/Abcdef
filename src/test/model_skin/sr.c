@@ -343,6 +343,7 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       quat.z = rot.val.rot.z;
       nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &angle, &axis);
       nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
+      //nx_mat_rotate (&mat, angle, axis.x, axis.z, -axis.y);
 
       NX_MAT_ELT (&mat, 0, 0) *= sca.val.vec.x;
       NX_MAT_ELT (&mat, 1, 0) *= sca.val.vec.x;
