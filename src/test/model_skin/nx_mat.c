@@ -294,6 +294,38 @@ nx_mat_rotate (NxMat *matrix,
 }
 
 void
+nx_mat_transpose (NxMat *mat)
+{
+  void
+  _swap2 (NxMat *m1, int r1, int c1, NxMat *m2, int r2, int c2)
+  {
+    float tmp;
+    tmp = NX_MAT_ELT (m1, r1, c1);
+    NX_MAT_ELT (m1, r1, c1) = NX_MAT_ELT (m2, r2, c2);
+    NX_MAT_ELT (m2, r2, c2) = tmp;
+  }
+
+  NxMat res;
+  res = *mat;
+
+  _swap2(&res, 0, 0, &res, 0, 0);
+  _swap2(&res, 1, 0, &res, 0, 1);
+  _swap2(&res, 2, 0, &res, 0, 2);
+  _swap2(&res, 3, 0, &res, 0, 3);
+
+  _swap2(&res, 1, 1, &res, 1, 1);
+  _swap2(&res, 2, 1, &res, 1, 2);
+  _swap2(&res, 3, 1, &res, 1, 3);
+
+  _swap2(&res, 2, 2, &res, 2, 2);
+  _swap2(&res, 3, 2, &res, 2, 3);
+
+  _swap2(&res, 3, 3, &res, 3, 3);
+
+  *mat = res;
+}
+
+void
 nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix)
 {
   g_xassert (mat);
@@ -307,6 +339,45 @@ nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix)
   };
 
   nx_mat_init_from_array (mat, tmp_vals);
+}
+
+void
+nx_mat_from_quaternion (NxMat *mat, float w, float x, float y, float z)
+{
+  /**
+   * http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q57
+   */
+  NxMat res;
+
+  float xx, xy, xz, xw, yy, yz, yw, zz, zw;
+  xx = x * x;
+  xy = x * y;
+  xz = x * z;
+  xw = x * w;
+  yy = y * y;
+  yz = y * z;
+  yw = y * w;
+  zz = z * z;
+  zw = z * w;
+
+  NX_MAT_ELT (&res, 0, 0) = 1.0f - 2.0f * (yy + zz);
+  NX_MAT_ELT (&res, 1, 0) =        2.0f * (xy - zw);
+  NX_MAT_ELT (&res, 2, 0) =        2.0f * (xz + yw);
+  NX_MAT_ELT (&res, 3, 0) = 0.0f;
+  NX_MAT_ELT (&res, 0, 1) =        2.0f * (xy + zw);
+  NX_MAT_ELT (&res, 1, 1) = 1.0f - 2.0f * (xx + zz);
+  NX_MAT_ELT (&res, 2, 1) =        2.0f * (yz - xw);
+  NX_MAT_ELT (&res, 3, 1) = 0.0f;
+  NX_MAT_ELT (&res, 0, 2) =        2.0f * (xz - yw);
+  NX_MAT_ELT (&res, 1, 2) =        2.0f * (yz + xw);
+  NX_MAT_ELT (&res, 2, 2) = 1.0f - 2.0f * (xx + yy);
+  NX_MAT_ELT (&res, 3, 2) = 0.0f;
+  NX_MAT_ELT (&res, 0, 3) = 0.0f;
+  NX_MAT_ELT (&res, 1, 3) = 0.0f;
+  NX_MAT_ELT (&res, 2, 3) = 0.0f;
+  NX_MAT_ELT (&res, 3, 3) = 1.0f;
+
+  *mat = res;
 }
 
 int

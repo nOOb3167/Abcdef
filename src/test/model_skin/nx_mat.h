@@ -87,7 +87,13 @@ nx_mat_rotate (NxMat *matrix,
                     float z);
 
 void
+nx_mat_transpose (NxMat *mat);
+
+void
 nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix);
+
+void
+nx_mat_from_quaternion (NxMat *mat, float w, float x, float y, float z);
 
 int
 nx_mat_get_inverse (NxMat *mat, NxMat *inv_out);

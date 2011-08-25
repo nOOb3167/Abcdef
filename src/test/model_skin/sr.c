@@ -342,9 +342,20 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       quat.y = rot.val.rot.y;
       quat.z = rot.val.rot.z;
       nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &angle, &axis);
-      nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
-      //nx_mat_rotate (&mat, angle, axis.x, axis.z, -axis.y);
+      //nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
+      nx_mat_rotate (&mat, angle, axis.x, axis.z, -axis.y);
+/*
+      // For comparison
+      NxMat mm;
+      nx_mat_init_identity (&mm);
+      nx_mat_rotate (&mm, angle, axis.x, axis.y, axis.z);
 
+      NxMat rm;
+      nx_mat_from_quaternion (&rm, quat.w, quat.x, quat.y, quat.z);
+      //nx_mat_transpose (&rm);
+
+      nx_mat_multiply (&mat, &mat, &rm);
+*/
       NX_MAT_ELT (&mat, 0, 0) *= sca.val.vec.x;
       NX_MAT_ELT (&mat, 1, 0) *= sca.val.vec.x;
       NX_MAT_ELT (&mat, 2, 0) *= sca.val.vec.x;
@@ -358,6 +369,27 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       NX_MAT_ELT (&mat, 0, 3) = pos.val.vec.x;
       NX_MAT_ELT (&mat, 1, 3) = pos.val.vec.y;
       NX_MAT_ELT (&mat, 2, 3) = pos.val.vec.z;
+
+      /**
+       * The person from:
+       *   http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745/index/page/2
+       * Does this:
+       *   node->mTransformation=mat*scene->mRootNode->mTransformation;
+       * As an additional step after applying translation and rotation.
+       *
+       * Also see the rotate (angle x z -y) above.
+       * Guess at what is happening:
+       *   Blender Collada exporter tacks on the Scene node,
+       *   but leaves the keys in non-Scene. (Does that make sense?)
+       */
+      /**
+      g_xassert (graph->nodes_len == 1);
+
+      struct SrNode *root_node;
+      root_node = &graph->nodes[0];
+
+      nx_mat_multiply (&mat, &mat, &root_node->transformation);
+      */
 
       *result = mat;
     }
