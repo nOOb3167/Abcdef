@@ -65,7 +65,7 @@ main (int argc, char **argv)
   sr_weight_dump (model);
 
   int frame;
-  for (frame=0; frame<60; ++frame)
+  for (frame=0; frame<600; ++frame)
     {
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);

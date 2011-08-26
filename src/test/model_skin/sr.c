@@ -596,13 +596,32 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
 
           NxVertexWeight vertex_weight;
           vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
+          /**
+           * In addition to the (vertex,influencing bones) map I was supposed
+           * to construct the per bone (vertex,weight) map.
+           * Instead I was indexing n-th weigharray element for n-th vertex,
+           * without matching on id.
+           */
+          g_xassert (vertex_weight.vertex_id == cnt);
 
           NxVec4 partial;
           partial = v2;
+          /**
+           * Homogeneous is ok in transform stage because translation needs
+           * to be applied.
+           */
           nx_mat_transform (bone_mtx, &partial);
           nx_vec_scale (&partial, &partial, vertex_weight.weight);
 
-          nx_vec_add (&cumulative, &cumulative, &partial);
+          /**
+           * Manipulating normal 3d coordinates not homogeneous, do an add3.
+           * (Well, seeing I am setting vals[3] to 1.0f anyway, could just add.)
+           */
+          nx_vec_add3 (&cumulative, &cumulative, &partial);
+          /**
+           * Make homogeneous.
+           */
+          cumulative.vals[3] = 1.0f;
 
           int a = floor(0);
         }
