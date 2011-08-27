@@ -16,7 +16,7 @@ xfake_on_error_stack_trace(const char *a, ...);
 #if defined X_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE
 #define g_xassert(exp) g_assert(exp)
 #elif defined X_ERROR_STACK_TRACE_INSTEAD_OF_ASSERT
-#define g_xassert(exp) xfake_on_error_stack_trace("XFAKE_ON_ERROR_STACK_TRACE", (exp))
+#define g_xassert(exp) ((exp) ? 1 : xfake_on_error_stack_trace("XFAKE_ON_ERROR_STACK_TRACE", (exp)))
 #else
 #error X_ERROR THING NOT DEFINED
 #endif

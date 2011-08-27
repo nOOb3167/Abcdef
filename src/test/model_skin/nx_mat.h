@@ -13,6 +13,9 @@ void
 nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
+nx_vec_add3 (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+void
 nx_vec_sub (NxVec4 *result, NxVec4 *a, NxVec4 *b);
 
 void
@@ -23,6 +26,9 @@ nx_vec_scale (NxVec4 *result, NxVec4 *vec, float scale);
 
 void
 nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b);
+
+float
+nx_vec_len (NxVec4 *in);
 
 void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in);
@@ -50,6 +56,9 @@ void
 nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b);
 
 void
+nx_mat_translate (NxMat *what, float x, float y, float z);
+
+void
 nx_mat_translation (NxMat *what, float x, float y, float z);
 
 void
@@ -57,6 +66,12 @@ nx_mat_scale (NxMat *what, float x, float y, float z);
 
 void
 nx_mat_projection (NxMat *what, float near);
+
+void
+nx_mat_projection_ndc (NxMat *what,
+                       float l, float r,
+                       float t, float b,
+                       float n, float f);
 
 void
 nx_mat_ortho (NxMat *what);
@@ -72,7 +87,13 @@ nx_mat_rotate (NxMat *matrix,
                     float z);
 
 void
+nx_mat_transpose (NxMat *mat);
+
+void
 nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix);
+
+void
+nx_mat_from_quaternion (NxMat *mat, float w, float x, float y, float z);
 
 int
 nx_mat_get_inverse (NxMat *mat, NxMat *inv_out);

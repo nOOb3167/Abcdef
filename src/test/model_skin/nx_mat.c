@@ -13,6 +13,15 @@ nx_vec_add (NxVec4 *result, NxVec4 *a, NxVec4 *b)
 }
 
 void
+nx_vec_add3 (NxVec4 *result, NxVec4 *a, NxVec4 *b)
+{
+  result->vals[0] = a->vals[0] + b->vals [0];
+  result->vals[1] = a->vals[1] + b->vals [1];
+  result->vals[2] = a->vals[2] + b->vals [2];
+  result->vals[3] = 0.0f;
+}
+
+void
 nx_vec_sub (NxVec4 *result, NxVec4 *a, NxVec4 *b)
 {
   result->vals[0] = a->vals[0] - b->vals [0];
@@ -51,6 +60,18 @@ nx_vec_cross_product (NxVec4 *result, NxVec4 *a, NxVec4 *b)
   *result = tmp;
 }
 
+float
+nx_vec_len (NxVec4 *in)
+{
+  float len;
+  len = sqrtf (in->vals[0] * in->vals[0] +
+               in->vals[1] * in->vals[1] +
+               in->vals[2] * in->vals[2] +
+               in->vals[3] * in->vals[3]);
+
+  return len;
+}
+
 void
 nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
 {
@@ -58,10 +79,8 @@ nx_vec_normalize4 (NxVec4 *out, NxVec4 *in)
    * Don't need a tmp vec to support out == in.. I think
    */
   float len;
-  len = sqrtf (in->vals[0] * in->vals[0] +
-               in->vals[1] * in->vals[1] +
-               in->vals[2] * in->vals[2] +
-               in->vals[3] * in->vals[3]);
+  len = nx_vec_len (in);
+
   /**
    * Lol floating point comparison
    */
@@ -136,6 +155,12 @@ nx_mat_multiply (NxMat *result, NxMat *a, NxMat *b)
 }
 
 void
+nx_mat_translate (NxMat *what, float x, float y, float z)
+{
+  nx_mat_translation (what, x, y, z);
+}
+
+void
 nx_mat_translation (NxMat *what, float x, float y, float z)
 {
   NxMat tmp;
@@ -157,9 +182,6 @@ nx_mat_scale (NxMat *what, float x, float y, float z)
   NX_MAT_ELT (&tmp, 0, 0) = x;
   NX_MAT_ELT (&tmp, 1, 1) = y;
   NX_MAT_ELT (&tmp, 2, 2) = z;
-  /*what->vals[0] = x;
-  what->vals[5] = y;
-  what->vals[10] = z;*/
 
   nx_mat_multiply (what, what, &tmp);
 }
@@ -170,6 +192,26 @@ nx_mat_projection (NxMat *what, float near)
   nx_mat_init_identity (what);
   NX_MAT_ELT (what, 0, 0) = near;
   NX_MAT_ELT (what, 1, 1) = near;
+  NX_MAT_ELT (what, 3, 2) = -1.0f;
+  NX_MAT_ELT (what, 3, 3) = 0.0f;
+}
+
+void
+nx_mat_projection_ndc (NxMat *what,
+                       float l, float r,
+                       float t, float b,
+                       float n, float f)
+{
+  /**
+   * http://www.songho.ca/opengl/gl_projectionmatrix.html
+   */
+  nx_mat_init_identity (what);
+  NX_MAT_ELT (what, 0, 0) = (2 * n) / (r - l);
+  NX_MAT_ELT (what, 0, 2) = (r + l) / (r - l);
+  NX_MAT_ELT (what, 1, 1) = (2 * n) / (t - b);
+  NX_MAT_ELT (what, 1, 2) = (t + b) / (t - b);
+  NX_MAT_ELT (what, 2, 2) = (- (f + n)) / (f - n);
+  NX_MAT_ELT (what, 2, 3) = (- (2 * f * n)) / (f - n);
   NX_MAT_ELT (what, 3, 2) = -1.0f;
   NX_MAT_ELT (what, 3, 3) = 0.0f;
 }
@@ -252,6 +294,38 @@ nx_mat_rotate (NxMat *matrix,
 }
 
 void
+nx_mat_transpose (NxMat *mat)
+{
+  void
+  _swap2 (NxMat *m1, int r1, int c1, NxMat *m2, int r2, int c2)
+  {
+    float tmp;
+    tmp = NX_MAT_ELT (m1, r1, c1);
+    NX_MAT_ELT (m1, r1, c1) = NX_MAT_ELT (m2, r2, c2);
+    NX_MAT_ELT (m2, r2, c2) = tmp;
+  }
+
+  NxMat res;
+  res = *mat;
+
+  _swap2(&res, 0, 0, &res, 0, 0);
+  _swap2(&res, 1, 0, &res, 0, 1);
+  _swap2(&res, 2, 0, &res, 0, 2);
+  _swap2(&res, 3, 0, &res, 0, 3);
+
+  _swap2(&res, 1, 1, &res, 1, 1);
+  _swap2(&res, 2, 1, &res, 1, 2);
+  _swap2(&res, 3, 1, &res, 1, 3);
+
+  _swap2(&res, 2, 2, &res, 2, 2);
+  _swap2(&res, 3, 2, &res, 2, 3);
+
+  _swap2(&res, 3, 3, &res, 3, 3);
+
+  *mat = res;
+}
+
+void
 nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix)
 {
   g_xassert (mat);
@@ -265,6 +339,45 @@ nx_mat_from_ai_matrix (NxMat *mat, struct aiMatrix4x4 *ai_matrix)
   };
 
   nx_mat_init_from_array (mat, tmp_vals);
+}
+
+void
+nx_mat_from_quaternion (NxMat *mat, float w, float x, float y, float z)
+{
+  /**
+   * http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q57
+   */
+  NxMat res;
+
+  float xx, xy, xz, xw, yy, yz, yw, zz, zw;
+  xx = x * x;
+  xy = x * y;
+  xz = x * z;
+  xw = x * w;
+  yy = y * y;
+  yz = y * z;
+  yw = y * w;
+  zz = z * z;
+  zw = z * w;
+
+  NX_MAT_ELT (&res, 0, 0) = 1.0f - 2.0f * (yy + zz);
+  NX_MAT_ELT (&res, 1, 0) =        2.0f * (xy - zw);
+  NX_MAT_ELT (&res, 2, 0) =        2.0f * (xz + yw);
+  NX_MAT_ELT (&res, 3, 0) = 0.0f;
+  NX_MAT_ELT (&res, 0, 1) =        2.0f * (xy + zw);
+  NX_MAT_ELT (&res, 1, 1) = 1.0f - 2.0f * (xx + zz);
+  NX_MAT_ELT (&res, 2, 1) =        2.0f * (yz - xw);
+  NX_MAT_ELT (&res, 3, 1) = 0.0f;
+  NX_MAT_ELT (&res, 0, 2) =        2.0f * (xz - yw);
+  NX_MAT_ELT (&res, 1, 2) =        2.0f * (yz + xw);
+  NX_MAT_ELT (&res, 2, 2) = 1.0f - 2.0f * (xx + yy);
+  NX_MAT_ELT (&res, 3, 2) = 0.0f;
+  NX_MAT_ELT (&res, 0, 3) = 0.0f;
+  NX_MAT_ELT (&res, 1, 3) = 0.0f;
+  NX_MAT_ELT (&res, 2, 3) = 0.0f;
+  NX_MAT_ELT (&res, 3, 3) = 1.0f;
+
+  *mat = res;
 }
 
 int

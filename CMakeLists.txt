@@ -76,10 +76,7 @@ TARGET_LINK_LIBRARIES(Nxt ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIE
 
 INSTALL(TARGETS Nxt DESTINATION ".")
 
-INCLUDE_DIRECTORIES(src/test/model_skin)
-ADD_EXECUTABLE(sr
- src/test/model_skin/sr.c
- src/test/model_skin/nx_mat.c
+ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
  ${CMAKE_SOURCE_DIR}/src/error.c
  ${CMAKE_SOURCE_DIR}/src/ai_example.c
@@ -94,5 +91,18 @@ ADD_EXECUTABLE(sr
  ${CMAKE_SOURCE_DIR}/src/mai-node-anim_funcs.c
  ${CMAKE_BINARY_DIR}/src/mai-anim-instance.c
  ${CMAKE_BINARY_DIR}/src/mai-bone.c)
-TARGET_LINK_LIBRARIES(sr ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
+
+INCLUDE_DIRECTORIES(src/test/model_skin)
+ADD_EXECUTABLE(sr
+ src/test/model_skin/sr_main.c
+ src/test/model_skin/sr.c
+ src/test/model_skin/nx_mat.c)
+TARGET_LINK_LIBRARIES(sr nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(sr PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+ADD_EXECUTABLE(sr_p
+ src/test/model_skin/sr_p.c
+ src/test/model_skin/sr.c
+ src/test/model_skin/nx_mat.c)
+TARGET_LINK_LIBRARIES(sr_p nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
+SET_TARGET_PROPERTIES(sr_p PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

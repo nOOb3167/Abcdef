@@ -1,10 +1,6 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_windows.h>
-#include <allegro5/allegro_opengl.h>
-#include <allegro5/allegro_primitives.h>
+#include <math.h>
 
 #include <glib.h>
 #include <src/error.h>
@@ -21,13 +17,43 @@ struct NxState *g_state;
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout)
 {
+  /**
+   * NDC frustum is -1.0f ... 1.0f for all coordinates (x,y,z).
+   * Coordinates outside these ranges are not on screen.
+   */
   NxVec4 temp;
   temp = *vec_inout;
+
   nx_mat_transform (mst, &temp);
+
+  g_xassert (fabs(temp.vals[3]) > 0.0001f);
+
   temp.vals[0] /= temp.vals[3];
   temp.vals[1] /= temp.vals[3];
   temp.vals[2] /= temp.vals[3];
   temp.vals[3] = 1.0f;
+
+  *vec_inout = temp;
+}
+
+void
+sr_viewport_one (NxVec4 *vec_inout)
+{
+  /**
+   * http://www.songho.ca/opengl/gl_transform.html
+   * NDC to viewport.
+   */
+  NxVec4 temp;
+  temp = *vec_inout;
+
+  temp.vals[0] = ((g_state->vp_w / 2) * temp.vals[0]) +
+                 (g_state->vp_x + (g_state->vp_w / 2));
+  temp.vals[1] = ((g_state->vp_h / 2) * temp.vals[1]) +
+                 (g_state->vp_y + (g_state->vp_h / 2));
+  temp.vals[2] = ((g_state->dr_f - g_state->dr_n) / 2) * temp.vals[2] +
+                 ((g_state->dr_f + g_state->dr_n) / 2);
+  temp.vals[3] = 1.0f;
+
   *vec_inout = temp;
 }
 
@@ -39,21 +65,24 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   ALLEGRO_COLOR clr2;
   clr2 = al_map_rgb (0, 255, 0);
 
-
   float sf;
-  sf = 20.0f;
+  sf = 1.0f;
   float ofx, ofy;
-  ofx = 50.0f; ofy = 50.0f;
+  ofx = 0.0f;
+  ofy = 0.0f;
 
   NxVec4 start, end;
   start = *pos;
-  nx_vec_add (&end, &start, dir);
+  nx_vec_add3 (&end, &start, dir);
+  end.vals[3] = 1.0f;
 
   NxVec4 projs[2];
   projs[0] = start;
   projs[1] = end;
   sr_project_one (mst, &projs[0]);
   sr_project_one (mst, &projs[1]);
+  sr_viewport_one (&projs[0]);
+  sr_viewport_one (&projs[1]);
 
   NxVec4 s_pos;
   NxVec4 s_dir;
@@ -63,7 +92,16 @@ sr_draw_unit_vec_at (NxMat *mst, NxVec4 *pos, NxVec4 *dir)
   NxVec4 orth_f;
   nx_vec_cross_product (&orth_f, &s_dir, &z_dir);
   nx_vec_normalize3 (&orth_f, &orth_f);
-  nx_vec_scale (&orth_f, &orth_f, 0.15f);
+  /**
+   * orth_f is unit vector so scaling it by 0.15f makes it length 0.15f.
+   * Since it will be drawn in window coordinates, for example 0 to 100,
+   * that is not a lot.
+   * Made proportional to the input vector's window space length instead.
+   */
+  /* nx_vec_scale (&orth_f, &orth_f, 0.15f); */
+  float wslen;
+  wslen = nx_vec_len (&s_dir);
+  nx_vec_scale (&orth_f, &orth_f, 0.1f * wslen);
 
   NxVec4 ivec;
   nx_vec_scale (&ivec, &s_dir, 0.85f);
@@ -98,15 +136,19 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
   clr = al_map_rgb (255, 0, 0);
 
   float sf;
-  sf = 20.0f;
+  sf = 1.0f;
   float ofx, ofy;
-  ofx = 50.0f; ofy = 50.0f;
+  ofx = 0.0f;
+  ofy = 0.0f;
 
   NxVec4 projs[3];
   projs[0] = pts[0]; projs[1] = pts[1]; projs[2] = pts[2];
   sr_project_one (mst, &projs[0]);
   sr_project_one (mst, &projs[1]);
   sr_project_one (mst, &projs[2]);
+  sr_viewport_one (&projs[0]);
+  sr_viewport_one (&projs[1]);
+  sr_viewport_one (&projs[2]);
 
   int cnt;
   for (cnt=0; cnt<3; ++cnt)
@@ -181,9 +223,9 @@ sr_update_global_ypr (ALLEGRO_KEYBOARD_STATE *aks)
   NxMat w_mat;
   w_mat = g_state->p_mat;
   if (left)
-    g_state->yaw += 2.0f;
-  if (right)
     g_state->yaw -= 2.0f;
+  if (right)
+    g_state->yaw += 2.0f;
   if (up)
     g_state->pitch += 2.0f;
   if (down)
@@ -300,8 +342,20 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       quat.y = rot.val.rot.y;
       quat.z = rot.val.rot.z;
       nx_cogl_quaternion_to_rotation_axis_and_angle (&quat, &angle, &axis);
-      nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
+      //nx_mat_rotate (&mat, angle, axis.x, axis.y, axis.z);
+      nx_mat_rotate (&mat, angle, axis.x, axis.z, -axis.y);
+/*
+      // For comparison
+      NxMat mm;
+      nx_mat_init_identity (&mm);
+      nx_mat_rotate (&mm, angle, axis.x, axis.y, axis.z);
 
+      NxMat rm;
+      nx_mat_from_quaternion (&rm, quat.w, quat.x, quat.y, quat.z);
+      //nx_mat_transpose (&rm);
+
+      nx_mat_multiply (&mat, &mat, &rm);
+*/
       NX_MAT_ELT (&mat, 0, 0) *= sca.val.vec.x;
       NX_MAT_ELT (&mat, 1, 0) *= sca.val.vec.x;
       NX_MAT_ELT (&mat, 2, 0) *= sca.val.vec.x;
@@ -315,6 +369,27 @@ sr_update_node_graph (MaiAnimInstance *mai, struct SrNodeGraph *graph)
       NX_MAT_ELT (&mat, 0, 3) = pos.val.vec.x;
       NX_MAT_ELT (&mat, 1, 3) = pos.val.vec.y;
       NX_MAT_ELT (&mat, 2, 3) = pos.val.vec.z;
+
+      /**
+       * The person from:
+       *   http://sourceforge.net/projects/assimp/forums/forum/817654/topic/3880745/index/page/2
+       * Does this:
+       *   node->mTransformation=mat*scene->mRootNode->mTransformation;
+       * As an additional step after applying translation and rotation.
+       *
+       * Also see the rotate (angle x z -y) above.
+       * Guess at what is happening:
+       *   Blender Collada exporter tacks on the Scene node,
+       *   but leaves the keys in non-Scene. (Does that make sense?)
+       */
+      /**
+      g_xassert (graph->nodes_len == 1);
+
+      struct SrNode *root_node;
+      root_node = &graph->nodes[0];
+
+      nx_mat_multiply (&mat, &mat, &root_node->transformation);
+      */
 
       *result = mat;
     }
@@ -519,15 +594,28 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
           bone_mtx = g_hash_table_lookup (name_bone_mtx_map, bone->name);
           g_xassert (bone_mtx);
 
-          NxVertexWeight vertex_weight;
-          vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
+          float *vertex_weight;
+          vertex_weight = g_hash_table_lookup (bone->id_wval_map, &cnt);
+          g_xassert (vertex_weight);
 
           NxVec4 partial;
           partial = v2;
+          /**
+           * Homogeneous is ok in transform stage because translation needs
+           * to be applied.
+           */
           nx_mat_transform (bone_mtx, &partial);
-          nx_vec_scale (&partial, &partial, vertex_weight.weight);
+          nx_vec_scale (&partial, &partial, *vertex_weight);
 
-          nx_vec_add (&cumulative, &cumulative, &partial);
+          /**
+           * Manipulating normal 3d coordinates not homogeneous, do an add3.
+           * (Well, seeing I am setting vals[3] to 1.0f anyway, could just add.)
+           */
+          nx_vec_add3 (&cumulative, &cumulative, &partial);
+          /**
+           * Make homogeneous.
+           */
+          cumulative.vals[3] = 1.0f;
 
           int a = floor(0);
         }
@@ -559,6 +647,7 @@ sr_skeletal_anim (MaiModel *model,
   /**
    * Do not modify the reference MaiNode structures.
    * Make a copy.
+   * (Caller responsible for the copy.)
    */
   struct SrNode *mesh_node_sr;
   mesh_node_sr= g_hash_table_lookup (sr_model_io->name_node_map, mesh_node->name);
@@ -578,83 +667,6 @@ sr_skeletal_anim (MaiModel *model,
   *trans_verts_out = trans_verts;
 }
 
-int
-main (int argc, char **argv)
-{
-  ALLEGRO_DISPLAY *display;
-
-  g_type_init ();
-
-  /**
-   * Initialize g_state
-   */
-  struct NxState state = {0};
-  g_state = g_new0 (struct NxState, 1);
-  *g_state = state;
-
-  NxMat z_mat;
-  nx_mat_projection (&z_mat, -1.0f);
-  //nx_mat_ortho (&z_mat);
-  nx_mat_translation (&z_mat, 0.0f, 0.0f, -3.0f);
-  g_state->p_mat = z_mat;
-  g_state->w_mat = z_mat;
-
-  al_init ();
-  al_init_primitives_addon ();
-
-  al_install_keyboard ();
-  al_install_mouse ();
-
-  display = al_create_display (100, 100);
-  g_xassert (display);
-
-  al_set_target_backbuffer (display);
-
-  MaiModel *model;
-  model = mai_model_new_from_file ("c_sr_weight.dae");
-  MaiNode *mesh_node;
-  mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
-  g_xassert (mesh_node);
-
-  MaiAnimInstance *mai;
-  g_xassert (model->anims->len > 0);
-  mai = mai_anim_instance_new_from_anim (
-                                         g_mai_anim_ptr_array_index (model->anims, 0),
-                                         model->name_node_map,
-                                         model->nodes);
-
-  sr_weight_dump (model);
-
-  struct SrNodeGraph *sr_model;
-  sr_node_graph_from_model (model, &sr_model);
-
-  GArray *trans_verts;
-  sr_skeletal_anim (model, mai, mesh_node, sr_model, &trans_verts);
-
-  ALLEGRO_KEYBOARD_STATE aks;
-
-  int frame;
-  for (frame=0; frame<60; ++frame)
-    {
-      al_get_keyboard_state (&aks);
-      sr_update_global_ypr (&aks);
-      al_clear_to_color (al_map_rgb (0, 0, 0));
-      //sr_draw_node (&g_state->w_mat, trans_verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
-      /**
-       * Hmm this is a problem, have sr_skeletal_anim
-       * return the SrNodeGraph.
-       */
-      sr_skeletal_draw_node_trans (&g_state->w_mat, sr_model, mesh_node, trans_verts);
-      NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
-      sr_draw_unit_vec_at (&g_state->w_mat, &uvecs[0], &uvecs[1]);
-
-      al_flip_display ();
-      al_rest (0.05f);
-    }
-
-  return EXIT_SUCCESS;
-}
-
 struct SrNode *
 _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
                     struct SrNodeGraph *orig_mdl,
@@ -665,10 +677,6 @@ _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
   ret = g_malloc0 (sizeof (*ret));
 
   g_hash_table_insert (res_mdl->name_node_map, g_strdup (nde->name), ret);
-
-  /**
-   * Lol not ref counted or actually copied
-   */
 
   ret->child_names = g_malloc0 (sizeof (*ret->child_names) * nde->child_names_len);
   memcpy (ret->child_names, nde->child_names, sizeof (*ret->child_names) * nde->child_names_len);
@@ -701,6 +709,46 @@ sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what)
   ret->nodes = _sr_copy_node_walk (ret, what, what->nodes);
 
   *result = ret;
+}
+
+void
+_sr_node_graph_draw_one (struct SrNodeGraph *sr_model,
+                         NxMat *mst, NxMat *acc,
+                         struct SrNode *node)
+{
+  NxMat tra, comb;
+  nx_mat_multiply (&tra, acc, &node->transformation);
+  nx_mat_multiply (&comb, mst, &tra);
+
+  NxVec4 start = {0.0f, 0.0f, 0.0f, 1.0f};
+  NxVec4 end = {1.0f, 0.0f, 0.0f, 1.0f};
+  /**
+   *  Not separating mst and acc, I'm combining them in comb so no need.
+   *  nx_mat_transform (&tra, &start);
+   *  nx_mat_transform (&tra, &end);
+   */
+
+  sr_draw_unit_vec_at (&comb, &start, &end);
+
+  for (int cnt = 0; cnt < node->child_names_len; ++cnt)
+    {
+      struct SrNode *child;
+      child = g_hash_table_lookup (sr_model->name_node_map, node->child_names[cnt]);
+      g_xassert (child);
+
+      _sr_node_graph_draw_one (sr_model, mst, &tra, child);
+    }
+}
+
+void
+sr_node_graph_draw (NxMat *mst, struct SrNodeGraph *sr_model)
+{
+  g_xassert (sr_model->nodes_len == 1);
+
+  NxMat id;
+  nx_mat_init_identity (&id);
+
+  _sr_node_graph_draw_one (sr_model, mst, &id, &sr_model->nodes[0]);
 }
 
 void
