@@ -594,15 +594,9 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
           bone_mtx = g_hash_table_lookup (name_bone_mtx_map, bone->name);
           g_xassert (bone_mtx);
 
-          NxVertexWeight vertex_weight;
-          vertex_weight = g_nx_vertex_weight_array_index (bone->weights, cnt);
-          /**
-           * In addition to the (vertex,influencing bones) map I was supposed
-           * to construct the per bone (vertex,weight) map.
-           * Instead I was indexing n-th weigharray element for n-th vertex,
-           * without matching on id.
-           */
-          g_xassert (vertex_weight.vertex_id == cnt);
+          float *vertex_weight;
+          vertex_weight = g_hash_table_lookup (bone->id_wval_map, &cnt);
+          g_xassert (vertex_weight);
 
           NxVec4 partial;
           partial = v2;
@@ -611,7 +605,7 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
            * to be applied.
            */
           nx_mat_transform (bone_mtx, &partial);
-          nx_vec_scale (&partial, &partial, vertex_weight.weight);
+          nx_vec_scale (&partial, &partial, *vertex_weight);
 
           /**
            * Manipulating normal 3d coordinates not homogeneous, do an add3.

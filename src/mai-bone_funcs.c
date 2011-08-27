@@ -22,7 +22,7 @@ mai_bone_new_from (struct aiBone *bone)
       g_nx_vertex_weight_array_append_val (self->weights, &nvw);
     }
 
-  self->id_weight_map = g_hash_table_new_full (g_int_hash, g_int_equal,
+  self->id_wval_map = g_hash_table_new_full (g_int_hash, g_int_equal,
       g_free, g_free);
 
   for (cnt = 0; cnt < bone->mNumWeights; ++cnt)
@@ -38,7 +38,7 @@ mai_bone_new_from (struct aiBone *bone)
       *id = nvw.vertex_id;
       *weight = nvw.weight;
 
-      g_hash_table_insert (self->id_weight_map, id, weight);
+      g_hash_table_insert (self->id_wval_map, id, weight);
     }
 
   return self;
