@@ -38,6 +38,12 @@ struct fbstate_data
 };
 
 void
+gfx_display_transfer (void);
+
+void
+gfx_display_clear (void);
+
+void
 gfx_lib_setup (void);
 
 void
@@ -52,8 +58,11 @@ context_switch_allegro (void);
 void
 context_switch_cogl (void);
 
-struct fbstate_data
+struct fbstate_data *
 fbstate_get_data (void);
+
+void
+fbstate_free (struct fbstate_data *fbd);
 
 #ifdef __cplusplus
 }

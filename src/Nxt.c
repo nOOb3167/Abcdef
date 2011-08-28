@@ -136,7 +136,7 @@ _display_loop (void)
   int blah;
   for (blah=0; blah < 30; ++blah)
     {
-      struct fbstate_data fbd;
+      struct fbstate_data *fbd;
 
       context_switch_cogl ();
       fbd = fbstate_get_data ();
@@ -148,7 +148,7 @@ _display_loop (void)
       char *data;
       for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
         {
-          memcpy (data, &fbd.data[cnt*640*3], 640*3);
+          memcpy (data, &fbd->data[cnt*640*3], 640*3);
         }
       al_unlock_bitmap (bmp);
 
@@ -160,7 +160,7 @@ _display_loop (void)
       mai_anim_instance_draw (g_mai);
 
       context_switch_allegro ();
-      al_set_target_backbuffer (fbd.display);
+      al_set_target_backbuffer (fbd->display);
       al_draw_bitmap (bmp, 0, 0, 0);
       al_flip_display ();
 

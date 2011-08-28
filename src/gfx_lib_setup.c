@@ -182,6 +182,48 @@ _context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx, ALLE
     return fbs;
 }
 
+void
+gfx_display_transfer (void)
+{
+  ALLEGRO_BITMAP *bmp;
+  struct fbstate_data *fbd;
+
+  context_switch_allegro ();
+  bmp = al_create_bitmap (640, 480);
+
+  context_switch_cogl ();
+  fbd = fbstate_get_data ();
+
+  context_switch_allegro ();
+  ALLEGRO_LOCKED_REGION *rgn;
+  rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
+  int cnt;
+  char *data;
+  for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
+    {
+      memcpy (data, &fbd->data[cnt*640*3], 640*3);
+    }
+  al_unlock_bitmap (bmp);
+
+  al_set_target_backbuffer (fbd->display);
+  al_draw_bitmap (bmp, 0, 0, 0);
+  al_flip_display ();
+
+  al_destroy_bitmap (bmp);
+  fbstate_free (fbd);
+
+  context_switch_cogl ();
+}
+
+void
+gfx_display_clear (void)
+{
+  context_switch_cogl ();
+  CoglColor clear_color;
+  cogl_color_set_from_4ub (&clear_color, '\x0', '\x0', '\x0', 255);
+  cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+}
+
 /**
  * Magic setup routine.
  * Leaves context in Cogl.
@@ -465,11 +507,13 @@ _create_offscreen_framebuffer (int width, int height, CoglHandle *ofs, CoglHandl
     *tx = tex64;
 }
 
-struct fbstate_data
+struct fbstate_data *
 fbstate_get_data (void)
 {
-    struct fbstate_data fbd;
+    struct fbstate_data *fbd;
     struct context_fbstate *fbs;
+
+    fbd = g_malloc (sizeof (*fbd));
 
     g_xassert (_g_fbstate);
     fbs = _g_fbstate;
@@ -480,15 +524,23 @@ fbstate_get_data (void)
     //printf ("SIZ %d\n", siz);
     g_xassert (siz);
 
-    data = g_new (char, siz);
+    data = g_malloc (sizeof (*data) * siz);
     siz = cogl_texture_get_data (fbs->texture, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
     g_xassert (siz);
     //printf ("Data %p\nValid %d\n", data, siz);
 
-    fbd.display = fbs->display;
-    fbd.data = data;
-    fbd.size = siz;
-    fbd.width = fbs->width;
-    fbd.height = fbs->height;
+    fbd->display = fbs->display;
+    fbd->data = data;
+    fbd->size = siz;
+    fbd->width = fbs->width;
+    fbd->height = fbs->height;
+
     return fbd;
+}
+
+void
+fbstate_free (struct fbstate_data *fbd)
+{
+  g_free (fbd->data);
+  g_free (fbd);
 }
