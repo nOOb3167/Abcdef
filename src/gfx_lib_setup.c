@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_opengl.h>
 #include <glib.h>
 #include <cogl_include.h>
 

@@ -39,6 +39,8 @@ LINK_DIRECTORIES(
 ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
 #ADD_DEFINITIONS(-DX_ERROR_STACK_TRACE_INSTEAD_OF_ASSERT)
 
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
+
 #Warning see about source file properties only applying to added from same directory
 FILE(GLOB XSRC_FILES "src/*.c")
 SET_SOURCE_FILES_PROPERTIES(${XSRC_FILES}
@@ -73,3 +75,34 @@ ADD_EXECUTABLE(Nxt src/Nxt.c src/array_macro.c src/gfx_lib_setup.c src/error.c s
 TARGET_LINK_LIBRARIES(Nxt ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 
 INSTALL(TARGETS Nxt DESTINATION ".")
+
+ADD_LIBRARY(nx_ai STATIC
+ ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
+ ${CMAKE_SOURCE_DIR}/src/error.c
+ ${CMAKE_SOURCE_DIR}/src/ai_example.c
+ ${CMAKE_SOURCE_DIR}/src/array_macro.c
+ ${CMAKE_SOURCE_DIR}/src/misc.c
+ ${CMAKE_BINARY_DIR}/src/mai-model.c
+ ${CMAKE_BINARY_DIR}/src/mai-anim.c
+ ${CMAKE_SOURCE_DIR}/src/mai-anim_funcs.c
+ ${CMAKE_BINARY_DIR}/src/mai-node.c
+ ${CMAKE_SOURCE_DIR}/src/mai-node_funcs.c
+ ${CMAKE_BINARY_DIR}/src/mai-node-anim.c
+ ${CMAKE_SOURCE_DIR}/src/mai-node-anim_funcs.c
+ ${CMAKE_BINARY_DIR}/src/mai-anim-instance.c
+ ${CMAKE_BINARY_DIR}/src/mai-bone.c)
+
+INCLUDE_DIRECTORIES(src/test/model_skin)
+ADD_EXECUTABLE(sr
+ src/test/model_skin/sr_main.c
+ src/test/model_skin/sr.c
+ src/test/model_skin/nx_mat.c)
+TARGET_LINK_LIBRARIES(sr nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
+SET_TARGET_PROPERTIES(sr PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+ADD_EXECUTABLE(sr_p
+ src/test/model_skin/sr_p.c
+ src/test/model_skin/sr.c
+ src/test/model_skin/nx_mat.c)
+TARGET_LINK_LIBRARIES(sr_p nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
+SET_TARGET_PROPERTIES(sr_p PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

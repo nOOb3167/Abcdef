@@ -12,4 +12,6 @@ class Mai:Bone from G:Object
  public char *name;
  public CoglMatrix *offset_matrix;
  public GNxVertexWeightArray *weights;
+ /* (int, weight_float) */
+ public GHashTable *id_wval_map;
 }

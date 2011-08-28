@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <allegro5/allegro.h>
 #include <cogl/cogl.h>
 
 struct ALLEGRO_DISPLAY;
