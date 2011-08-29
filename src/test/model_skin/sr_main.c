@@ -92,7 +92,7 @@ main (int argc, char **argv)
 
       mai->current_frame += mai->current_frame >= 30 ? -30 : 1;
 
-      sr_skeletal_draw_node_trans (&g_state->w_mat, aux_sr_model, mesh_node, trans_verts);
+      sr_allegro_skeletal_draw_node_trans (&g_state->w_mat, aux_sr_model, mesh_node, trans_verts);
 
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {3.0f, 3.0f, 0.0f, 1.0f}};
       NxMat uvmat;

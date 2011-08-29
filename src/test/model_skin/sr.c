@@ -162,7 +162,7 @@ sr_draw_tri (NxMat *mst, NxVec4 pts[3])
 }
 
 void
-sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
+sr_allegro_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
 {
   g_xassert (indices->len > 0);
   g_xassert ((indices->len % 3) == 0);
@@ -183,7 +183,30 @@ sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
 }
 
 void
-sr_skeletal_draw_node_trans (NxMat *mst,
+sr_draw_node (NxMat *mv_mtx, NxMat *node_mtx, GArray *verts, GArray *indices, GArray *uvs)
+{
+  // FIXME: That is retarded by the way.
+  cogl_ortho (-1.0f, 1.0f, -1.0f, 1.0f, -5.0f, 100.0f);
+
+  NxMat combined;
+  nx_mat_multiply (&combined, mv_mtx, node_mtx);
+
+  CoglMatrix combined_c;
+  sr_cogl_matrix_from_nx_mat (&combined_c, &combined);
+
+  cogl_set_modelview_matrix (&combined_c);
+
+  CoglPrimitive *prim;
+  prim = nx_cogl_primitive_new (verts, indices, uvs);
+  g_xassert (prim);
+
+  nx_cogl_primitive_draw (prim);
+
+  cogl_object_unref (prim);
+}
+
+void
+sr_allegro_skeletal_draw_node_trans (NxMat *mst,
                              struct SrNodeGraph *sr_model,
                              MaiNode *mesh_node,
                              GArray *verts)
@@ -198,7 +221,23 @@ sr_skeletal_draw_node_trans (NxMat *mst,
   NxMat combined;
   nx_mat_multiply (&combined, mst, &mesh_node_ws);
 
-  sr_draw_node (&combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+  sr_allegro_draw_node (&combined, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
+}
+
+void
+sr_skeletal_draw_node_trans (NxMat *mv_mat,
+                             struct SrNodeGraph *sr_model,
+                             MaiNode *mesh_node,
+                             GArray *verts)
+{
+  struct SrNode *mesh_node_sr;
+  mesh_node_sr = g_hash_table_lookup (sr_model->name_node_map, mesh_node->name);
+  g_xassert (mesh_node_sr);
+
+  NxMat mesh_node_ws;
+  sr_node_accumulate (sr_model, mesh_node_sr, &mesh_node_ws);
+
+  sr_draw_node (mv_mat, &mesh_node_ws, verts, mesh_node->mesh_indices, mesh_node->mesh_uvs);
 }
 
 void
@@ -250,7 +289,7 @@ _sr_node_walk (struct SrNodeGraph *mdl, MaiNode *nde_foreign)
 
   ret->name = nde_foreign->name;
   ret->parent_name = nde_foreign->parent ? nde_foreign->parent->name : NULL;
-  nx_mat_from_cogl_matrix (&ret->transformation, nde_foreign->transformation);
+  sr_nx_mat_from_cogl_matrix (&ret->transformation, nde_foreign->transformation);
 
   ret->child_names_len = nde_foreign->children->len;
   ret->child_names = g_malloc0_n (nde_foreign->children->len, sizeof (*ret->child_names));
@@ -467,7 +506,7 @@ sr_bone_matrix (struct SrNodeGraph *sr_model,
                 NxMat *result_out)
 {
   NxMat offset_mtx;
-  nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
+  sr_nx_mat_from_cogl_matrix (&offset_mtx, bone->offset_matrix);
 
   struct SrNode *tmp;
   tmp = g_hash_table_lookup (sr_model->name_node_map, bone->name);
@@ -752,7 +791,7 @@ sr_node_graph_draw (NxMat *mst, struct SrNodeGraph *sr_model)
 }
 
 void
-nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix)
+sr_nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix)
 {
   g_xassert (mat);
   g_xassert (cogl_matrix);
@@ -765,4 +804,20 @@ nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix)
   };
 
   nx_mat_init_from_array (mat, tmp_vals);
+}
+
+void
+sr_cogl_matrix_from_nx_mat (CoglMatrix *cogl_matrix, NxMat *mat)
+{
+  g_xassert (cogl_matrix);
+  g_xassert (mat);
+
+  float tmp_vals[16] = {
+      NX_MAT_ELT (mat, 0, 0), NX_MAT_ELT (mat, 1, 0), NX_MAT_ELT (mat, 2, 0), NX_MAT_ELT (mat, 3, 0),
+      NX_MAT_ELT (mat, 0, 1), NX_MAT_ELT (mat, 1, 1), NX_MAT_ELT (mat, 2, 1), NX_MAT_ELT (mat, 3, 1),
+      NX_MAT_ELT (mat, 0, 2), NX_MAT_ELT (mat, 1, 2), NX_MAT_ELT (mat, 2, 2), NX_MAT_ELT (mat, 3, 2),
+      NX_MAT_ELT (mat, 0, 3), NX_MAT_ELT (mat, 1, 3), NX_MAT_ELT (mat, 2, 3), NX_MAT_ELT (mat, 3, 3)
+  };
+
+  cogl_matrix_init_from_array (cogl_matrix, tmp_vals);
 }

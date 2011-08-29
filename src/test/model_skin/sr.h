@@ -54,7 +54,10 @@ struct SrNodeGraph
 };
 
 void
-nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
+sr_nx_mat_from_cogl_matrix (NxMat *mat, CoglMatrix *cogl_matrix);
+
+void
+sr_cogl_matrix_from_nx_mat (CoglMatrix *cogl_matrix, NxMat *mat);
 
 void
 sr_project_one (NxMat *mst, NxVec4 *vec_inout);
@@ -69,10 +72,19 @@ void
 sr_draw_tri (NxMat *mst, NxVec4 pts[3]);
 
 void
-sr_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs);
+sr_allegro_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs);
 
 void
-sr_skeletal_draw_node_trans (NxMat *mst,
+sr_draw_node (NxMat *mv_mtx, NxMat *node_mtx, GArray *verts, GArray *indices, GArray *uvs);
+
+void
+sr_allegro_skeletal_draw_node_trans (NxMat *mst,
+                             struct SrNodeGraph *sr_model,
+                             MaiNode *mesh_node,
+                             GArray *verts);
+
+void
+sr_skeletal_draw_node_trans (NxMat *mv_mat,
                              struct SrNodeGraph *sr_model,
                              MaiNode *mesh_node,
                              GArray *verts);

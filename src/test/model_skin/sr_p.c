@@ -80,7 +80,9 @@ main (int argc, char **argv)
       comp = g_state->w_mat;
       nx_mat_scale (&comp, -1.0f, -1.0f, -1.0f);
 
-//      sr_skeletal_draw_node_trans (&comp, aux_sr_model, mesh_node, trans_verts);
+//      sr_allegro_skeletal_draw_node_trans (&comp, aux_sr_model, mesh_node, trans_verts);
+      sr_skeletal_draw_node_trans (&comp, aux_sr_model,
+                                   mesh_node, trans_verts);
 
 //      sr_node_graph_draw (&comp, aux_sr_model);
 
