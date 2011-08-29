@@ -185,9 +185,6 @@ sr_allegro_draw_node (NxMat *mst, GArray *verts, GArray *indices, GArray *uvs)
 void
 sr_draw_node (NxMat *mv_mtx, NxMat *node_mtx, GArray *verts, GArray *indices, GArray *uvs)
 {
-  // FIXME: That is retarded by the way.
-  cogl_ortho (-1.0f, 1.0f, -1.0f, 1.0f, -5.0f, 100.0f);
-
   NxMat combined;
   nx_mat_multiply (&combined, mv_mtx, node_mtx);
 

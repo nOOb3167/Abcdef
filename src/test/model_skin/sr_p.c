@@ -5,12 +5,20 @@
 
 struct NxState *g_state;
 
+CoglHandle *g_testtex;
+
 int
 main (int argc, char **argv)
 {
   g_type_init ();
 
   gfx_lib_setup ();
+
+  g_testtex = cogl_texture_new_from_file ("testtex_sr.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
+  g_xassert (g_testtex != COGL_INVALID_HANDLE);
+
+  cogl_ortho (-1.0f, 1.0f, -1.0f, 1.0f, -5.0f, 100.0f);
+  cogl_set_source_texture (g_testtex);
 
   /**
    * Initialize g_state
