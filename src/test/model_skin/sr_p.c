@@ -27,6 +27,11 @@ main (int argc, char **argv)
   cogl_set_depth_test_enabled (TRUE);
 
   /**
+   * Enabling this shows polygons actually missing not just culled out?
+   * cogl_set_backface_culling_enabled (TRUE);
+   */
+
+  /**
    * Initialize g_state
    */
   struct NxState state = {0};
