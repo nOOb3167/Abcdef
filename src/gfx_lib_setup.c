@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_opengl.h>
 #include <glib.h>
 #include <cogl_include.h>
@@ -272,6 +273,11 @@ _allegro_setup (ALLEGRO_DISPLAY **disp)
   g_assert (disp);
 
   al_init ();
+
+  al_init_primitives_addon ();
+
+  al_install_keyboard ();
+  al_install_mouse ();
 
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_BGR_888);
   al_set_new_display_flags (ALLEGRO_OPENGL | ALLEGRO_NOFRAME);
