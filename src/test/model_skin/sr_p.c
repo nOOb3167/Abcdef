@@ -17,7 +17,8 @@ main (int argc, char **argv)
   g_testtex = cogl_texture_new_from_file ("testtex_sr.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
   g_xassert (g_testtex != COGL_INVALID_HANDLE);
 
-  cogl_ortho (-1.0f, 1.0f, -1.0f, 1.0f, -5.0f, 100.0f);
+  //cogl_ortho (-1.0f, 1.0f, -1.0f, 1.0f, -5.0f, 100.0f);
+  cogl_perspective (45.0f, 1.0f, 0.1f, 100.0f);
   cogl_set_source_texture (g_testtex);
 
   /**
@@ -35,9 +36,8 @@ main (int argc, char **argv)
   g_state->vp_y = 0.0f;
 
   NxMat z_mat;
-
-  nx_mat_projection_ndc (&z_mat, -1.0f, 1.0f, 1.0f, -1.0f, g_state->dr_n, g_state->dr_f);
-  nx_mat_translate (&z_mat, 0.0f, 0.0f, -3.0f);
+  nx_mat_init_identity (&z_mat);
+  nx_mat_translate (&z_mat, 0.0f, 0.0f, -4.0f);
 
   g_state->p_mat = z_mat;
   g_state->w_mat = z_mat;
@@ -86,7 +86,7 @@ main (int argc, char **argv)
        */
       NxMat comp;
       comp = g_state->w_mat;
-      nx_mat_scale (&comp, -1.0f, -1.0f, -1.0f);
+      nx_mat_scale (&comp, -1.0f, 1.0f, -1.0f);
 
 //      sr_allegro_skeletal_draw_node_trans (&comp, aux_sr_model, mesh_node, trans_verts);
       sr_skeletal_draw_node_trans (&comp, aux_sr_model,
@@ -100,6 +100,7 @@ main (int argc, char **argv)
 //      sr_draw_unit_vec_at (&uvmat, &uvecs[0], &uvecs[1]);
 
       gfx_display_transfer ();
+
       al_rest (0.05f);
     }
 

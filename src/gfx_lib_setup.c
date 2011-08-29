@@ -222,7 +222,7 @@ gfx_display_clear (void)
   context_switch_cogl ();
   CoglColor clear_color;
   cogl_color_set_from_4ub (&clear_color, '\x0', '\x0', '\x0', 255);
-  cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR);
+  cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);
 }
 
 /**

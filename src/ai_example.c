@@ -287,11 +287,13 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices, GArray *uvs)
 
   CoglIndices *idx;
   g_xassert (indices->len > 0);
-  idx = cogl_indices_new (COGL_INDICES_TYPE_UNSIGNED_INT, indices->data, indices->len);
+  idx = cogl_indices_new (COGL_INDICES_TYPE_UNSIGNED_INT,
+                          indices->data, indices->len);
   g_xassert (idx);
 
   CoglPrimitive *prim;
-  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts->len,                             attr, attr_uv, NULL);
+  prim = cogl_primitive_new (COGL_VERTICES_MODE_TRIANGLES, verts->len,
+                             attr, attr_uv, NULL);
 //  CoglAttribute *attrs_arry[2];
 //  attrs_arry[0] = attr;
 //  attrs_arry[1] = attr_uv;
