@@ -22,6 +22,11 @@ main (int argc, char **argv)
   cogl_set_source_texture (g_testtex);
 
   /**
+   * WHY IS THIS NOT ENABLED BY DEFAULT
+   */
+  cogl_set_depth_test_enabled (TRUE);
+
+  /**
    * Initialize g_state
    */
   struct NxState state = {0};
