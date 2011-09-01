@@ -34,9 +34,14 @@ ai_scene_from_file (const char *file_name)
    * Warning: PreTransformVertices, flatten scene essentially.
    * See LimitBoneWeights for shader skinning.
    */
+  /**
+   * JoinIdenticalVertices fails (Missing polygons).
+   */
+//  scene = aiImportFile (file_name,
+//      aiProcess_Triangulate | aiProcess_SortByPType |
+//      aiProcess_JoinIdenticalVertices);
   scene = aiImportFile (file_name,
-      aiProcess_Triangulate | aiProcess_SortByPType |
-      aiProcess_JoinIdenticalVertices);
+      aiProcess_Triangulate | aiProcess_SortByPType);
   g_xassert (scene);
   nonconst_scene = (struct aiScene *)scene;
 
