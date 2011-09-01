@@ -14,10 +14,20 @@ nx_value_object_hash (gconstpointer v)
   gpointer p;
 
   g_xassert (G_IS_VALUE (v));
-  p = g_value_get_object (v);
-  g_xassert (p);
 
-  return GPOINTER_TO_INT (p);
+  if (G_VALUE_HOLDS_INT (v))
+    {
+      return g_value_get_int (v);
+    }
+
+  if (G_VALUE_HOLDS_OBJECT (v))
+    {
+      return GPOINTER_TO_UINT (g_value_get_object (v));
+    }
+
+  g_xassert (FALSE);
+
+  return 0;
 }
 
 gboolean
@@ -29,11 +39,10 @@ nx_value_object_equal (gconstpointer v1, gconstpointer v2)
 void
 nx_value_free (gpointer v)
 {
-  GValue *val;
-  val = v;
-
   printf ("nx_value_free %p\n", v);
-  g_value_reset (val);
+
+  g_xassert (G_IS_VALUE (v));
+  g_value_reset (v);
   g_free (v);
 }
 
@@ -64,13 +73,24 @@ main (int argc, char **argv)
   g_value_init (k1, G_TYPE_OBJECT);
   g_value_set_object (k1, G_OBJECT (obj));
 
+  GValue *k2;
+  k2 = g_malloc (sizeof (*k2));
+  *k2 = nx_empty_value;
+  g_value_init (k2, G_TYPE_INT);
+  g_value_set_int (k2, 1234);
+
+  /**
+   * It is okay to use G_TYPE_OBJECT for derived.
+   * Will be using checked casts anyway, just have to
+   * get the fundamental type covered.
+   */
   GValue *v1;
   v1 = g_malloc (sizeof (*v1));
   *v1 = nx_empty_value;
   g_value_init (v1, G_TYPE_OBJECT);
   g_value_set_object (v1, G_OBJECT (x1));
 
-  g_hash_table_insert (ht, k1, v1);
+  g_hash_table_insert (ht, k2, v1);
 
   g_object_unref (obj);
   g_object_unref (x1);
