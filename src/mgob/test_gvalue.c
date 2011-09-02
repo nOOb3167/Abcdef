@@ -102,6 +102,17 @@ nx_unbox_object (GValue *v)
   return ret;
 }
 
+GValue *
+nx_hash_table_lookup (GHashTable *ht, GValue *v)
+{
+  GValue *ret;
+
+  ret = g_hash_table_lookup (ht, v);
+  nx_value_free (v);
+
+  return ret;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -142,13 +153,9 @@ main (int argc, char **argv)
 
   g_hash_table_insert (ht, k2, v1);
 
-  GValue *nothere;
-  nothere = nx_box_object (obj_nothere);
-
   MgobX1 *ok2o;
-  ok2o = MGOB_X1 (nx_unbox_object (g_hash_table_lookup (ht, nothere)));
+  ok2o = MGOB_X1 (nx_unbox_object (nx_hash_table_lookup (ht, nx_box_object (obj_nothere))));
   g_xassert (!ok2o);
-  g_free (nothere);
 
   g_object_unref (obj);
   g_object_unref (x1);
