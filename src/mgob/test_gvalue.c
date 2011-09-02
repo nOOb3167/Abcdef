@@ -93,6 +93,9 @@ nx_unbox_object (GValue *v)
 {
   GObject *ret;
 
+  if (v == NULL)
+    return NULL;
+
   g_xassert (G_VALUE_HOLDS_OBJECT (v));
   ret = g_value_get_object (v);
 
@@ -140,12 +143,12 @@ main (int argc, char **argv)
   g_hash_table_insert (ht, k2, v1);
 
   GValue *nothere;
-  nx_g_value_new (&nothere, G_TYPE_OBJECT);
-  g_value_set_object (nothere, obj_nothere);
+  nothere = nx_box_object (obj_nothere);
 
   MgobX1 *ok2o;
-  ok2o = MGOB_X1 (g_value_get_object (g_hash_table_lookup (ht, nothere)));
+  ok2o = MGOB_X1 (nx_unbox_object (g_hash_table_lookup (ht, nothere)));
   g_xassert (!ok2o);
+  g_free (nothere);
 
   g_object_unref (obj);
   g_object_unref (x1);
