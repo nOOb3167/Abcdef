@@ -69,7 +69,7 @@ ADD_EXECUTABLE(Nxt src/Nxt.c src/array_macro.c src/gfx_lib_setup.c src/error.c s
  src/mai-node.c src/mai-node_funcs.c
  src/mai-anim.c src/mai-anim_funcs.c
  src/mai-node-anim.c src/mai-node-anim_funcs.c
- src/mai-model.c
+ src/mai-model.c src/mai-model_funcs.c
  src/mai-anim-instance.c
  src/mai-bone.c)
 TARGET_LINK_LIBRARIES(Nxt ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
@@ -83,6 +83,7 @@ ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/array_macro.c
  ${CMAKE_SOURCE_DIR}/src/misc.c
  ${CMAKE_BINARY_DIR}/src/mai-model.c
+ ${CMAKE_SOURCE_DIR}/src/mai-model_funcs.c
  ${CMAKE_BINARY_DIR}/src/mai-anim.c
  ${CMAKE_SOURCE_DIR}/src/mai-anim_funcs.c
  ${CMAKE_BINARY_DIR}/src/mai-node.c

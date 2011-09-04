@@ -53,7 +53,8 @@ main (int argc, char **argv)
   g_state->w_mat = z_mat;
 
   MaiModel *model;
-  model = mai_model_new_from_file ("c_sr_weight.dae");
+  //model = mai_model_new_from_file ("c_sr_weight.dae");
+  model = mai_model_new_from_file ("../misc/fleurOptonl.dae");
   MaiNode *mesh_node;
   mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mesh_node);

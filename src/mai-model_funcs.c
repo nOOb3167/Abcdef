@@ -2,6 +2,8 @@
 #include <src/ai_example.h>
 #include <src/mai-model_funcs.h>
 
+#define GET_NEW ((MaiModel *)g_object_new(mai_model_get_type(), NULL))
+
 MaiModel *
 _mai_model_new_from_scene (struct aiScene *scene);
 

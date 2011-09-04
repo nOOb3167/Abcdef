@@ -4,6 +4,8 @@
 #include <assimp.h>
 #include <aiScene.h>
 
+#include <src/mai-model.h>
+
 MaiModel *
 mai_model_new_from (struct aiScene *scene);
 
