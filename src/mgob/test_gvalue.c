@@ -113,8 +113,8 @@ nx_hash_table_lookup (GHashTable *ht, GValue *v)
   return ret;
 }
 
-int
-main (int argc, char **argv)
+void
+abcdef (void)
 {
   g_type_init ();
 
@@ -161,6 +161,101 @@ main (int argc, char **argv)
   g_object_unref (x1);
 
   g_hash_table_unref (ht);
+}
+
+void
+nx_slice_int_free (gpointer mem)
+{
+  g_slice_free1 (sizeof (gint), mem);
+}
+
+void
+tnormal (void)
+{
+
+  GHashTable *ht;
+  ht = g_hash_table_new_full (g_int_hash, g_int_equal,
+      nx_slice_int_free, nx_slice_int_free);
+
+  gint nkeys;
+  nkeys = 1000000;
+
+  for (int i = 0; i < nkeys; ++i)
+    {
+      gint *k;
+      k = g_slice_alloc (sizeof (gint));
+      *k = i;
+
+      gint *v;
+      v = g_slice_alloc (sizeof (gint));
+      *v = (nkeys - 1) - i;
+
+      g_hash_table_insert (ht, k, v);
+    }
+
+  for (int i = 0; i < nkeys; ++i)
+    {
+      gint k;
+      k = i;
+
+      gint *v;
+
+      v = g_hash_table_lookup (ht, &k);
+    }
+
+  g_hash_table_unref (ht);
+}
+
+void
+tbatched (void)
+{
+
+  GHashTable *ht;
+  ht = g_hash_table_new (g_int_hash, g_int_equal);
+
+  gint nkeys;
+  nkeys = 1000000;
+
+  gint *keys;
+  keys = g_slice_alloc (sizeof (*keys) * nkeys);
+
+  gint *values;
+  values = g_slice_alloc (sizeof (*values) * nkeys);
+
+  for (int i = 0; i < nkeys; ++i)
+    {
+      gint *k;
+      k = &keys[i];
+      *k = i;
+
+      gint *v;
+      v = &values[i];
+      *v = (nkeys - 1) - i;
+
+      g_hash_table_insert (ht, k, v);
+    }
+
+  for (int i = 0; i < nkeys; ++i)
+    {
+      gint k;
+      k = i;
+
+      gint *v;
+
+      v = g_hash_table_lookup (ht, &k);
+    }
+
+  g_hash_table_unref (ht);
+}
+
+int
+main (int argc, char **argv)
+{
+  g_type_init ();
+
+  //tnormal ();
+  //tbatched ();
+  abcdef ();
 
   return EXIT_SUCCESS;
 }
