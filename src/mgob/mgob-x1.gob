@@ -2,6 +2,11 @@
 #include <stdio.h>
 %}
 
+%adh{
+GObject *
+mgob_x1_new (const char *name);
+%}
+
 class Mgob:X1 from G:Object
 {
  public const char *name;
@@ -11,12 +16,4 @@ class Mgob:X1 from G:Object
   printf ("Finalized %s\n", self->name);
  }
 
- public Mgob:X1 *
- new (const char *name)
- {
-  MgobX1 *ret;
-  ret = GET_NEW;
-  ret->name = name;
-  return ret;
- }
 }

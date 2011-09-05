@@ -3,6 +3,10 @@
 
 #include <glib.h>
 
+#define NX_GET_NEW(xlower) \
+static GObject *nx_get_new (void) \
+{ return (g_object_new(xlower##_get_type(), NULL)); }
+
 /*
  * xlower mai_node
  * xupper MaiNode
