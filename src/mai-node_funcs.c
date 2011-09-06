@@ -1,5 +1,5 @@
 #include <src/ai_example.h>
-#include <src/mai-node_funcs.h>
+#include <src/mai-node.h>
 
 #define GET_NEW ((MaiNode *)g_object_new(mai_node_get_type(), NULL))
 

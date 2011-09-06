@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <src/ai_example.h>
-#include <src/mai-anim-instance_funcs.h>
+#include <src/array_macro.h>
+#include <src/mai-anim-instance.h>
+
+NX_GET_NEW (mai_anim_instance);
 
 void
 _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_mtx);
@@ -9,8 +12,9 @@ _mai_anim_draw_recursive (MaiAnimInstance *self, MaiNode *node, CoglMatrix *acc_
 MaiAnimInstance *
 mai_anim_instance_new_from_anim (MaiAnim *anim, GHashTable *name_node_map, MaiNode *nodes)
 {
-  MaiAnimInstance *self = GET_NEW;
+  MaiAnimInstance *self;
 
+  self = MAI_ANIM_INSTANCE (nx_get_new ());
   self->anim = anim;
   self->name_node_map = name_node_map;
   self->nodes = nodes;

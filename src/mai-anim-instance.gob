@@ -1,13 +1,7 @@
 %header{
 #include <src/mai-node.h>
-#include <src/mai-node_funcs.h>
 #include <src/mai-anim.h>
 #include <src/mai-node-anim.h>
-#include <src/mai-node-anim_funcs.h>
-%}
-
-%afterdecls{
-#include <src/mai-anim-instance_funcs.c>
 %}
 
 class Mai:Anim:Instance from G:Object
@@ -22,3 +16,11 @@ class Mai:Anim:Instance from G:Object
  public Mai:Node *nodes
    unrefwith g_object_unref;
 }
+
+%adh{
+MaiAnimInstance *
+mai_anim_instance_new_from_anim (MaiAnim *anim, GHashTable *name_node_map, MaiNode *nodes);
+
+void
+mai_anim_instance_draw (MaiAnimInstance * self);
+%}

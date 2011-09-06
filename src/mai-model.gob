@@ -4,10 +4,17 @@
 
 #include <src/mai-anim.h>
 #include <src/mai-anim-instance.h>
-#include <src/mai-anim-instance_funcs.h>
 #include <src/mai-node.h>
-#include <src/mai-node_funcs.h>
 %}
+
+class Mai:Model from G:Object
+{
+ public GHashTable *name_node_map
+   destroywith g_hash_table_unref;
+ public GMaiAnimPtrArray *anims
+   destroywith g_mai_anim_ptr_array_unref;
+ public Mai:Node *nodes;
+}
 
 %adh{
 MaiModel *
@@ -19,12 +26,3 @@ mai_model_new_from_file (const char *file_name);
 MaiAnimInstance *
 mai_model_get_anim_by_name (MaiModel *self, char * name);
 %}
-
-class Mai:Model from G:Object
-{
- public GHashTable *name_node_map
-   destroywith g_hash_table_unref;
- public GMaiAnimPtrArray *anims
-   destroywith g_mai_anim_ptr_array_unref;
- public Mai:Node *nodes;
-}

@@ -1,13 +1,17 @@
 #include <src/ai_example.h>
-#include <src/mai-bone_funcs.h>
+#include <src/array_macro.h>
+#include <src/mai-bone.h>
 
 XPTR_ARRAY_MACRO_TYPE_DEFINE (mai_bone, MaiBone);
+
+NX_GET_NEW (mai_bone);
 
 MaiBone *
 mai_bone_new_from (struct aiBone *bone)
 {
-  MaiBone *self = GET_NEW;
+  MaiBone *self;
 
+  self = MAI_BONE (nx_get_new ());
   self->name = g_strdup (bone->mName.data);
   self->offset_matrix = g_new0 (CoglMatrix, 1);
   ai_matrix_to_cogl_matrix (&bone->mOffsetMatrix, self->offset_matrix);

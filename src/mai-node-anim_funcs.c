@@ -1,4 +1,4 @@
-#include <src/mai-node-anim_funcs.h>
+#include <src/mai-node-anim.h>
 
 #define GET_NEW ((MaiNodeAnim *)g_object_new(mai_node_anim_get_type(), NULL))
 

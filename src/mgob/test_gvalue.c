@@ -126,7 +126,7 @@ abcdef (void)
 
 
   MgobX1 *x1;
-  x1 = mgob_x1_new ("x1");
+  x1 = MGOB_X1 (mgob_x1_new ("x1"));
 
   GHashTable *ht;
   ht = g_hash_table_new_full (nx_value_object_hash,

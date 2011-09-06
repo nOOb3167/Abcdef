@@ -11,7 +11,6 @@
 #include <src/gfx_lib_setup.h>
 #include <src/mai-model.h>
 #include <src/mai-node-anim.h>
-#include <src/mai-node-anim_funcs.h>
 #include <src/misc.h>
 #include <src/ai_example.h>
 
