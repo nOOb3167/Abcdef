@@ -36,12 +36,16 @@ _iw_setup_tree (GtkWidget **tree_out, GtkTreeStore **store_out)
    tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (store));
 
    renderer = gtk_cell_renderer_text_new ();
-   g_object_set (G_OBJECT (renderer),
-                 "foreground", "red",
-                 NULL);
-
+   /*
+    * Lol markup > color property.
+    * http://www.gtk.org/api/2.6/pango/PangoMarkupFormat.html
+    *
+    * g_object_set (G_OBJECT (renderer),
+    *               "foreground", "green",
+    *               NULL);
+   */
    column = gtk_tree_view_column_new_with_attributes ("Author", renderer,
-                                                      "text", IW_COLUMN_NAME,
+                                                      "markup", IW_COLUMN_NAME,
                                                       NULL);
 
    gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -75,7 +79,9 @@ iw_info_win (void)
   GtkTreeIter iter;
   gtk_tree_store_append (store, &iter, NULL);
 
-  gtk_tree_store_set (store, &iter, IW_COLUMN_NAME, "Greetings", -1);
+  gtk_tree_store_set (store, &iter,
+                      IW_COLUMN_NAME, "<span foreground=\"blue\" size=\"x-large\">Blue text</span> is <i>cool</i>!",
+                      -1);
 
   gtk_container_add (GTK_CONTAINER (hbox), tree);
 
