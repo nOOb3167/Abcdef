@@ -1,0 +1,88 @@
+diff -u2 -r gob2-2.0.18.orig/src/lexer.l gob2-2.0.18/src/lexer.l
+--- gob2-2.0.18.orig/src/lexer.l	2011-01-03 20:46:05 +0100
++++ gob2-2.0.18/src/lexer.l	2011-09-05 02:53:55 +0200
+@@ -365,4 +365,12 @@
+ 			ccode_line = line_no;
+ 		}
++^\%(adh|afterdeclsheader)\{		{
++			BEGIN(C_CODE);
++			parenth_depth = 1;
++			class_after_c = FALSE;
++			code_type = ADHCODE;
++			clear_cbuf();
++			ccode_line = line_no;
++		}
+ <C_CODE>^\%\}	{
+ 			BEGIN(INITIAL);
+diff -u2 -r gob2-2.0.18.orig/src/main.c gob2-2.0.18/src/main.c
+--- gob2-2.0.18.orig/src/main.c	2011-01-03 20:50:33 +0100
++++ gob2-2.0.18/src/main.c	2011-09-06 04:24:58 +0200
+@@ -3374,4 +3374,7 @@
+ 		out_printf(fp, "\n");
+ 		break;
++	case ADH_CCODE:
++		fp = outh;
++		break;
+ 	case AT_CCODE:
+ 		/* AT code is printed exactly like normal 'all'
+@@ -3613,4 +3616,17 @@
+ 
+ 	out_printf (outh, "\n/*\n"
++		" * AfterDeclsHeader section\n"
++		" */\n");
++
++	for (li = nodes; li != NULL; li = li->next) {
++		Node *node = li->data;
++		if (node->type == CCODE_NODE) {
++			CCode *cc = (CCode *)node;
++			if (cc->cctype == ADH_CCODE)
++				print_ccode_block (cc);
++		}
++	}
++
++	out_printf (outh, "\n/*\n"
+ 		    " * Public methods\n"
+ 		    " */\n");
+@@ -4193,6 +4209,7 @@
+ 			CCode *cc = (CCode *)node;
+ 			if (cc->cctype != HT_CCODE &&
+-			    cc->cctype != AT_CCODE &&
+-			    cc->cctype != AD_CCODE)
++				cc->cctype != AT_CCODE &&
++				cc->cctype != AD_CCODE &&
++				cc->cctype != ADH_CCODE)
+ 				print_ccode_block ((CCode *)node);
+ 		} else if (node->type == CLASS_NODE) {
+diff -u2 -r gob2-2.0.18.orig/src/parse.y gob2-2.0.18/src/parse.y
+--- gob2-2.0.18.orig/src/parse.y	2011-01-03 20:55:50 +0100
++++ gob2-2.0.18/src/parse.y	2011-09-05 02:42:26 +0200
+@@ -694,5 +694,5 @@
+ 
+ %token <id> TOKEN NUMBER TYPETOKEN ARRAY_DIM SINGLE_CHAR
+-%token <cbuf> CCODE CTCODE ADCODE HTCODE PHCODE HCODE ACODE ATCODE STRING
++%token <cbuf> CCODE CTCODE ADCODE ADHCODE HTCODE PHCODE HCODE ACODE ATCODE STRING
+ %token <line> PUBLIC PRIVATE PROTECTED CLASSWIDE PROPERTY ARGUMENT
+ %token <line> VIRTUAL SIGNAL OVERRIDE
+@@ -722,4 +722,13 @@
+ 					       "cbuf:steal", ($<cbuf>1)->str,
+ 					       "line_no", ccode_line,
++					       NULL);
++			nodes = g_list_append(nodes,node);
++			g_string_free($<cbuf>1,FALSE);
++					}
++	|	ADHCODE			{
++			Node *node = node_new (CCODE_NODE,
++					       "cctype", ADH_CCODE,
++					       "cbuf:steal", ($<cbuf>1)->str,
++					       "line_no", ccode_line,
+ 					       NULL);
+ 			nodes = g_list_append(nodes,node);
+diff -u2 -r gob2-2.0.18.orig/src/treefuncs.def gob2-2.0.18/src/treefuncs.def
+--- gob2-2.0.18.orig/src/treefuncs.def	2011-01-03 20:41:11 +0100
++++ gob2-2.0.18/src/treefuncs.def	2011-09-05 02:43:18 +0200
+@@ -11,4 +11,5 @@
+ 	C_CCODE,
+ 	AD_CCODE,
++	ADH_CCODE,
+ 	H_CCODE,
+ 	HT_CCODE,

@@ -8,13 +8,9 @@
 #include <src/cogl_include.h>
 
 #include <src/mai-node.h>
-#include <src/mai-node_funcs.h>
 #include <src/mai-anim.h>
-#include <src/mai-anim_funcs.h>
 #include <src/mai-model.h>
-#include <src/mai-model_funcs.h>
 #include <src/mai-anim-instance.h>
-#include <src/mai-anim-instance_funcs.h>
 #include <src/gfx_lib_setup.h>
 #include <Nxt.h>
 #include <ai_example.h>

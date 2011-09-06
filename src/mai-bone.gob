@@ -1,10 +1,10 @@
 %header{
-#include <src/cogl_include.h>
-#include <Nxt.h>
-%}
+#include <assimp.h>
+#include <aiScene.h>
 
-%afterdecls{
-#include <src/mai-bone_funcs.c>
+#include <src/cogl_include.h>
+#include <src/array_macro.h>
+#include <src/Nxt.h>
 %}
 
 class Mai:Bone from G:Object
@@ -15,3 +15,10 @@ class Mai:Bone from G:Object
  /* (int, weight_float) */
  public GHashTable *id_wval_map;
 }
+
+%adh{
+XPTR_ARRAY_MACRO_TYPE_DECLARE (mai_bone, MaiBone);
+
+MaiBone *
+mai_bone_new_from (struct aiBone *bone);
+%}

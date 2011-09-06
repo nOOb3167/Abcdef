@@ -1,7 +1,4 @@
 %header{
-//#define XGOB_VFUN
-//#include <src/mai-node_funcs.h>
-//#undef XGOB_VFUN
 #include <assimp.h>
 #include <aiScene.h>
 #include <cogl_include.h>
@@ -10,13 +7,8 @@
 #include <Nxt.h>
 
 #include <src/mai-bone.h>
-#include <src/mai-bone_funcs.h>
 
 struct GMaiNodePtrArray_struct;
-%}
-
-%afterdecls{
-//#include <src/mai-node_decls.c>
 %}
 
 class Mai:Node from G:Object
@@ -54,3 +46,16 @@ class Mai:Node from G:Object
   //class->something = _abcdalt_something;
  }
 }
+
+%adh{
+XPTR_ARRAY_MACRO_TYPE_DECLARE (mai_node, MaiNode);
+
+MaiNode *
+mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent);
+
+void
+mai_node_draw_recursive (MaiNode *self);
+
+void
+_mai_node_draw_recursive (MaiNode *self, CoglMatrix *acc_mtx);
+%}

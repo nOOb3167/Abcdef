@@ -6,9 +6,7 @@
 #include <src/error.h>
 #include <src/ai_example.h>
 #include <src/mai-model.h>
-#include <src/mai-model_funcs.h>
 #include <src/mai-node-anim.h>
-#include <src/mai-node-anim_funcs.h>
 #include <nx_mat.h>
 #include <sr.h>
 
