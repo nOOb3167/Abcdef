@@ -101,6 +101,7 @@ SET_TARGET_PROPERTIES(sr PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR
 ADD_EXECUTABLE(sr_p
  src/test/model_skin/sr_p.c
  src/test/model_skin/sr.c
- src/test/model_skin/nx_mat.c)
+ src/test/model_skin/nx_mat.c
+ src/info_win.c)
 TARGET_LINK_LIBRARIES(sr_p nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(sr_p PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <glib.h>
+#include <gtk/gtk.h>
 #include <src/gfx_lib_setup.h>
+#include <src/info_win.h>
 #include <sr.h>
 
 struct NxState *g_state;
@@ -10,7 +12,11 @@ CoglHandle *g_testtex;
 int
 main (int argc, char **argv)
 {
+  gtk_init( &argc, &argv );
+
   g_type_init ();
+
+  iw_info_win ();
 
   gfx_lib_setup ();
 
