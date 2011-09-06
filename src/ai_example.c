@@ -10,7 +10,6 @@
 #include <src/mai-node.h>
 #include <src/mai-node_funcs.h>
 #include <src/mai-anim.h>
-#include <src/mai-anim_funcs.h>
 #include <src/mai-model.h>
 #include <src/mai-anim-instance.h>
 #include <src/mai-anim-instance_funcs.h>

@@ -4,8 +4,17 @@
 #include <cogl_include.h>
 #include <error.h>
 
+#include <src/array_macro.h>
 #include <src/mai-node-anim.h>
 #include <src/mai-node-anim_funcs.h>
+%}
+
+%adh{
+XARRAY_MACRO_TYPE_DECLARE (mai_anim, MaiAnim);
+XPTR_ARRAY_MACRO_TYPE_DECLARE (mai_anim, MaiAnim);
+
+MaiAnim *
+mai_anim_new_from (struct aiScene *scene, struct aiAnimation *from);
 %}
 
 class Mai:Anim from G:Object
