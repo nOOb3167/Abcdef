@@ -1,4 +1,7 @@
 %header{
+#include <assimp.h>
+#include <aiScene.h>
+
 #include <src/mai-anim.h>
 #include <src/mai-anim_funcs.h>
 #include <src/mai-anim-instance.h>
@@ -6,10 +9,6 @@
 #include <src/mai-node.h>
 #include <src/mai-node_funcs.h>
 %}
-
-//%afterdecls{
-//#include <src/mai-model_funcs.c>
-//%}
 
 class Mai:Model from G:Object
 {
@@ -19,3 +18,14 @@ class Mai:Model from G:Object
    destroywith g_mai_anim_ptr_array_unref;
  public Mai:Node *nodes;
 }
+
+%adh{
+MaiModel *
+mai_model_new_from (struct aiScene *scene);
+
+MaiModel *
+mai_model_new_from_file (const char *file_name);
+
+MaiAnimInstance *
+mai_model_get_anim_by_name (MaiModel *self, char * name);
+%}

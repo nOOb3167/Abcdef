@@ -12,7 +12,6 @@
 #include <src/mai-anim.h>
 #include <src/mai-anim_funcs.h>
 #include <src/mai-model.h>
-#include <src/mai-model_funcs.h>
 #include <src/mai-anim-instance.h>
 #include <src/mai-anim-instance_funcs.h>
 #include <src/gfx_lib_setup.h>

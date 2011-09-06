@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <src/ai_example.h>
-#include <src/mai-model_funcs.h>
+#include <src/mai-model.h>
 
 #define GET_NEW ((MaiModel *)g_object_new(mai_model_get_type(), NULL))
 
