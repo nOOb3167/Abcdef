@@ -54,7 +54,7 @@ _iw_setup_tree (GtkWidget **tree_out, GtkTreeStore **store_out)
    *store_out = store;
 }
 
-int
+void
 iw_info_win (void)
 {
   GtkWidget *win, *but, *hbox;
@@ -91,6 +91,36 @@ iw_info_win (void)
     {
       gtk_main_iteration ();
     }
+}
 
-  return 0;
+void
+_iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
+                        struct SrNodeGraph *gra, struct SrNode* node)
+{
+  gtk_tree_store_set (store, iter,
+                      IW_COLUMN_NAME, node->name,
+                      -1);
+
+  for (int i = 0; i < node->child_names_len; ++i)
+    {
+      struct SrNode *ch;
+
+      ch = g_hash_table_lookup (gra->name_node_map, node->child_names[i]);
+      g_xassert (ch);
+
+      _iw_fill_from_node_one (store, iter, gra, ch);
+    }
+}
+
+void
+iw_fill_model_from_node_graph (GtkTreeStore *store, struct SrNodeGraph *gra)
+{
+  GtkTreeIter iter;
+
+  gtk_tree_store_clear (store);
+
+  gtk_tree_store_append (store, &iter, NULL);
+
+  g_xassert (gra->nodes_len > 0 && &gra->nodes[0] != NULL);
+  _iw_fill_from_node_one (store, &iter, gra, &gra->nodes[0]);
 }

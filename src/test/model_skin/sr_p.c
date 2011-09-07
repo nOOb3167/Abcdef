@@ -16,8 +16,6 @@ main (int argc, char **argv)
 
   g_type_init ();
 
-  iw_info_win ();
-
   gfx_lib_setup ();
 
   g_testtex = cogl_texture_new_from_file ("testtex_sr.bmp", COGL_TEXTURE_NONE, COGL_PIXEL_FORMAT_ANY, NULL);
@@ -74,6 +72,8 @@ main (int argc, char **argv)
 
   struct SrNodeGraph *sr_model;
   sr_node_graph_from_model (model, &sr_model);
+
+  iw_info_win ();
 
   sr_weight_dump (model);
 
