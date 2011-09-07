@@ -100,6 +100,14 @@ main (int argc, char **argv)
       GArray *trans_verts;
       sr_skeletal_anim (model, mai, mesh_node, aux_sr_model, &trans_verts);
 
+      struct SrNodeGraph *s2;
+      sr_node_graph_copy (&s2, sr_model);
+
+      GHashTable *ht;
+      sr_skeletal_anim_node_graph (mai, s2);
+      sr_skeletal_anim_verts (model, mai, s2, &ht);
+      g_hash_table_unref (ht);
+
       mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
       /**

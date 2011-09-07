@@ -143,6 +143,12 @@ void
 sr_skeletal_anim_node_graph (MaiAnimInstance *mai,
                              struct SrNodeGraph *sr_model_io);
 
+void
+sr_skeletal_anim_verts (MaiModel *model,
+                        MaiAnimInstance *mai,
+                        struct SrNodeGraph *sr_model,
+                        GHashTable **name_verts_map_out);
+
 struct SrNode *
 _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
                     struct SrNodeGraph *orig_mdl,
