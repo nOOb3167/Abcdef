@@ -4,7 +4,12 @@
 %}
 
 class Mai:Info:Win from G:Object
-{ 
+{
+ public GtkWidget *win
+   unrefwith g_object_unref;
+   
+ public gboolean win_dead = FALSE;
+ 
  public GtkTreeIter **iter
    destroywith g_free;
    
@@ -16,6 +21,21 @@ class Mai:Info:Win from G:Object
 }
 
 %adh{
+enum
+{
+   IW_COLUMN_NAME = 0,
+   N_COLUMNS
+};
+
 GObject *
-mai_node_new (void);
+mai_info_win_new (void);
+
+gboolean
+_iw_signal_dead (GtkWidget *widget, GdkEvent *event, gpointer user_data);
+
+void
+_iw_create_window (MaiInfoWin *iw, GtkWidget **win_out);
+
+void
+_iw_setup_tree (GtkWidget **tree_out, GtkTreeStore **store_out);
 %}
