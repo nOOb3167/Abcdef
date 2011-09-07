@@ -1,0 +1,21 @@
+%header{
+#include <gtk/gtk.h>
+#include <src/array_macro.h>
+%}
+
+class Mai:Info:Win from G:Object
+{ 
+ public GtkTreeIter **iter
+   destroywith g_free;
+   
+ public GtkTreeStore *store
+   unrefwith g_object_unref;
+   
+ public GtkWidget *tree_view
+   unrefwith g_object_unref;
+}
+
+%adh{
+GObject *
+mai_node_new (void);
+%}
