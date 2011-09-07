@@ -71,7 +71,9 @@ void
 _iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
                         struct SrNodeGraph *gra, struct SrNode* node)
 {
-  gtk_tree_store_set (store, iter,
+  GtkTreeIter it2;
+  gtk_tree_store_append (store, &it2, iter);
+  gtk_tree_store_set (store, &it2,
                       IW_COLUMN_NAME, node->name,
                       -1);
 
@@ -82,21 +84,17 @@ _iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
       ch = g_hash_table_lookup (gra->name_node_map, node->child_names[i]);
       g_xassert (ch);
 
-      _iw_fill_from_node_one (store, iter, gra, ch);
+      _iw_fill_from_node_one (store, &it2, gra, ch);
     }
 }
 
 void
 mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra)
 {
-  GtkTreeIter iter;
-
   gtk_tree_store_clear (iw->store);
 
-  gtk_tree_store_append (iw->store, &iter, NULL);
-
   g_xassert (gra->nodes_len > 0 && &gra->nodes[0] != NULL);
-  _iw_fill_from_node_one (iw->store, &iter, gra, &gra->nodes[0]);
+  _iw_fill_from_node_one (iw->store, NULL, gra, &gra->nodes[0]);
 }
 
 void
@@ -129,6 +127,11 @@ mai_info_win_new (void)
 
   self->store = store;
   self->tree_view = tree_view;
+
+  GtkWidget *hbox;
+  hbox = gtk_bin_get_child (GTK_BIN (self->win));
+  g_xassert (hbox);
+  gtk_container_add (GTK_CONTAINER (hbox), self->tree_view);
 
   return G_OBJECT (self);
 }
