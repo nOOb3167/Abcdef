@@ -139,6 +139,10 @@ sr_skeletal_anim (MaiModel *model,
                   struct SrNodeGraph *sr_model_io,
                   GArray **trans_verts_out);
 
+void
+sr_skeletal_anim_node_graph (MaiAnimInstance *mai,
+                             struct SrNodeGraph *sr_model_io);
+
 struct SrNode *
 _sr_copy_node_walk (struct SrNodeGraph *res_mdl,
                     struct SrNodeGraph *orig_mdl,

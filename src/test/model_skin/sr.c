@@ -568,7 +568,7 @@ sr_vertex_bones (MaiNode *mesh_node, GPtrArray **vbmap_out)
   /* In for(vtx) loop, link bone->name with name_bone_mtx map
    * then bone->weights[vtx] for weight */
   GPtrArray *vbmap;
-  vbmap = g_ptr_array_new ();
+  vbmap = g_ptr_array_new_with_free_func ((GDestroyNotify)g_ptr_array_unref);
 
   for (int cnt = 0; cnt < mesh_node->mesh_verts->len; ++cnt)
     {
@@ -684,7 +684,7 @@ sr_skeletal_anim (MaiModel *model,
    * (Caller responsible for the copy.)
    */
   struct SrNode *mesh_node_sr;
-  mesh_node_sr= g_hash_table_lookup (sr_model_io->name_node_map, mesh_node->name);
+  mesh_node_sr = g_hash_table_lookup (sr_model_io->name_node_map, mesh_node->name);
   g_xassert (mesh_node_sr);
 
   sr_update_node_graph (mai, sr_model_io);
@@ -699,6 +699,80 @@ sr_skeletal_anim (MaiModel *model,
   sr_vertex_transform_calculate (mesh_node, vbmap, name_bone_mtx_map, &trans_verts);
 
   *trans_verts_out = trans_verts;
+}
+
+void
+sr_skeletal_anim_node_graph (MaiAnimInstance *mai,
+                             struct SrNodeGraph *sr_model_io)
+{
+  sr_update_node_graph (mai, sr_model_io);
+}
+
+void
+sr_skeletal_anim_verts (MaiModel *model,
+                        MaiAnimInstance *mai,
+                        struct SrNodeGraph *sr_model,
+                        GHashTable **name_verts_map_out)
+{
+  /**
+   * Mapping Skeletal-transformed verts for every mesh node.
+   *
+   * Foreach the model->name_node_map, filter MaiNode->mesh_verts->len > 0
+   * Then use vertex_transform_calculate
+   */
+
+  /* (name, GArray<struct xvtx>) */
+  GHashTable *ret;
+  ret = g_hash_table_new_full (g_str_hash, g_str_equal,
+                               g_free, (GDestroyNotify)g_array_unref);
+
+  void
+  flt (gpointer key, gpointer val, gpointer data)
+  {
+    MaiNode *mn;
+    mn = MAI_NODE (val);
+    g_object_ref (mn);
+
+    GHashTable *ret;
+    ret = data;
+
+    /* Only want nodes with meshes */
+    if (mn->mesh_verts->len == 0)
+      {
+        g_object_unref (mn);
+        return;
+      }
+
+    /* I don't see why mesh_node_sr is necessary with a little cleanup
+     * Maybe just pass name and MaiModel to sr_bone_matrices, have it lookup */
+    struct SrNode *mn_sr;
+    mn_sr = g_hash_table_lookup (sr_model->name_node_map, mn->name);
+    g_xassert (mn_sr);
+
+    GHashTable *name_bone_mtx_map;
+    sr_bone_matrices (sr_model, mn_sr,
+                      mn, &name_bone_mtx_map);
+
+    GPtrArray *vbmap;
+    sr_vertex_bones (mn, &vbmap);
+
+    GArray *trans_verts;
+    sr_vertex_transform_calculate (mn, vbmap,
+                                   name_bone_mtx_map, &trans_verts);
+
+    g_hash_table_insert (ret,
+                         g_strdup (mn->name),
+                         g_array_ref (trans_verts));
+
+    g_hash_table_unref (name_bone_mtx_map);
+    g_ptr_array_unref (vbmap);
+    g_array_unref (trans_verts);
+    g_object_unref (mn);
+  }
+
+  g_hash_table_foreach (model->name_node_map, flt, ret);
+
+  *name_verts_map_out = ret;
 }
 
 struct SrNode *
