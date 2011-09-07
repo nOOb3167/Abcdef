@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <glib.h>
+#include <gtk/gtk.h>
 #include <src/gfx_lib_setup.h>
+#include <src/mai-info-win.h>
 #include <sr.h>
 
 struct NxState *g_state;
@@ -10,6 +12,8 @@ CoglHandle *g_testtex;
 int
 main (int argc, char **argv)
 {
+  gtk_init( &argc, &argv );
+
   g_type_init ();
 
   gfx_lib_setup ();
@@ -68,6 +72,13 @@ main (int argc, char **argv)
 
   struct SrNodeGraph *sr_model;
   sr_node_graph_from_model (model, &sr_model);
+
+  MaiInfoWin *iw;
+  iw = MAI_INFO_WIN (mai_info_win_new ());
+
+  mai_info_win_fill_model_from_node_graph (iw, sr_model);
+
+  mai_info_win_display (iw);
 
   sr_weight_dump (model);
 

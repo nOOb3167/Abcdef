@@ -1,0 +1,49 @@
+%header{
+#include <gtk/gtk.h>
+#include <src/array_macro.h>
+#include <sr.h>
+%}
+
+class Mai:Info:Win from G:Object
+{
+ public GtkWidget *win = NULL
+   unrefwith g_object_unref;
+   
+ public gboolean win_dead = FALSE;
+    
+ public GtkTreeStore *store = NULL
+   unrefwith g_object_unref;
+   
+ public GtkWidget *tree_view = NULL
+   unrefwith g_object_unref;
+}
+
+%adh{
+enum
+{
+   IW_COLUMN_NAME = 0,
+   N_COLUMNS
+};
+
+GObject *
+mai_info_win_new (void);
+
+gboolean
+_iw_signal_dead (GtkWidget *widget, gpointer user_data);
+
+void
+_iw_create_window (MaiInfoWin *iw, GtkWidget **win_out);
+
+void
+_iw_setup_tree (GtkWidget **tree_out, GtkTreeStore **store_out);
+
+void
+_iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
+                        struct SrNodeGraph *gra, struct SrNode* node);
+
+void
+mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra);
+
+void
+mai_info_win_display (MaiInfoWin *iw);
+%}

@@ -65,6 +65,7 @@ GOB2IZE(src/mai-node.gob)
 GOB2IZE(src/mai-node-anim.gob)
 GOB2IZE(src/mai-anim-instance.gob)
 GOB2IZE(src/mai-bone.gob)
+GOB2IZE(src/mai-info-win.gob)
 
 ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
@@ -83,7 +84,9 @@ ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_BINARY_DIR}/src/mai-anim-instance.c
  ${CMAKE_SOURCE_DIR}/src/mai-anim-instance_funcs.c
  ${CMAKE_BINARY_DIR}/src/mai-bone.c
- ${CMAKE_SOURCE_DIR}/src/mai-bone_funcs.c)
+ ${CMAKE_SOURCE_DIR}/src/mai-bone_funcs.c
+ ${CMAKE_BINARY_DIR}/src/mai-info-win.c
+ ${CMAKE_SOURCE_DIR}/src/mai-info-win_funcs.c)
 
 ADD_EXECUTABLE(Nxt src/Nxt.c)
 TARGET_LINK_LIBRARIES(Nxt nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)

@@ -1,0 +1,9 @@
+Need to use Mingw45 libintl-8.dll for compiling.
+Need to use OBS     libintl-8.dll for running.
+
+Have Mingw45 (Located in OBS24/bin) earlier in path by default.
+wr.bat prepends a directory containing just the OBS intl.
+
+Of course I could just revert to libintl-8.dll from
+Abcdef_deps_001_2011_6_30.7z
+But that would be too easy right?
