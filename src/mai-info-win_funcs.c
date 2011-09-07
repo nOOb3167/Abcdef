@@ -4,9 +4,10 @@
 NX_GET_NEW (mai_info_win);
 
 gboolean
-_iw_signal_dead (GtkWidget *widget, GdkEvent *event, gpointer user_data)
+_iw_signal_dead (GtkWidget *widget, gpointer user_data)
 {
   MaiInfoWin *iw;
+
   iw = MAI_INFO_WIN (user_data);
 
   iw->win_dead = TRUE;
@@ -66,6 +67,49 @@ _iw_setup_tree (GtkWidget **tree_out, GtkTreeStore **store_out)
    *store_out = store;
 }
 
+void
+_iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
+                        struct SrNodeGraph *gra, struct SrNode* node)
+{
+  gtk_tree_store_set (store, iter,
+                      IW_COLUMN_NAME, node->name,
+                      -1);
+
+  for (int i = 0; i < node->child_names_len; ++i)
+    {
+      struct SrNode *ch;
+
+      ch = g_hash_table_lookup (gra->name_node_map, node->child_names[i]);
+      g_xassert (ch);
+
+      _iw_fill_from_node_one (store, iter, gra, ch);
+    }
+}
+
+void
+mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra)
+{
+  GtkTreeIter iter;
+
+  gtk_tree_store_clear (iw->store);
+
+  gtk_tree_store_append (iw->store, &iter, NULL);
+
+  g_xassert (gra->nodes_len > 0 && &gra->nodes[0] != NULL);
+  _iw_fill_from_node_one (iw->store, &iter, gra, &gra->nodes[0]);
+}
+
+void
+mai_info_win_display (MaiInfoWin *iw)
+{
+  gtk_widget_show_all (iw->win);
+
+  while (iw->win_dead == FALSE)
+    {
+      gtk_main_iteration ();
+    }
+}
+
 GObject *
 mai_info_win_new (void)
 {
@@ -78,6 +122,13 @@ mai_info_win_new (void)
 
   self->win = win;
   self->win_dead = FALSE;
+
+  GtkWidget *tree_view;
+  GtkTreeStore *store;
+  _iw_setup_tree (&tree_view, &store);
+
+  self->store = store;
+  self->tree_view = tree_view;
 
   return G_OBJECT (self);
 }

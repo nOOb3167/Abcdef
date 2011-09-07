@@ -76,6 +76,8 @@ main (int argc, char **argv)
   MaiInfoWin *iw;
   iw = MAI_INFO_WIN (mai_info_win_new ());
 
+  mai_info_win_display (iw);
+
   sr_weight_dump (model);
 
   int frame;
