@@ -100,6 +100,8 @@ mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra
 void
 mai_info_win_display (MaiInfoWin *iw)
 {
+  gtk_tree_view_expand_all (GTK_TREE_VIEW (iw->tree_view));
+
   gtk_widget_show_all (iw->win);
 
   while (iw->win_dead == FALSE)
