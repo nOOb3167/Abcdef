@@ -47,29 +47,25 @@ _mai_model_new_from_scene (struct aiScene *scene)
 {
   MaiModel *self = GET_NEW;
 
-  g_xassert (scene->mRootNode);
-  struct aiNode *root_node;
-  root_node = scene->mRootNode;
-
   MaiNode *mn;
-  mn = mai_node_new_from (scene, root_node, NULL);
-
   GHashTable *name_node_map;
-  name_node_map = _nx_mai_collect_node_map (mn);
 
+  g_xassert (scene->mRootNode);
+  g_xassert (scene->mNumAnimations >= 1);
+
+  mn = mai_node_new_from (scene, scene->mRootNode, NULL);
+  name_node_map = _nx_mai_collect_node_map (mn);
 
   self->name_node_map = name_node_map;
   self->nodes = mn;
 
   self->anims = g_mai_anim_ptr_array_new ();
 
-  g_xassert (scene->mNumAnimations >= 1);
-
-  int cnt;
-  for (cnt=0; cnt<scene->mNumAnimations; ++cnt)
+  for (int i = 0; i < scene->mNumAnimations; ++i)
     {
       MaiAnim *an;
-      an = mai_anim_new_from (scene, scene->mAnimations[cnt]);
+
+      an = mai_anim_new_from (scene, scene->mAnimations[i]);
       g_mai_anim_ptr_array_add (self->anims, an);
     }
 
@@ -105,16 +101,19 @@ GHashTable *
 _nx_mai_collect_node_map (MaiNode *from)
 {
   GHashTable *ret;
-  ret = g_hash_table_new (g_str_hash, g_str_equal);
+  ret = g_hash_table_new_full (g_str_hash, g_str_equal,
+                               g_free, g_object_unref);
 
   void _collector (GHashTable *ht, MaiNode *node)
   {
-    g_hash_table_insert (ht, g_strdup (node->name), node);
+    g_hash_table_insert (ht,
+                         g_strdup (node->name), g_object_ref (node));
+
     if (node->children->len == 0)
-      return;
-    int cnt;
-    for (cnt=0; cnt<node->children->len; ++cnt)
-      _collector (ht, g_mai_node_ptr_array_index(node->children, cnt));
+        return;
+
+    for (int i = 0; i < node->children->len; ++i)
+        _collector (ht, MAI_NODE (g_mai_node_ptr_array_index(node->children, i)));
   }
 
   _collector (ret, from);

@@ -15,11 +15,11 @@ mai_anim_new_from (struct aiScene *scene, struct aiAnimation *from)
   self->duration = from->mDuration;
 
   self->channels = g_mai_node_anim_ptr_array_new ();
-  int cnt;
-  for (cnt=0; cnt<from->mNumChannels; ++cnt)
+
+  for (int i = 0; i < from->mNumChannels; ++i)
     {
       MaiNodeAnim *na;
-      na = mai_node_anim_new_from (scene, from->mChannels[cnt]);
+      na = mai_node_anim_new_from (scene, from->mChannels[i]);
       g_mai_node_anim_ptr_array_add (self->channels, na);
     }
 
