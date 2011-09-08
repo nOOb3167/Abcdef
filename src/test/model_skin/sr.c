@@ -618,7 +618,18 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
 
       GPtrArray *varr;
       varr = g_ptr_array_index (vbmap, cnt);
-      g_xassert (("Verts referenced by no bones dont get transform",varr->len));
+      //g_xassert (("Verts referenced by no bones dont get transform",varr->len));
+      static gboolean one_time_null_transform_warning = TRUE;
+      if (!varr->len)
+        {
+          if (one_time_null_transform_warning == TRUE)
+            {
+              one_time_null_transform_warning = FALSE;
+              printf ("WARNING: Verts referenced by no bones dont get transform\n");
+            }
+          cumulative = v2;
+        }
+
       for (int bid = 0; bid < varr->len; ++bid)
         {
           MaiBone *bone;

@@ -51,7 +51,7 @@ main (int argc, char **argv)
 
   NxMat z_mat;
   nx_mat_init_identity (&z_mat);
-  nx_mat_translate (&z_mat, 0.0f, 0.0f, -4.0f);
+  nx_mat_translate (&z_mat, 0.0f, 0.0f, -30.0f);
 
   g_state->p_mat = z_mat;
   g_state->w_mat = z_mat;
@@ -113,9 +113,9 @@ main (int argc, char **argv)
 
           name = k->data;
 
-          vts_a = g_array_ref (
-              g_hash_table_lookup (ht, name));
+          vts_a = g_hash_table_lookup (ht, name);
           g_xassert (vts_a);
+          g_array_ref (vts_a);
 
           mn_a = g_object_ref (MAI_NODE (
               g_hash_table_lookup (model->name_node_map, name)));
@@ -126,8 +126,9 @@ main (int argc, char **argv)
 
           g_array_unref (vts_a);
           g_object_unref (mn_a);
-          g_hash_table_unref (ht);
         }
+
+      g_hash_table_unref (ht);
 
       mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
