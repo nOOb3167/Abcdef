@@ -600,7 +600,7 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
                                GHashTable *name_bone_mtx_map,
                                GArray **trans_verts_out)
 {
-  g_xassert (mesh_node->mesh_verts->len);
+  g_xassert (mesh_node->mesh_verts->len > 0);
 
   GArray *trans_verts;
   trans_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
@@ -622,7 +622,7 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
       for (int bid = 0; bid < varr->len; ++bid)
         {
           MaiBone *bone;
-          bone = g_ptr_array_index (varr, bid);
+          bone = MAI_BONE (g_ptr_array_index (varr, bid));
 
           NxMat *bone_mtx;
           bone_mtx = g_hash_table_lookup (name_bone_mtx_map, bone->name);
@@ -650,8 +650,6 @@ sr_vertex_transform_calculate (MaiNode *mesh_node,
            * Make homogeneous.
            */
           cumulative.vals[3] = 1.0f;
-
-          int a = floor(0);
         }
 
       struct xvtx vout = {cumulative.vals[0], cumulative.vals[1], cumulative.vals[2]};

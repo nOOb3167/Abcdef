@@ -75,10 +75,7 @@ main (int argc, char **argv)
   mai_info_win_clear_model (iw);
   mai_info_win_fill_model_from_node_graph (iw, sr_model);
   mai_info_win_fill_model_from_model (iw, model);
-
   mai_info_win_display (iw);
-
-  sr_weight_dump (model);
 
   int frame;
   for (frame=0; frame<600; ++frame)
@@ -100,13 +97,13 @@ main (int argc, char **argv)
       comp = g_state->w_mat;
       nx_mat_scale (&comp, -1.0f, 1.0f, -1.0f);
 
-      struct SrNodeGraph *s2;
+      struct SrNodeGraph *sr_model_aux;
       GHashTable *ht;
 
-      sr_node_graph_copy (&s2, sr_model);
+      sr_node_graph_copy (&sr_model_aux, sr_model);
 
-      sr_skeletal_anim_node_graph (mai, s2);
-      sr_skeletal_anim_verts (model, mai, s2, &ht);
+      sr_skeletal_anim_node_graph (mai, sr_model_aux);
+      sr_skeletal_anim_verts (model, mai, sr_model_aux, &ht);
 
       for (GList *k = g_hash_table_get_keys (ht); k != NULL; k = k->next)
         {
@@ -124,7 +121,7 @@ main (int argc, char **argv)
               g_hash_table_lookup (model->name_node_map, name)));
           g_xassert (mn_a);
 
-          sr_skeletal_draw_node_trans (&comp, s2,
+          sr_skeletal_draw_node_trans (&comp, sr_model_aux,
                                        mn_a, vts_a);
 
           g_array_unref (vts_a);
