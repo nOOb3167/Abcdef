@@ -9,11 +9,17 @@
 
 class Mai:Bone from G:Object
 {
- public char *name;
- public CoglMatrix *offset_matrix;
+ public char *name
+   destroywith g_free;
+
+ public CoglMatrix *offset_matrix
+   destroywith g_free;
+
  public GNxVertexWeightArray *weights;
+ 
  /* (int, weight_float) */
- public GHashTable *id_wval_map;
+ public GHashTable *id_wval_map
+   destroywith g_hash_table_unref;
 }
 
 %adh{

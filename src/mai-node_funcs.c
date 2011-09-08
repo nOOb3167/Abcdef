@@ -13,7 +13,10 @@ mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
   g_xassert (from->mParent == NULL ? parent == NULL : TRUE);
   g_xassert (from->mNumMeshes <= 1);
 
-  self->parent = g_object_ref (parent);
+  self->parent = parent;
+  if (parent != NULL)
+      g_object_ref (parent);
+
   self->name = g_strdup (from->mName.data);
 
   self->transformation = g_malloc0 (sizeof (*self->transformation));
