@@ -110,36 +110,37 @@ main (int argc, char **argv)
       comp = g_state->w_mat;
       nx_mat_scale (&comp, -1.0f, 1.0f, -1.0f);
 
-//      sr_allegro_skeletal_draw_node_trans (&comp, aux_sr_model, mesh_node, trans_verts);
-      //sr_skeletal_draw_node_trans (&comp, aux_sr_model,
-      //                             mesh_node, trans_verts);
-
-//      sr_node_graph_draw (&comp, aux_sr_model);
-
-      /******/
       struct SrNodeGraph *s2;
+      GHashTable *ht;
+
       sr_node_graph_copy (&s2, sr_model);
 
-      GHashTable *ht;
       sr_skeletal_anim_node_graph (mai, s2);
       sr_skeletal_anim_verts (model, mai, s2, &ht);
 
-      /* Do foreach key etc */
-      GArray *vts_a;
-      vts_a = g_array_ref (
-          g_hash_table_lookup (ht, "Cube"));
-      g_xassert (vts_a);
+      for (GList *k = g_hash_table_get_keys (ht); k != NULL; k = k->next)
+        {
+          char *name;
+          GArray *vts_a;
+          MaiNode *mn_a;
 
-      MaiNode *mn_a;
-      mn_a = g_object_ref (MAI_NODE (
-          g_hash_table_lookup (model->name_node_map, "Cube")));
-      g_xassert (mn_a);
+          name = k->data;
 
-      sr_skeletal_draw_node_trans (&comp, s2,
-                                   mn_a, vts_a);
+          vts_a = g_array_ref (
+              g_hash_table_lookup (ht, name));
+          g_xassert (vts_a);
 
-      g_hash_table_unref (ht);
-      /******/
+          mn_a = g_object_ref (MAI_NODE (
+              g_hash_table_lookup (model->name_node_map, name)));
+          g_xassert (mn_a);
+
+          sr_skeletal_draw_node_trans (&comp, s2,
+                                       mn_a, vts_a);
+
+          g_array_unref (vts_a);
+          g_object_unref (mn_a);
+          g_hash_table_unref (ht);
+        }
 
       NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}};
       NxMat uvmat;
