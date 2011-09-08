@@ -61,7 +61,7 @@ _mai_model_new_from_scene (struct aiScene *scene)
 
   self->anims = g_mai_anim_ptr_array_new ();
 
-  for (int i = 0; i < scene->mNumAnimations; ++i)
+  for (gint i = 0; i < scene->mNumAnimations; ++i)
     {
       MaiAnim *an;
 
@@ -106,6 +106,8 @@ _nx_mai_collect_node_map (MaiNode *from)
 
   void _collector (GHashTable *ht, MaiNode *node)
   {
+    g_xassert (node);
+
     g_hash_table_insert (ht,
                          g_strdup (node->name), g_object_ref (node));
 

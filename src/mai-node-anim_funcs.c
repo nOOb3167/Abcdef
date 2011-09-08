@@ -14,36 +14,34 @@ mai_node_anim_new_from (struct aiScene *scene, struct aiNodeAnim *from)
   self->rotation_keys = g_array_new (FALSE, TRUE, sizeof (struct NxAnimKey));
   self->scaling_keys = g_array_new (FALSE, TRUE, sizeof (struct NxAnimKey));
 
-  int cnt;
-
-  for (cnt=0; cnt<from->mNumPositionKeys; ++cnt)
+  for (gint i = 0; i<from->mNumPositionKeys; ++i)
     {
       struct NxAnimKey toadd;
-      toadd.time = from->mPositionKeys[cnt].mTime;
-      toadd.val.vec.x = from->mPositionKeys[cnt].mValue.x;
-      toadd.val.vec.y = from->mPositionKeys[cnt].mValue.y;
-      toadd.val.vec.z = from->mPositionKeys[cnt].mValue.z;
+      toadd.time = from->mPositionKeys[i].mTime;
+      toadd.val.vec.x = from->mPositionKeys[i].mValue.x;
+      toadd.val.vec.y = from->mPositionKeys[i].mValue.y;
+      toadd.val.vec.z = from->mPositionKeys[i].mValue.z;
       g_array_append_vals (self->position_keys, &toadd, 1);
     }
 
-  for (cnt=0; cnt<from->mNumRotationKeys; ++cnt)
+  for (gint i=0; i<from->mNumRotationKeys; ++i)
     {
       struct NxAnimKey toadd;
-      toadd.time = from->mRotationKeys[cnt].mTime;
-      toadd.val.rot.w = from->mRotationKeys[cnt].mValue.w;
-      toadd.val.rot.x = from->mRotationKeys[cnt].mValue.x;
-      toadd.val.rot.y = from->mRotationKeys[cnt].mValue.y;
-      toadd.val.rot.z = from->mRotationKeys[cnt].mValue.z;
+      toadd.time = from->mRotationKeys[i].mTime;
+      toadd.val.rot.w = from->mRotationKeys[i].mValue.w;
+      toadd.val.rot.x = from->mRotationKeys[i].mValue.x;
+      toadd.val.rot.y = from->mRotationKeys[i].mValue.y;
+      toadd.val.rot.z = from->mRotationKeys[i].mValue.z;
       g_array_append_vals (self->rotation_keys, &toadd, 1);
     }
 
-  for (cnt=0; cnt<from->mNumScalingKeys; ++cnt)
+  for (gint i=0; i<from->mNumScalingKeys; ++i)
     {
       struct NxAnimKey toadd;
-      toadd.time = from->mScalingKeys[cnt].mTime;
-      toadd.val.vec.x = from->mScalingKeys[cnt].mValue.x;
-      toadd.val.vec.y = from->mScalingKeys[cnt].mValue.y;
-      toadd.val.vec.z = from->mScalingKeys[cnt].mValue.z;
+      toadd.time = from->mScalingKeys[i].mTime;
+      toadd.val.vec.x = from->mScalingKeys[i].mValue.x;
+      toadd.val.vec.y = from->mScalingKeys[i].mValue.y;
+      toadd.val.vec.z = from->mScalingKeys[i].mValue.z;
       g_array_append_vals (self->scaling_keys, &toadd, 1);
     }
 

@@ -12,7 +12,9 @@ class Mai:Anim from G:Object
 {
  public char * name
    destroywith g_free;
+
  public double duration;
+
  public GMaiNodeAnimPtrArray *channels
    destroywith g_mai_node_anim_ptr_array_unref;
 }
