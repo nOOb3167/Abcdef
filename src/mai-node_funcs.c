@@ -9,69 +9,79 @@ MaiNode *
 mai_node_new_from (struct aiScene *scene, struct aiNode *from, MaiNode *parent)
 {
   MaiNode * self = GET_NEW;
-  int cnt;
 
-  g_xassert (from->mParent == NULL ? parent == NULL : 1);
-  self->parent = parent;
+  g_xassert (from->mParent == NULL ? parent == NULL : TRUE);
+  g_xassert (from->mNumMeshes <= 1);
+
+  self->parent = g_object_ref (parent);
   self->name = g_strdup (from->mName.data);
 
-  self->transformation = g_new0 (CoglMatrix, 1);
+  self->transformation = g_malloc0 (sizeof (*self->transformation));
   ai_matrix_to_cogl_matrix (&from->mTransformation, self->transformation);
 
-  g_xassert (from->mNumMeshes <= 1);
   self->mesh_verts = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
   self->mesh_indices = g_array_new (FALSE, TRUE, sizeof (unsigned int));
   self->mesh_uvs = g_array_new (FALSE, TRUE, sizeof (struct xvtx));
   self->bones = g_mai_bone_ptr_array_new ();
+
   if (from->mNumMeshes == 1)
     {
       struct aiMesh *mesh;
+
+      /**
+       * Warning:
+       *   Assumes nodes have only one mesh each (Or none at all).
+       *   Gets the first one.
+       */
       mesh = scene->mMeshes[from->mMeshes[0]];
 
-      for (cnt=0; cnt<mesh->mNumVertices; ++cnt)
+      g_xassert (mesh->mNumVertices > 0);
+      g_xassert (mesh->mNumFaces > 0);
+      g_xassert (mesh->mNumUVComponents[0] == 2);
+
+      for (gint i = 0; i < mesh->mNumVertices; ++i)
         {
           struct xvtx vert;
-          vert.x = mesh->mVertices[cnt].x;
-          vert.y = mesh->mVertices[cnt].y;
-          vert.z = mesh->mVertices[cnt].z;
+          vert.x = mesh->mVertices[i].x;
+          vert.y = mesh->mVertices[i].y;
+          vert.z = mesh->mVertices[i].z;
           g_array_append_vals (self->mesh_verts, &vert, 1);
         }
 
-      g_xassert (mesh->mNumFaces > 0);
-      for (cnt=0; cnt<mesh->mNumFaces; ++cnt)
+      for (gint i = 0; i < mesh->mNumFaces; ++i)
         {
           unsigned int index;
-          index = mesh->mFaces[cnt].mIndices[0];
+          index = mesh->mFaces[i].mIndices[0];
           g_array_append_vals (self->mesh_indices, &index, 1);
-          index = mesh->mFaces[cnt].mIndices[1];
+          index = mesh->mFaces[i].mIndices[1];
           g_array_append_vals (self->mesh_indices, &index, 1);
-          index = mesh->mFaces[cnt].mIndices[2];
+          index = mesh->mFaces[i].mIndices[2];
           g_array_append_vals (self->mesh_indices, &index, 1);
         }
 
-      g_xassert (mesh->mNumUVComponents[0] == 2);
       /* mTextureCoords[x] is mNumVertices entries in size */
-      for (cnt=0; cnt<mesh->mNumVertices; ++cnt)
+      for (gint i = 0; i < mesh->mNumVertices; ++i)
         {
           struct xvtx uvcoord;
-          uvcoord.x = mesh->mTextureCoords[0][cnt].x;
-          uvcoord.y = mesh->mTextureCoords[0][cnt].y;
-          uvcoord.z = mesh->mTextureCoords[0][cnt].z;
+          uvcoord.x = mesh->mTextureCoords[0][i].x;
+          uvcoord.y = mesh->mTextureCoords[0][i].y;
+          uvcoord.z = mesh->mTextureCoords[0][i ].z;
           g_array_append_vals (self->mesh_uvs, &uvcoord, 1);
         }
 
-      for (cnt=0; cnt<mesh->mNumBones; ++cnt)
+      for (gint i = 0; i < mesh->mNumBones; ++i)
         {
           MaiBone *bone;
-          bone = mai_bone_new_from (mesh->mBones[cnt]);
+          bone = mai_bone_new_from (mesh->mBones[i]);
           g_mai_bone_ptr_array_add (self->bones, bone);
         }
     }
 
   self->children = g_mai_node_ptr_array_new ();
-  for (cnt=0; cnt<from->mNumChildren; ++cnt)
+  for (gint i = 0; i < from->mNumChildren; ++i)
     {
-      g_mai_node_ptr_array_add (self->children, mai_node_new_from (scene, from->mChildren[cnt], self));
+      g_mai_node_ptr_array_add (self->children,
+                                mai_node_new_from (scene, from->mChildren[i], self));
     }
 
   return self;
