@@ -89,12 +89,41 @@ _iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
 }
 
 void
-mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra)
+mai_info_win_clear_model (MaiInfoWin *iw)
 {
   gtk_tree_store_clear (iw->store);
+}
 
+void
+mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra)
+{
   g_xassert (gra->nodes_len > 0 && &gra->nodes[0] != NULL);
   _iw_fill_from_node_one (iw->store, NULL, gra, &gra->nodes[0]);
+}
+
+void
+mai_info_win_fill_model_from_model (MaiInfoWin *iw, MaiModel *model)
+{
+  GtkTreeIter iter;
+  GtkTreeIter it2;
+  gtk_tree_store_append (iw->store, &iter, NULL);
+  gtk_tree_store_set (iw->store, &iter,
+                      IW_COLUMN_NAME, "Anims",
+                      -1);
+  gtk_tree_store_append (iw->store, &it2, &iter);
+
+  for (gint i = 0; i < model->anims->len; ++i)
+    {
+      MaiAnim *an;
+      an = g_object_ref (MAI_ANIM (
+          g_mai_anim_ptr_array_index (model->anims, i)));
+      g_xassert (an);
+
+      gtk_tree_store_set (iw->store, &it2,
+                          IW_COLUMN_NAME, an->name,
+                          -1);
+      g_object_unref (an);
+    }
 }
 
 void

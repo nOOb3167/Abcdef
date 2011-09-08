@@ -42,9 +42,9 @@ ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
 #Warning see about source file properties only applying to added from same directory
-FILE(GLOB XSRC_FILES "src/*.c")
-SET_SOURCE_FILES_PROPERTIES(${XSRC_FILES}
- PROPERTIES COMPILE_FLAGS "-Wstrict-prototypes")
+#FILE(GLOB XSRC_FILES "src/*.c")
+#SET_SOURCE_FILES_PROPERTIES(${XSRC_FILES}
+# PROPERTIES COMPILE_FLAGS "-Wstrict-prototypes")
 
 ADD_SUBDIRECTORY(src/mgob)
 ADD_SUBDIRECTORY(src/test)

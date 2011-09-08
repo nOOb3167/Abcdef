@@ -1,6 +1,7 @@
 %header{
 #include <gtk/gtk.h>
 #include <src/array_macro.h>
+#include <src/mai-model.h>
 #include <sr.h>
 %}
 
@@ -42,7 +43,13 @@ _iw_fill_from_node_one (GtkTreeStore *store, GtkTreeIter *iter,
                         struct SrNodeGraph *gra, struct SrNode* node);
 
 void
+mai_info_win_clear_model (MaiInfoWin *iw);
+
+void
 mai_info_win_fill_model_from_node_graph (MaiInfoWin *iw, struct SrNodeGraph *gra);
+
+void
+mai_info_win_fill_model_from_model (MaiInfoWin *iw, MaiModel *model);
 
 void
 mai_info_win_display (MaiInfoWin *iw);

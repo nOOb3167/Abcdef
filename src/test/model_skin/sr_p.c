@@ -57,11 +57,7 @@ main (int argc, char **argv)
   g_state->w_mat = z_mat;
 
   MaiModel *model;
-  //model = mai_model_new_from_file ("c_sr_weight.dae");
   model = mai_model_new_from_file ("../misc/mtest1.dae");
-  MaiNode *mesh_node;
-  mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
-  g_xassert (mesh_node);
 
   MaiAnimInstance *mai;
   g_xassert (model->anims->len > 0);
@@ -76,7 +72,9 @@ main (int argc, char **argv)
   MaiInfoWin *iw;
   iw = MAI_INFO_WIN (mai_info_win_new ());
 
+  mai_info_win_clear_model (iw);
   mai_info_win_fill_model_from_node_graph (iw, sr_model);
+  mai_info_win_fill_model_from_model (iw, model);
 
   mai_info_win_display (iw);
 
@@ -93,14 +91,6 @@ main (int argc, char **argv)
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);
       al_clear_to_color (al_map_rgb (0, 0, 0));
-
-      struct SrNodeGraph *aux_sr_model;
-      sr_node_graph_copy (&aux_sr_model, sr_model);
-
-      GArray *trans_verts;
-      sr_skeletal_anim (model, mai, mesh_node, aux_sr_model, &trans_verts);
-
-      mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
       /**
        * Allegro drawing origin top left.
@@ -142,10 +132,7 @@ main (int argc, char **argv)
           g_hash_table_unref (ht);
         }
 
-      NxVec4 uvecs[2] = {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f}};
-      NxMat uvmat;
-      uvmat = g_state->w_mat;
-//      sr_draw_unit_vec_at (&uvmat, &uvecs[0], &uvecs[1]);
+      mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
       gfx_display_transfer ();
 
