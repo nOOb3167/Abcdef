@@ -133,6 +133,8 @@ main (int argc, char **argv)
 
       g_hash_table_unref (ht);
 
+      sr_node_graph_free (sr_model_aux);
+
       mai->current_frame += mai->current_frame == 29 ? -29 : 1;
 
       gfx_display_transfer ();

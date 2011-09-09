@@ -158,6 +158,15 @@ void
 sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what);
 
 void
+sr_node_free (struct SrNode *node);
+
+void
+_sr_node_graph_free_nodes (struct SrNodeGraph *mdl, struct SrNode *cur);
+
+void
+sr_node_graph_free (struct SrNodeGraph *what);
+
+void
 _sr_node_graph_draw_one (struct SrNodeGraph *sr_model,
                          NxMat *mst, NxMat *acc,
                          struct SrNode *node);

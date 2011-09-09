@@ -317,7 +317,7 @@ sr_model_from_mai_model (struct SrNodeGraph **result, MaiModel *model)
   ret->name = "Err No Such Thing";
   ret->name_node_map = g_hash_table_new (g_str_hash, g_str_equal);
   ret->nodes_len = 1;
-  ret->nodes = _sr_node_walk (ret, model->nodes);
+  ret->nodes = _sr_node_walk (ret, &model->nodes[0]);
 
   *result = ret;
 }
@@ -826,6 +826,93 @@ sr_node_graph_copy (struct SrNodeGraph **result, struct SrNodeGraph *what)
   ret->nodes = _sr_copy_node_walk (ret, what, what->nodes);
 
   *result = ret;
+}
+
+/**
+ * As SrNodes are supposed to have corresponding entries in
+ * a SrNodeGraph's name_node_map, should only be freed by
+ * SrNodeGraph's free function.
+ */
+void
+sr_node_free (struct SrNode *node)
+{
+  g_xassert (node);
+
+  free (node->child_names);
+  free (node);
+}
+
+void
+_sr_node_graph_free_nodes (struct SrNodeGraph *mdl, struct SrNode *cur)
+{
+  /**
+   * Must not free the node then try to use its child_names member
+   * to continue with the recursion..
+   * Or free the children and then recurse into them.
+   * Cache the SrNodes in advance.
+   * Recurse into children before freeing current.
+   *
+   * Meh still problematic if node graph not a tree.
+   * Even a DAG (Multiple nodes allowed to have the same node as child),
+   * would break it.
+   * Actually assuming only one parent here, shouldn't be a problem?
+   *
+   * Screw deferred just have each node recurse into children then free itself.
+   */
+
+  for (gint i = 0; i < cur->child_names_len; ++i)
+    {
+      struct SrNode *ch;
+      ch = g_hash_table_lookup (mdl->name_node_map, cur->child_names[i]);
+      g_xassert (ch);
+
+      _sr_node_graph_free_nodes (mdl, ch);
+    }
+
+  g_free (cur);
+
+  /*
+  struct SrNode **childs;
+  childs = g_slice_alloc0 (sizeof (*childs) * cur->child_names_len);
+
+  for (gint i = 0; i < cur->child_names_len; ++i)
+    {
+      struct SrNode *ch;
+      ch = g_hash_table_lookup (mdl->name_node_map, cur->child_names[i]);
+      g_xassert (ch);
+
+      childs[i] = ch;
+    }
+
+  for (gint i = 0; i < cur->child_names_len; ++i)
+    {
+      struct SrNode *ch;
+      ch = g_hash_table_lookup (mdl->name_node_map, cur->child_names[i]);
+      g_xassert (ch);
+
+      _sr_node_graph_free_nodes (mdl, ch);
+    }
+
+  for (gint i = 0; i < cur->child_names_len; ++i)
+    {
+      g_free (childs[i]);
+    }
+
+  g_slice_free1 (sizeof (*childs) * cur->child_names_len, childs);
+  */
+}
+
+void
+sr_node_graph_free (struct SrNodeGraph *what)
+{
+  g_xassert (what);
+  g_xassert (what->nodes);
+  g_xassert (what->nodes_len == 1);
+
+  _sr_node_graph_free_nodes (what, &what->nodes[0]);
+
+  g_hash_table_unref (what->name_node_map);
+  free (what);
 }
 
 void
