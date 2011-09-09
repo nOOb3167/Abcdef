@@ -740,17 +740,13 @@ sr_skeletal_anim_verts (MaiModel *model,
   {
     MaiNode *mn;
     mn = MAI_NODE (val);
-    g_object_ref (mn);
 
     GHashTable *ret;
     ret = data;
 
     /* Only want nodes with meshes */
     if (mn->mesh_verts->len == 0)
-      {
-        g_object_unref (mn);
         return;
-      }
 
     /* I don't see why mesh_node_sr is necessary with a little cleanup
      * Maybe just pass name and MaiModel to sr_bone_matrices, have it lookup */
@@ -776,7 +772,6 @@ sr_skeletal_anim_verts (MaiModel *model,
     g_hash_table_unref (name_bone_mtx_map);
     g_ptr_array_unref (vbmap);
     g_array_unref (trans_verts);
-    g_object_unref (mn);
   }
 
   g_hash_table_foreach (model->name_node_map, flt, ret);

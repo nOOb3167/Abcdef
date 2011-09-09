@@ -108,7 +108,10 @@ main (int argc, char **argv)
       sr_skeletal_anim_node_graph (mai, sr_model_aux);
       sr_skeletal_anim_verts (model, mai, sr_model_aux, &ht);
 
-      for (GList *k = g_hash_table_get_keys (ht); k != NULL; k = k->next)
+      GList *model_keys;
+      model_keys = g_hash_table_get_keys (ht);
+
+      for (GList *k = model_keys; k != NULL; k = k->next)
         {
           char *name;
           GArray *vts_a;
@@ -130,6 +133,8 @@ main (int argc, char **argv)
           g_object_unref (mn_a);
           g_array_unref (vts_a);
         }
+
+      g_list_free (model_keys);
 
       g_hash_table_unref (ht);
 
