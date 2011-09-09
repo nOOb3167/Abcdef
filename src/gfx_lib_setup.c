@@ -186,31 +186,40 @@ _context_fbstate_new (int width, int height, CoglHandle ofs, CoglHandle tx, ALLE
 void
 gfx_display_transfer (void)
 {
-  ALLEGRO_BITMAP *bmp;
+  static ALLEGRO_BITMAP *bmp = NULL;
   struct fbstate_data *fbd;
-
-  context_switch_allegro ();
-  bmp = al_create_bitmap (640, 480);
 
   context_switch_cogl ();
   fbd = fbstate_get_data ();
 
   context_switch_allegro ();
-  ALLEGRO_LOCKED_REGION *rgn;
-  rgn = al_lock_bitmap (bmp, ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_READWRITE);
-  int cnt;
-  char *data;
-  for (cnt=0,data=rgn->data; cnt < 480; ++cnt,data+=rgn->pitch)
-    {
-      memcpy (data, &fbd->data[cnt*640*3], 640*3);
-    }
-  al_unlock_bitmap (bmp);
+
+  if (bmp == NULL)
+      bmp = al_create_bitmap (640, 480);
+
+  {
+      ALLEGRO_LOCKED_REGION *rgn;
+      rgn = al_lock_bitmap (bmp,
+                            ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_WRITEONLY);
+      char *data;
+      for (gint i = 0, data = rgn->data; i < 480; ++i, data += rgn->pitch)
+        {
+          memcpy (data, &fbd->data[i*640*3], 640*3);
+        }
+      al_unlock_bitmap (bmp);
+  }
 
   al_set_target_backbuffer (fbd->display);
   al_draw_bitmap (bmp, 0, 0, 0);
   al_flip_display ();
 
-  al_destroy_bitmap (bmp);
+  /*
+   * The bitmap is not destroyed as a new one is not being
+   * created every frame anymore.
+   *
+   * al_destroy_bitmap (bmp);
+   */
+
   fbstate_free (fbd);
 
   context_switch_cogl ();
