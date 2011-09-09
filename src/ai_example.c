@@ -269,6 +269,7 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices, GArray *uvs)
   g_xassert (verts->len > 0);
   bfr = cogl_attribute_buffer_new (sizeof (struct xvtx) * verts->len, verts->data);
   g_xassert (bfr);
+
   CoglAttribute *attr;
   attr = cogl_attribute_new (bfr, "cogl_position_in",
                              sizeof (struct xvtx), offsetof (struct xvtx, x),
@@ -304,8 +305,10 @@ nx_cogl_primitive_new (GArray *verts, GArray *indices, GArray *uvs)
   cogl_primitive_set_indices (prim, idx);
 
   cogl_object_unref (idx);
-  cogl_object_unref (bfr);
+  cogl_object_unref (attr_uv);
+  cogl_object_unref (bfr_uv);
   cogl_object_unref (attr);
+  cogl_object_unref (bfr);
 
   return prim;
 }
