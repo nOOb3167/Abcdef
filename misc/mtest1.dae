@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA version="1.4.0" xmlns="http://www.collada.org/2005/11/COLLADASchema">
+	<asset>
+		<contributor>
+			<author>Illusoft Collada 1.4.0 plugin for Blender - http://colladablender.illusoft.com</author>
+			<authoring_tool>Blender v:249 - Illusoft Collada Exporter v:0.3.162</authoring_tool>
+			<comments></comments>
+			<copyright></copyright>
+			<source_data>file://C:/testM/Glade/Test/N010_Cogl/misc/mtest1.blend</source_data>
+		</contributor>
+		<created>2011-09-09T05:58:26.328000</created>
+		<modified>2011-09-09T05:58:26.328000</modified>
+		<unit meter="0.01" name="centimeter"/>
+		<up_axis>Z_UP</up_axis>
+	</asset>
+	<library_animations>
+		<animation id="Bone-rotateX" name="Bone-rotateX">
+			<source id="Bone-rotateX-input">
+				<float_array count="2" id="Bone-rotateX-input-array">0.04000 1.20000</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateX-input-array" stride="1">
+						<param type="float" name="TIME"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateX-output">
+				<float_array count="2" id="Bone-rotateX-output-array">0.00000 -0.00001</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateX-output-array" stride="1">
+						<param type="float" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateX-interpolation">
+				<Name_array count="2" id="Bone-rotateX-interpolation-array">BEZIER BEZIER</Name_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateX-interpolation-array" stride="1">
+						<param type="Name" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<sampler id="Bone-rotateX-sampler">
+				<input semantic="INPUT" source="#Bone-rotateX-input"/>
+				<input semantic="OUTPUT" source="#Bone-rotateX-output"/>
+				<input semantic="INTERPOLATION" source="#Bone-rotateX-interpolation"/>
+			</sampler>
+			<channel source="#Bone-rotateX-sampler" target="Bone/rotateX.ANGLE"/>
+		</animation>
+		<animation id="Bone-rotateY" name="Bone-rotateY">
+			<source id="Bone-rotateY-input">
+				<float_array count="2" id="Bone-rotateY-input-array">0.04000 1.20000</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateY-input-array" stride="1">
+						<param type="float" name="TIME"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateY-output">
+				<float_array count="2" id="Bone-rotateY-output-array">-0.00000 -89.99999</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateY-output-array" stride="1">
+						<param type="float" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateY-interpolation">
+				<Name_array count="2" id="Bone-rotateY-interpolation-array">BEZIER BEZIER</Name_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateY-interpolation-array" stride="1">
+						<param type="Name" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<sampler id="Bone-rotateY-sampler">
+				<input semantic="INPUT" source="#Bone-rotateY-input"/>
+				<input semantic="OUTPUT" source="#Bone-rotateY-output"/>
+				<input semantic="INTERPOLATION" source="#Bone-rotateY-interpolation"/>
+			</sampler>
+			<channel source="#Bone-rotateY-sampler" target="Bone/rotateY.ANGLE"/>
+		</animation>
+		<animation id="Bone-rotateZ" name="Bone-rotateZ">
+			<source id="Bone-rotateZ-input">
+				<float_array count="2" id="Bone-rotateZ-input-array">0.04000 1.20000</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateZ-input-array" stride="1">
+						<param type="float" name="TIME"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateZ-output">
+				<float_array count="2" id="Bone-rotateZ-output-array">-0.00000 0.00000</float_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateZ-output-array" stride="1">
+						<param type="float" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-rotateZ-interpolation">
+				<Name_array count="2" id="Bone-rotateZ-interpolation-array">BEZIER BEZIER</Name_array>
+				<technique_common>
+					<accessor count="2" source="#Bone-rotateZ-interpolation-array" stride="1">
+						<param type="Name" name="ANGLE"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<sampler id="Bone-rotateZ-sampler">
+				<input semantic="INPUT" source="#Bone-rotateZ-input"/>
+				<input semantic="OUTPUT" source="#Bone-rotateZ-output"/>
+				<input semantic="INTERPOLATION" source="#Bone-rotateZ-interpolation"/>
+			</sampler>
+			<channel source="#Bone-rotateZ-sampler" target="Bone/rotateZ.ANGLE"/>
+		</animation>
+		<animation id="Bone-translate" name="Bone-translate">
+			<source id="Bone-translate-input">
+				<float_array count="30" id="Bone-translate-input-array">0.04000 0.08000 0.12000 0.16000 0.20000 0.24000 0.28000 0.32000 0.36000 0.40000 0.44000 0.48000 0.52000 0.56000 0.60000 0.64000 0.68000 0.72000 0.76000 0.80000 0.84000 0.88000 0.92000 0.96000 1.00000 1.04000 1.08000 1.12000 1.16000 1.20000</float_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-translate-input-array" stride="1">
+						<param type="float" name="TIME"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-translate-output">
+				<float_array count="90" id="Bone-translate-output-array">2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655 2.03942 0.24901 -0.06655</float_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-translate-output-array" stride="3">
+						<param type="float" name="X"></param>
+						<param type="float" name="Y"></param>
+						<param type="float" name="Z"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-translate-interpolation">
+				<Name_array count="90" id="Bone-translate-interpolation-array">BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER</Name_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-translate-interpolation-array" stride="3">
+						<param type="Name" name="X"></param>
+						<param type="Name" name="Y"></param>
+						<param type="Name" name="Z"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<sampler id="Bone-translate-sampler">
+				<input semantic="INPUT" source="#Bone-translate-input"/>
+				<input semantic="OUTPUT" source="#Bone-translate-output"/>
+				<input semantic="INTERPOLATION" source="#Bone-translate-interpolation"/>
+			</sampler>
+			<channel source="#Bone-translate-sampler" target="Bone/translate"/>
+		</animation>
+		<animation id="Bone-scale" name="Bone-scale">
+			<source id="Bone-scale-input">
+				<float_array count="30" id="Bone-scale-input-array">0.04000 0.08000 0.12000 0.16000 0.20000 0.24000 0.28000 0.32000 0.36000 0.40000 0.44000 0.48000 0.52000 0.56000 0.60000 0.64000 0.68000 0.72000 0.76000 0.80000 0.84000 0.88000 0.92000 0.96000 1.00000 1.04000 1.08000 1.12000 1.16000 1.20000</float_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-scale-input-array" stride="1">
+						<param type="float" name="TIME"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-scale-output">
+				<float_array count="90" id="Bone-scale-output-array">1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000</float_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-scale-output-array" stride="3">
+						<param type="float" name="X"></param>
+						<param type="float" name="Y"></param>
+						<param type="float" name="Z"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<source id="Bone-scale-interpolation">
+				<Name_array count="90" id="Bone-scale-interpolation-array">BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER BEZIER</Name_array>
+				<technique_common>
+					<accessor count="30" source="#Bone-scale-interpolation-array" stride="3">
+						<param type="Name" name="X"></param>
+						<param type="Name" name="Y"></param>
+						<param type="Name" name="Z"></param>
+					</accessor>
+				</technique_common>
+			</source>
+			<sampler id="Bone-scale-sampler">
+				<input semantic="INPUT" source="#Bone-scale-input"/>
+				<input semantic="OUTPUT" source="#Bone-scale-output"/>
+				<input semantic="INTERPOLATION" source="#Bone-scale-interpolation"/>
+			</sampler>
+			<channel source="#Bone-scale-sampler" target="Bone/scale"/>
+		</animation>
+	</library_animations>
+	<library_cameras>
+		<camera id="Camera-Camera" name="Camera-Camera">
+			<optics>
+				<technique_common>
+					<perspective>
+						<yfov>49.13434</yfov>
+						<znear>0.1</znear>
+						<zfar>100.0</zfar>
+					</perspective>
+				</technique_common>
+			</optics>
+		</camera>
+	</library_cameras>
+	<library_controllers>
+		<controller id="Cube-skin">
+			<skin source="#Cube_003-Geometry">
+				<bind_shape_matrix>
+					1.0 0.0 0.0 2.0 
+					0.0 1.0 0.0 0.0 
+					0.0 0.0 1.0 0.0 
+					0.0 0.0 0.0 1.0 
+				</bind_shape_matrix>
+				<source id="Cube-skin-joints">
+					<IDREF_array count="1" id="Cube-skin-joints-array">Bone</IDREF_array>
+					<technique_common>
+						<accessor count="1" source="#Cube-skin-joints-array" stride="1">
+							<param type="IDREF" name="JOINT"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube-skin-weights">
+					<float_array count="8" id="Cube-skin-weights-array">1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000 1.00000</float_array>
+					<technique_common>
+						<accessor count="8" source="#Cube-skin-weights-array" stride="1">
+							<param type="float" name="WEIGHT"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube-skin-poses">
+					<float_array count="16" id="Cube-skin-poses-array">1.00000 -0.00000 0.00000 -2.03942 -0.00000 1.00000 -0.00000 -0.24901 0.00000 -0.00000 1.00000 0.06655 -0.00000 0.00000 -0.00000 1.00000</float_array>
+					<technique_common>
+						<accessor count="1" source="#Cube-skin-poses-array" stride="16">
+							<param type="float4x4"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<joints>
+					<input semantic="JOINT" source="#Cube-skin-joints"/>
+					<input semantic="INV_BIND_MATRIX" source="#Cube-skin-poses"/>
+				</joints>
+				<vertex_weights count="8">
+					<input offset="0" semantic="JOINT" source="#Cube-skin-joints"/>
+					<input offset="1" semantic="WEIGHT" source="#Cube-skin-weights"/>
+					<vcount>1 1 1 1 1 1 1 1</vcount>
+					<v>0 0 0 1 0 2 0 3 0 4 0 5 0 6 0 7</v>
+				</vertex_weights>
+			</skin>
+		</controller>
+	</library_controllers>
+	<library_lights>
+		<light id="Spot" name="Spot">
+			<technique_common>
+				<point>
+					<color>1.00000 1.00000 1.00000</color>
+					<constant_attenuation>1.0</constant_attenuation>
+					<linear_attenuation>0.0</linear_attenuation>
+					<quadratic_attenuation>0.0</quadratic_attenuation>
+				</point>
+			</technique_common>
+		</light>
+	</library_lights>
+	<library_geometries>
+		<geometry id="Cube_003" name="Cube_003">
+			<mesh>
+				<source id="Cube_003-Position">
+					<float_array count="24" id="Cube_003-Position-array">1.00000 1.00000 -1.00000 1.00000 -1.00000 -1.00000 -1.00000 -1.00000 -1.00000 -1.00000 1.00000 -1.00000 1.00000 1.00000 6.00000 1.00000 -1.00000 6.00000 -1.00000 -1.00000 6.00000 -1.00000 1.00000 6.00000</float_array>
+					<technique_common>
+						<accessor count="8" source="#Cube_003-Position-array" stride="3">
+							<param type="float" name="X"></param>
+							<param type="float" name="Y"></param>
+							<param type="float" name="Z"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube_003-Normals">
+					<float_array count="18" id="Cube_003-Normals-array">0.00000 0.00000 -1.00000 0.00000 -0.00000 1.00000 1.00000 -0.00000 0.00000 -0.00000 -1.00000 -0.00000 -1.00000 0.00000 -0.00000 0.00000 1.00000 0.00000</float_array>
+					<technique_common>
+						<accessor count="6" source="#Cube_003-Normals-array" stride="3">
+							<param type="float" name="X"></param>
+							<param type="float" name="Y"></param>
+							<param type="float" name="Z"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube_003-UV">
+					<float_array count="72" id="Cube_003-UV-array">0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000</float_array>
+					<technique_common>
+						<accessor count="36" source="#Cube_003-UV-array" stride="2">
+							<param type="float" name="S"></param>
+							<param type="float" name="T"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<vertices id="Cube_003-Vertex">
+					<input semantic="POSITION" source="#Cube_003-Position"/>
+				</vertices>
+				<triangles count="12">
+					<input offset="0" semantic="VERTEX" source="#Cube_003-Vertex"/>
+					<input offset="1" semantic="NORMAL" source="#Cube_003-Normals"/>
+					<input offset="2" semantic="TEXCOORD" source="#Cube_003-UV"/>
+					<p>0 0 0 1 0 1 2 0 2 2 0 3 3 0 4 0 0 5 4 1 6 7 1 7 6 1 8 6 1 9 5 1 10 4 1 11 0 2 12 4 2 13 5 2 14 5 2 15 1 2 16 0 2 17 1 3 18 5 3 19 6 3 20 6 3 21 2 3 22 1 3 23 2 4 24 6 4 25 7 4 26 7 4 27 3 4 28 2 4 29 4 5 30 0 5 31 3 5 32 3 5 33 7 5 34 4 5 35</p>
+				</triangles>
+			</mesh>
+		</geometry>
+		<geometry id="Cube_003-Geometry" name="Cube_003-Geometry">
+			<mesh>
+				<source id="Cube_003-Geometry-Position">
+					<float_array count="24" id="Cube_003-Geometry-Position-array">1.00000 1.00000 -1.00000 1.00000 -1.00000 -1.00000 -1.00000 -1.00000 -1.00000 -1.00000 1.00000 -1.00000 1.00000 1.00000 6.00000 1.00000 -1.00000 6.00000 -1.00000 -1.00000 6.00000 -1.00000 1.00000 6.00000</float_array>
+					<technique_common>
+						<accessor count="8" source="#Cube_003-Geometry-Position-array" stride="3">
+							<param type="float" name="X"></param>
+							<param type="float" name="Y"></param>
+							<param type="float" name="Z"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube_003-Geometry-Normals">
+					<float_array count="18" id="Cube_003-Geometry-Normals-array">0.00000 0.00000 -1.00000 0.00000 -0.00000 1.00000 1.00000 -0.00000 0.00000 -0.00000 -1.00000 -0.00000 -1.00000 0.00000 -0.00000 0.00000 1.00000 0.00000</float_array>
+					<technique_common>
+						<accessor count="6" source="#Cube_003-Geometry-Normals-array" stride="3">
+							<param type="float" name="X"></param>
+							<param type="float" name="Y"></param>
+							<param type="float" name="Z"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<source id="Cube_003-Geometry-UV">
+					<float_array count="72" id="Cube_003-Geometry-UV-array">0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000 0.00000 0.00000 1.00000 0.00000 1.00000 1.00000 1.00000 1.00000 0.00000 1.00000 0.00000 0.00000</float_array>
+					<technique_common>
+						<accessor count="36" source="#Cube_003-Geometry-UV-array" stride="2">
+							<param type="float" name="S"></param>
+							<param type="float" name="T"></param>
+						</accessor>
+					</technique_common>
+				</source>
+				<vertices id="Cube_003-Geometry-Vertex">
+					<input semantic="POSITION" source="#Cube_003-Geometry-Position"/>
+				</vertices>
+				<triangles count="12">
+					<input offset="0" semantic="VERTEX" source="#Cube_003-Geometry-Vertex"/>
+					<input offset="1" semantic="NORMAL" source="#Cube_003-Geometry-Normals"/>
+					<input offset="2" semantic="TEXCOORD" source="#Cube_003-Geometry-UV"/>
+					<p>0 0 0 1 0 1 2 0 2 2 0 3 3 0 4 0 0 5 4 1 6 7 1 7 6 1 8 6 1 9 5 1 10 4 1 11 0 2 12 4 2 13 5 2 14 5 2 15 1 2 16 0 2 17 1 3 18 5 3 19 6 3 20 6 3 21 2 3 22 1 3 23 2 4 24 6 4 25 7 4 26 7 4 27 3 4 28 2 4 29 4 5 30 0 5 31 3 5 32 3 5 33 7 5 34 4 5 35</p>
+				</triangles>
+			</mesh>
+		</geometry>
+	</library_geometries>
+	<library_visual_scenes>
+		<visual_scene id="Scene" name="Scene">
+			<node layer="L1" sid="Bone" type="JOINT" id="Bone" name="Bone">
+				<translate sid="translate">2.03942 0.24901 -0.06655</translate>
+				<rotate sid="rotateZ">0 0 1 0.00000</rotate>
+				<rotate sid="rotateY">0 1 0 -0.00000</rotate>
+				<rotate sid="rotateX">1 0 0 0.00000</rotate>
+				<scale sid="scale">1.00000 1.00000 1.00000</scale>
+			</node>
+			<node layer="L1" id="Cube_001" name="Cube_001">
+				<translate sid="translate">2.00000 0.00000 7.00000</translate>
+				<rotate sid="rotateZ">0 0 1 -0.00000</rotate>
+				<rotate sid="rotateY">0 1 0 -125.00000</rotate>
+				<rotate sid="rotateX">1 0 0 -0.00000</rotate>
+				<scale sid="scale">1.00000 1.00000 1.00000</scale>
+				<instance_geometry url="#Cube_003">
+					<bind_material>
+						<technique_common/>
+					</bind_material>
+				</instance_geometry>
+			</node>
+			<node layer="L1" id="Cube" name="Cube">
+				<translate sid="translate">0 0 0</translate>
+				<rotate sid="rotateZ">0 0 1 0</rotate>
+				<rotate sid="rotateY">0 1 0 0</rotate>
+				<rotate sid="rotateX">1 0 0 0</rotate>
+				<scale sid="scale">1 1 1</scale>
+				<instance_controller url="#Cube-skin">
+					<skeleton>#Bone</skeleton>
+					<bind_material>
+						<technique_common/>
+					</bind_material>
+				</instance_controller>
+			</node>
+			<node layer="L1" id="Lamp" name="Lamp">
+				<translate sid="translate">4.07625 1.00545 5.90386</translate>
+				<rotate sid="rotateZ">0 0 1 106.93632</rotate>
+				<rotate sid="rotateY">0 1 0 3.16371</rotate>
+				<rotate sid="rotateX">1 0 0 37.26105</rotate>
+				<scale sid="scale">1.00000 1.00000 1.00000</scale>
+				<instance_light url="#Spot"/>
+			</node>
+			<node layer="L1" id="Camera" name="Camera">
+				<translate sid="translate">7.48113 -6.50764 5.34367</translate>
+				<rotate sid="rotateZ">0 0 1 46.69194</rotate>
+				<rotate sid="rotateY">0 1 0 0.61977</rotate>
+				<rotate sid="rotateX">1 0 0 63.55930</rotate>
+				<scale sid="scale">1.00000 1.00000 1.00000</scale>
+				<instance_camera url="#Camera-Camera"/>
+			</node>
+		</visual_scene>
+	</library_visual_scenes>
+	<scene>
+		<instance_visual_scene url="#Scene"/>
+	</scene>
+</COLLADA>
