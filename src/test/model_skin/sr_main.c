@@ -52,7 +52,8 @@ main (int argc, char **argv)
   al_set_target_backbuffer (display);
 
   MaiModel *model;
-  model = mai_model_new_from_file ("c_sr_weight.dae");
+  struct aiScene *scene;
+  model = mai_model_new_from_file ("c_sr_weight.dae", &scene);
   MaiNode *mesh_node;
   mesh_node = g_hash_table_lookup (model->name_node_map, "Cube");
   g_xassert (mesh_node);

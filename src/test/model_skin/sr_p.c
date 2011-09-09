@@ -57,7 +57,9 @@ main (int argc, char **argv)
   g_state->w_mat = z_mat;
 
   MaiModel *model;
-  model = mai_model_new_from_file ("../misc/mtest1.dae");
+  struct aiScene *scene;
+  model = mai_model_new_from_file ("../misc/mtest1.dae", &scene);
+  aiReleaseImport (scene);
 
   MaiAnimInstance *mai;
   g_xassert (model->anims->len > 0);

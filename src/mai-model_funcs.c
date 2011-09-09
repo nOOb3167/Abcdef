@@ -37,10 +37,12 @@ mai_model_new_from (struct aiScene *scene)
 }
 
 MaiModel *
-mai_model_new_from_file (const char *file_name)
+mai_model_new_from_file (const char *file_name, struct aiScene **scene_out)
 {
   struct aiScene *scene;
   scene = ai_scene_from_file (file_name);
+
+  *scene_out = scene;
 
   return _mai_model_new_from_scene (scene);
 }
