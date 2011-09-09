@@ -52,5 +52,11 @@ void
 mai_info_win_fill_model_from_model (MaiInfoWin *iw, MaiModel *model);
 
 void
+mai_info_win_show (MaiInfoWin *iw);
+
+void
+mai_info_win_iteration (MaiInfoWin *iw, gboolean blocking);
+
+void
 mai_info_win_display (MaiInfoWin *iw);
 %}

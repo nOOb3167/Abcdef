@@ -75,7 +75,8 @@ main (int argc, char **argv)
   mai_info_win_clear_model (iw);
   mai_info_win_fill_model_from_node_graph (iw, sr_model);
   mai_info_win_fill_model_from_model (iw, model);
-  mai_info_win_display (iw);
+
+  mai_info_win_show (iw);
 
   int frame;
   for (frame=0; frame<600; ++frame)
@@ -88,6 +89,8 @@ main (int argc, char **argv)
       al_get_keyboard_state (&aks);
       sr_update_global_ypr (&aks);
       al_clear_to_color (al_map_rgb (0, 0, 0));
+
+      mai_info_win_iteration (iw, FALSE);
 
       /**
        * Allegro drawing origin top left.

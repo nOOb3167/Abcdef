@@ -127,11 +127,22 @@ mai_info_win_fill_model_from_model (MaiInfoWin *iw, MaiModel *model)
 }
 
 void
-mai_info_win_display (MaiInfoWin *iw)
+mai_info_win_show (MaiInfoWin *iw)
 {
   gtk_tree_view_expand_all (GTK_TREE_VIEW (iw->tree_view));
-
   gtk_widget_show_all (iw->win);
+}
+
+void
+mai_info_win_iteration (MaiInfoWin *iw, gboolean blocking)
+{
+  gtk_main_iteration_do (blocking);
+}
+
+void
+mai_info_win_display (MaiInfoWin *iw)
+{
+  mai_info_win_show (iw);
 
   while (iw->win_dead == FALSE)
     {
