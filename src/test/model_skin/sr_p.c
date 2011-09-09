@@ -124,8 +124,8 @@ main (int argc, char **argv)
           sr_skeletal_draw_node_trans (&comp, sr_model_aux,
                                        mn_a, vts_a);
 
-          g_array_unref (vts_a);
           g_object_unref (mn_a);
+          g_array_unref (vts_a);
         }
 
       g_hash_table_unref (ht);

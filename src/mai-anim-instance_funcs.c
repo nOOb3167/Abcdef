@@ -15,9 +15,9 @@ mai_anim_instance_new_from_anim (MaiAnim *anim, GHashTable *name_node_map, MaiNo
   MaiAnimInstance *self;
 
   self = MAI_ANIM_INSTANCE (nx_get_new ());
-  self->anim = anim;
-  self->name_node_map = name_node_map;
-  self->nodes = nodes;
+  self->anim = g_object_ref (MAI_ANIM (anim));
+  self->name_node_map = g_hash_table_ref (name_node_map);
+  self->nodes = g_object_ref (MAI_NODE (nodes));
   self->current_frame = 0;
 
   return self;

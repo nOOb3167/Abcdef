@@ -11,6 +11,9 @@ GHashTable *
 _nx_mai_collect_node_map (MaiNode *from);
 
 
+/**
+ * Deprecated, use mai_model_new_from_scene or something.
+ */
 MaiModel *
 mai_model_new_from (struct aiScene *scene)
 {
@@ -72,24 +75,30 @@ _mai_model_new_from_scene (struct aiScene *scene)
   return self;
 }
 
+/**
+ * Creates a new instance from the MaiModel animation
+ * with the matching name.
+ */
 MaiAnimInstance *
-mai_model_get_anim_by_name (MaiModel *self, char * name)
+mai_model_get_anim_by_name (MaiModel *self, char *name)
 {
   MaiAnimInstance *ret;
   MaiAnim *matching_anim;
 
-  int cnt;
   matching_anim = NULL;
-  for (cnt=0; cnt<=self->anims->len; ++cnt)
+
+  for (gint i = 0; i <= self->anims->len; ++i)
     {
       MaiAnim *candidate;
-      candidate = g_mai_anim_ptr_array_index (self->anims, cnt);
+      candidate = g_mai_anim_ptr_array_index (self->anims, i);
+
       if (0 == g_strcmp0 (name, candidate->name))
         {
           matching_anim = candidate;
           break;
         }
     }
+
   g_xassert (NULL != matching_anim);
 
   ret = mai_anim_instance_new_from_anim (matching_anim, self->name_node_map, self->nodes);

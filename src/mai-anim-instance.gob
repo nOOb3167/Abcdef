@@ -8,8 +8,10 @@ class Mai:Anim:Instance from G:Object
 {
  public Mai:Anim *anim
    unrefwith g_object_unref;
+
  public GHashTable *name_node_map
    destroywith g_hash_table_unref;
+
  public int current_frame;
 
  /* Do I need this? name_node_map might obsolete it. */
