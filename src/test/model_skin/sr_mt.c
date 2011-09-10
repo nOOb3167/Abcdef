@@ -37,8 +37,8 @@ tf_init_allegro (gpointer data)
   return NULL;
 }
 
-gchar *
-tf_cogl_texture_get_data (CoglHandle texture)
+void
+tf_cogl_texture_get_data (CoglHandle texture, gchar **data_out, gint *size_out)
 {
   int siz;
   gchar *data;
@@ -51,7 +51,8 @@ tf_cogl_texture_get_data (CoglHandle texture)
   siz = cogl_texture_get_data (texture, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
   g_xassert (siz);
 
-  return data;
+  *data_out = data;
+  *size_out = siz;
 }
 
 gpointer
@@ -73,10 +74,11 @@ tf_init_cogl (gpointer data)
   _cogl_setup (width, height, &ofs, &tx);
 
   gchar *tex_data;
-  tex_data = tf_cogl_texture_get_data (tx);
+  gint tex_siz;
+  tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
 
   MTfMsg *mm;
-  mm = m_tfmsg_new_with_data (tex_data);
+  mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz));
 
   g_async_queue_push (sha->qu, mm);
 

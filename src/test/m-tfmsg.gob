@@ -7,11 +7,13 @@ class M:TfMsg from G:Object
 {
   public gchar *tex_data
     destroywith g_free;
+  
+  public gint tex_data_size;
 }
 
 %adh{
 
 GObject *
-m_tfmsg_new_with_data (gchar *data);
+m_tfmsg_new (gchar *data, gint size);
 
 %}
