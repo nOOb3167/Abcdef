@@ -8,6 +8,11 @@
 
 struct TfSharedData
 {
+  /**
+   * Allegro pushes NULLs into qu_r, to trigger
+   * cogl pop from qu.
+   */
+  GAsyncQueue *qu_r;
   GAsyncQueue *qu;
 };
 
@@ -15,6 +20,7 @@ struct TfSharedData *tf_shared_data_new ()
 {
   struct TfSharedData *ret;
   ret = g_malloc0 (sizeof (*ret));
+  ret->qu_r = g_async_queue_new ();
   ret->qu = g_async_queue_new ();
   return ret;
 }
@@ -53,16 +59,21 @@ tf_init_allegro (gpointer data)
 
   sha = data;
 
-  g_async_queue_push (sha->qu, "HELLO");
-
   _allegro_setup (&disp);
 
-  MTfMsg *mm;
-  mm = M_TFMSG (g_async_queue_pop (sha->qu));
+  while (TRUE)
+    {
+      g_async_queue_push (sha->qu_r, "PRETEND_THIS_IS_NULL");
 
-  tf_allegro_display_transfer (disp, mm);
+      MTfMsg *mm;
+      mm = M_TFMSG (g_async_queue_pop (sha->qu));
 
-  g_object_unref (mm);
+      tf_allegro_display_transfer (disp, mm);
+
+      g_object_unref (mm);
+
+      al_rest (0.05f);
+    }
 
   return NULL;
 }
@@ -94,27 +105,28 @@ tf_init_cogl (gpointer data)
 
   sha = data;
 
-  char * msg;
-  msg = g_async_queue_pop (sha->qu);
-  printf ("%s\n", msg);
-
   width = 640;
   height = 480;
 
   _cogl_setup (width, height, &ofs, &tx);
 
-  CoglColor clear_color;
-  cogl_color_set_from_4ub (&clear_color, '\x80', '\x0', '\x0', 255);
-  cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);
+  for (gint i = 0; i < 600; ++i)
+    {
+      g_async_queue_pop (sha->qu_r);
 
-  gchar *tex_data;
-  gint tex_siz;
-  tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
+      CoglColor clear_color;
+      cogl_color_set_from_4ub (&clear_color, '\x80', '\x0', '\x0', 255);
+      cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);
 
-  MTfMsg *mm;
-  mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz, width, height));
+      gchar *tex_data;
+      gint tex_siz;
+      tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
 
-  g_async_queue_push (sha->qu, mm);
+      MTfMsg *mm;
+      mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz, width, height));
+
+      g_async_queue_push (sha->qu, mm);
+    }
 
   return NULL;
 }
