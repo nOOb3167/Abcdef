@@ -9,11 +9,15 @@ class M:TfMsg from G:Object
     destroywith g_free;
   
   public gint tex_data_size;
+  
+  public gint width;
+  public gint height;
 }
 
 %adh{
 
 GObject *
-m_tfmsg_new (gchar *data, gint size);
+m_tfmsg_new (gchar *data, gint size,
+             gint width, gint height);
 
 %}

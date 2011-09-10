@@ -34,6 +34,8 @@ tf_init_allegro (gpointer data)
   MTfMsg *mm;
   mm = M_TFMSG (g_async_queue_pop (sha->qu));
 
+  g_object_unref (mm);
+
   return NULL;
 }
 
@@ -78,7 +80,7 @@ tf_init_cogl (gpointer data)
   tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
 
   MTfMsg *mm;
-  mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz));
+  mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz, width, height));
 
   g_async_queue_push (sha->qu, mm);
 
