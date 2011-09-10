@@ -38,6 +38,12 @@ struct fbstate_data
 };
 
 void
+_allegro_setup (ALLEGRO_DISPLAY **disp);
+
+void
+_cogl_setup (int width, int height, CoglHandle *ofs, CoglHandle *tx);
+
+void
 gfx_display_transfer (void);
 
 void

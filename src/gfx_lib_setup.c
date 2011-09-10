@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_opengl.h>
@@ -7,13 +8,6 @@
 
 #include <error.h>
 #include <gfx_lib_setup.h>
-
-
-static void
-_allegro_setup (ALLEGRO_DISPLAY **disp);
-
-static void
-_cogl_setup (int width, int height, CoglHandle *ofs, CoglHandle *tx);
 
 static struct context_holder *
 _context_holder_new_WHILE_COGL (void);
@@ -201,10 +195,11 @@ gfx_display_transfer (void)
       ALLEGRO_LOCKED_REGION *rgn;
       rgn = al_lock_bitmap (bmp,
                             ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_WRITEONLY);
-      char *data;
-      for (gint i = 0, data = rgn->data; i < 480; ++i, data += rgn->pitch)
+      char *rdata;
+      rdata = rgn->data;
+      for (gint i = 0; i < 480; ++i, rdata += rgn->pitch)
         {
-          memcpy (data, &fbd->data[i*640*3], 640*3);
+          memcpy (rdata, &fbd->data[i*640*3], 640*3);
         }
       al_unlock_bitmap (bmp);
   }
