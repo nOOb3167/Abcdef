@@ -1,23 +1,24 @@
 %header{
 #include <src/error.h>
 #include <src/array_macro.h>
+
+enum TfMsgType
+{
+  TF_MSGTYPE_INVALID = 0,
+  TF_MSGTYPE_HEARTBEAT,
+  TF_MSGTYPE_FBUP,
+  TF_MSGTYPE_END
+};
 %}
 
 class M:TfMsg from G:Object
 {
-  public gchar *tex_data
-    destroywith g_free;
-  
-  public gint tex_data_size;
-  
-  public gint width;
-  public gint height;
+  public enum TfMsgType msg_type = TF_MSGTYPE_INVALID;
 }
 
 %adh{
 
 GObject *
-m_tfmsg_new (gchar *data, gint size,
-             gint width, gint height);
+m_tfmsg_new (void);
 
 %}

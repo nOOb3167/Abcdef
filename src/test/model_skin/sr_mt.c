@@ -4,6 +4,7 @@
 #include <src/gfx_lib_setup.h>
 #include <src/mai-info-win.h>
 #include <src/test/m-tfmsg.h>
+#include <src/test/m-tfmsg-fbup.h>
 #include <sr.h>
 
 struct TfSharedData
@@ -26,7 +27,7 @@ struct TfSharedData *tf_shared_data_new ()
 }
 
 void
-tf_allegro_display_transfer (ALLEGRO_DISPLAY *disp, MTfMsg *mm)
+tf_allegro_display_transfer (ALLEGRO_DISPLAY *disp, MTfMsgFbUp *mm)
 {
   static ALLEGRO_BITMAP *bmp;
 
@@ -67,8 +68,9 @@ tf_init_allegro (gpointer data)
 
       MTfMsg *mm;
       mm = M_TFMSG (g_async_queue_pop (sha->qu));
+      g_xassert (M_IS_TFMSG (mm) && mm->msg_type == TF_MSGTYPE_FBUP);
 
-      tf_allegro_display_transfer (disp, mm);
+      tf_allegro_display_transfer (disp, M_TFMSG_FBUP (mm));
 
       g_object_unref (mm);
 
@@ -122,8 +124,8 @@ tf_init_cogl (gpointer data)
       gint tex_siz;
       tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
 
-      MTfMsg *mm;
-      mm = M_TFMSG (m_tfmsg_new (tex_data, tex_siz, width, height));
+      MTfMsgFbUp *mm;
+      mm = M_TFMSG_FBUP (m_tfmsg_fbup_new (tex_data, tex_siz, width, height));
 
       g_async_queue_push (sha->qu, mm);
     }

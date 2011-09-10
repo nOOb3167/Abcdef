@@ -1,0 +1,18 @@
+%header{
+#include <src/error.h>
+#include <src/array_macro.h>
+
+#include <src/test/m-tfmsg.h>
+%}
+
+class M:TfMsg:HeartBeat from M:TfMsg
+{
+  public gint frame_number;
+}
+
+%adh{
+
+GObject *
+m_tfmsg_heartbeat_new (void);
+
+%}

@@ -68,6 +68,8 @@ GOB2IZE(src/mai-bone.gob)
 GOB2IZE(src/mai-info-win.gob)
 
 GOB2IZE(src/test/m-tfmsg.gob)
+GOB2IZE(src/test/m-tfmsg-heartbeat.gob)
+GOB2IZE(src/test/m-tfmsg-fbup.gob)
 
 ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
@@ -115,6 +117,7 @@ ADD_EXECUTABLE(sr_mt
  src/test/model_skin/sr.c
  src/test/model_skin/nx_mat.c
  src/test/m-tfmsg.c src/test/m-tfmsg_funcs.c
- )
+ src/test/m-tfmsg-heartbeat.c src/test/m-tfmsg-heartbeat_funcs.c
+ src/test/m-tfmsg-fbup.c src/test/m-tfmsg-fbup_.c)
 TARGET_LINK_LIBRARIES(sr_mt nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(sr_mt PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
