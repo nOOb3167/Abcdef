@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include <src/gfx_lib_setup.h>
 #include <src/mai-info-win.h>
+#include <src/test/m-tfmsg.h>
 #include <sr.h>
 
 struct TfSharedData
@@ -30,7 +31,27 @@ tf_init_allegro (gpointer data)
 
   _allegro_setup (&disp);
 
+  MTfMsg *mm;
+  mm = M_TFMSG (g_async_queue_pop (sha->qu));
+
   return NULL;
+}
+
+gchar *
+tf_cogl_texture_get_data (CoglHandle texture)
+{
+  int siz;
+  gchar *data;
+
+  siz = cogl_texture_get_data (texture, COGL_PIXEL_FORMAT_RGB_888, 0, NULL);
+  g_xassert (siz);
+
+  data = g_malloc (sizeof (*data) * siz);
+
+  siz = cogl_texture_get_data (texture, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
+  g_xassert (siz);
+
+  return data;
 }
 
 gpointer
@@ -50,6 +71,14 @@ tf_init_cogl (gpointer data)
   height = 480;
 
   _cogl_setup (width, height, &ofs, &tx);
+
+  gchar *tex_data;
+  tex_data = tf_cogl_texture_get_data (tx);
+
+  MTfMsg *mm;
+  mm = m_tfmsg_new_with_data (tex_data);
+
+  g_async_queue_push (sha->qu, mm);
 
   return NULL;
 }
