@@ -19,6 +19,32 @@ struct TfSharedData *tf_shared_data_new ()
   return ret;
 }
 
+void
+tf_allegro_display_transfer (ALLEGRO_DISPLAY *disp, MTfMsg *mm)
+{
+  static ALLEGRO_BITMAP *bmp;
+
+  if (bmp == NULL)
+      bmp = al_create_bitmap (640, 480);
+
+  {
+      ALLEGRO_LOCKED_REGION *rgn;
+      rgn = al_lock_bitmap (bmp,
+                            ALLEGRO_PIXEL_FORMAT_BGR_888, ALLEGRO_LOCK_WRITEONLY);
+      char *rdata;
+      rdata = rgn->data;
+      for (gint i = 0; i < 480; ++i, rdata += rgn->pitch)
+        {
+          memcpy (rdata, &mm->tex_data[i*640*3], 640*3);
+        }
+      al_unlock_bitmap (bmp);
+  }
+
+  al_set_target_backbuffer (disp);
+  al_draw_bitmap (bmp, 0, 0, 0);
+  al_flip_display ();
+}
+
 gpointer
 tf_init_allegro (gpointer data)
 {
@@ -33,6 +59,8 @@ tf_init_allegro (gpointer data)
 
   MTfMsg *mm;
   mm = M_TFMSG (g_async_queue_pop (sha->qu));
+
+  tf_allegro_display_transfer (disp, mm);
 
   g_object_unref (mm);
 
@@ -74,6 +102,10 @@ tf_init_cogl (gpointer data)
   height = 480;
 
   _cogl_setup (width, height, &ofs, &tx);
+
+  CoglColor clear_color;
+  cogl_color_set_from_4ub (&clear_color, '\x80', '\x0', '\x0', 255);
+  cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);
 
   gchar *tex_data;
   gint tex_siz;
