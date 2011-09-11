@@ -57,22 +57,49 @@ tf_init_allegro (gpointer data)
 {
   struct TfSharedData *sha;
   ALLEGRO_DISPLAY *disp;
+  ALLEGRO_EVENT_QUEUE *queue;
+  ALLEGRO_EVENT_SOURCE *timer_source;
+  ALLEGRO_TIMER *timer;
 
   sha = data;
 
   _allegro_setup (&disp);
 
+  queue = al_create_event_queue ();
+  g_xassert (queue);
+
+  timer = al_create_timer (0.05f);
+  g_xassert (timer);
+
+  timer_source = al_get_timer_event_source (timer);
+  g_xassert (timer_source);
+
+  al_register_event_source (queue, timer_source);
+
+  al_start_timer (timer);
+
   while (TRUE)
     {
       g_async_queue_push (sha->qu_r, "PRETEND_THIS_IS_NULL");
 
-      MTfMsg *mm;
-      mm = M_TFMSG (g_async_queue_pop (sha->qu));
-      g_xassert (M_IS_TFMSG (mm) && mm->msg_type == TF_MSGTYPE_FBUP);
+      MTfMsg *msg;
+      while ((msg = g_async_queue_try_pop (sha->qu)))
+        {
+          g_xassert (M_IS_TFMSG (msg) && msg->msg_type != TF_MSGTYPE_INVALID);
 
-      tf_allegro_display_transfer (disp, M_TFMSG_FBUP (mm));
+          switch (msg->msg_type)
+            {
+          case TF_MSGTYPE_FBUP:
+              tf_allegro_display_transfer (disp, M_TFMSG_FBUP (msg));
+              break;
 
-      g_object_unref (mm);
+          default:
+              g_xassert (("EEH MAJI, UNHANDLED MESSAGE TYPE", FALSE));
+              break;
+            }
+
+          g_object_unref (msg);
+        }
 
       al_rest (0.05f);
     }
