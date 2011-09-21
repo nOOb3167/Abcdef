@@ -1,0 +1,16 @@
+${INCLUDE_PARENT_HEADER}
+${INCLUDE_THIS_HEADER}
+
+${NXGETNEW}
+
+GObject *
+${TYPE_LOWER}_new (void)
+{
+  ${TYPE_UPPER} *self;
+  ${TYPE_PARENT_UPPER} *par;
+
+  self = ${CHECKEDCAST_THIS} (nx_get_new ());
+  par = ${CHECKEDCAST_PARENT} (self);
+
+  return G_OBJECT (self);
+}

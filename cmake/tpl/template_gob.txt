@@ -1,0 +1,16 @@
+%header{
+#include <src/error.h>
+#include <src/array_macro.h>
+${INCLUDE_PARENT_HEADER}
+%}
+
+class ${CLASS_THIS} from ${CLASS_PARENT}
+{
+}
+
+%adh{
+
+GObject *
+${TYPE_LOWER}_new (void);
+
+%}
