@@ -14,7 +14,7 @@ ctonc ()
 		ARGS="${ARGS#*:}"
 		if [ -z "$ARGS" ]
 			then break; fi
-		done
+	done
 	RET="$CONCAT"
 }
 
