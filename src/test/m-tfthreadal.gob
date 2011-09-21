@@ -1,0 +1,16 @@
+%header{
+#include <src/error.h>
+#include <src/array_macro.h>
+#include <src/test/m-tfthread.h>
+%}
+
+class M:TfThreadAl from M:TfThread
+{
+}
+
+%adh{
+
+GObject *
+m_tfthreadal_new (void);
+
+%}

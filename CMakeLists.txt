@@ -70,6 +70,9 @@ GOB2IZE(src/mai-info-win.gob)
 GOB2IZE(src/test/m-tfmsg.gob)
 GOB2IZE(src/test/m-tfmsg-heartbeat.gob)
 GOB2IZE(src/test/m-tfmsg-fbup.gob)
+GOB2IZE(src/test/m-tfthread.gob)
+GOB2IZE(src/test/m-tfthreadal.gob)
+GOB2IZE(src/test/m-tfthreadcogl.gob)
 
 ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
@@ -123,6 +126,9 @@ TARGET_LINK_LIBRARIES(sr_mt nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_
 SET_TARGET_PROPERTIES(sr_mt PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 ADD_EXECUTABLE(mt_yield
+ src/test/m-tfthread.c
+ src/test/m-tfthreadal.c
+ src/test/m-tfthreadcogl.c
  src/test/model_skin/mt_yield.c)
 TARGET_LINK_LIBRARIES(mt_yield ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} opengl32)
 SET_TARGET_PROPERTIES(mt_yield PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
