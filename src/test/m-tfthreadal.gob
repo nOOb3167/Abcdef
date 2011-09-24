@@ -2,15 +2,53 @@
 #include <src/error.h>
 #include <src/array_macro.h>
 #include <src/test/m-tfthread.h>
+
+#include <src/test/m-tfmsg.h>
+#include <allegro5/allegro.h>
 %}
 
 class M:TfThreadAl from M:TfThread
 {
+  public ALLEGRO_EVENT_QUEUE *queue
+    destroywith al_destroy_event_queue;
+
+  public ALLEGRO_EVENT_SOURCE *timer_source;
+  
+  public ALLEGRO_EVENT_SOURCE *custom_source
+    destroywith al_destroy_user_event_source;
+  
+  public ALLEGRO_TIMER *timer
+    destroywith al_destroy_timer;
+  
+  public gboolean kill_me;
+
+  public GAsyncQueue *qu_out
+    unrefwith g_async_queue_unref;
+    
+  class_init (self)
+  {
+    MTfThreadClass *parent = M_TFTHREAD_CLASS (self);
+  	parent->send = m_tfthreadal_send_;
+  }
 }
 
 %adh{
 
+#define TF_USER_EVENT_TYPE ALLEGRO_GET_EVENT_TYPE('T', 'F', 'T', 'U')
+
 GObject *
-m_tfthreadal_new (void);
+m_tfthreadal_new_inside_thread (void);
+
+void
+m_tfthreadal_event_loop_enter (MTfThreadAl *self);
+
+void
+m_tfthreadal_send_ (MTfThread *self, MTfMsg * msg);
+
+void
+m_tfthreadal_start_timer (MTfThreadAl *self);
+
+void
+_m_tfthreadal_user_event_dtor (ALLEGRO_USER_EVENT *event);
 
 %}
