@@ -42,22 +42,12 @@ m_tfthreadal_event_loop_enter (MTfThreadAl *self)
     {
       ALLEGRO_EVENT ev;
 
-      if (self->kill_me)
-          g_thread_exit (0);
-
       al_wait_for_event (self->queue, &ev);
-      g_xassert (ALLEGRO_EVENT_TIMER == ev.type ||
-                 TF_USER_EVENT_TYPE == ev.type);
 
-      if (_tf_allegro_check_overflow (self))
+      if (_m_tfthreadal_check_overflow (self))
           self->kill_me = TRUE;
 
-      _tf_allegro_process_incoming (self);
-
-      MTfMsgAllegroTimer *mm;
-      mm = m_tfmsg_allegro_timer_new ();
-
-      g_async_queue_push (self->qu_out, mm);
+      _m_tfthreadal_process_incoming_one (self, &ev);
     }
 }
 
@@ -100,4 +90,48 @@ _m_tfthreadal_user_event_dtor (ALLEGRO_USER_EVENT *event)
   printf ("UserEventDtor\n");
 
   g_object_unref (msg);
+}
+
+gboolean
+_m_tfthreadal_check_overflow (MTfThreadAl *self)
+{
+  if (1000 > g_async_queue_length (self->qu_out))
+      return TRUE;
+  else
+      return FALSE;
+}
+
+void
+_m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
+{
+  g_xassert (ALLEGRO_EVENT_TIMER == ev->type ||
+             TF_USER_EVENT_TYPE == ev->type);
+
+  switch (ev->type)
+  {
+  case ALLEGRO_EVENT_TIMER:
+      MTfMsgHeartBeat *mm;
+      mm = m_tfmsg_heartbeat_new ();
+
+      /**
+       * Should be this instead: Select(Dispatch)->Send(mm)
+       */
+      g_async_queue_push (self->qu_out, mm);
+      break;
+
+  case TF_USER_EVENT_TYPE:
+      MTfMsg *msg;
+      msg = M_TFMSG (ev->user->data1);
+
+      /**
+       * Switch on msg->msg_type
+       */
+      printf ("UserEventType received\n");
+      g_xassert (0);
+      break;
+
+  default:
+      g_xassert (("EEH MAJI, UNHANDLED MESSAGE TYPE", FALSE));
+      break;
+  }
 }

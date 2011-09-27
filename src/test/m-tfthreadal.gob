@@ -4,6 +4,7 @@
 #include <src/test/m-tfthread.h>
 
 #include <src/test/m-tfmsg.h>
+#include <src/test/m-tfmsg-heartbeat.h>
 #include <allegro5/allegro.h>
 %}
 
@@ -50,5 +51,11 @@ m_tfthreadal_start_timer (MTfThreadAl *self);
 
 void
 _m_tfthreadal_user_event_dtor (ALLEGRO_USER_EVENT *event);
+
+gboolean
+_m_tfthreadal_check_overflow (MTfThreadAl *self);
+
+void
+_m_tfthreadal_process_incoming (MTfThreadAl *self);
 
 %}
