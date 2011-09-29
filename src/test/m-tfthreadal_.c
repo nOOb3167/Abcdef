@@ -121,6 +121,8 @@ _m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
       MTfMsgHeartBeat *mm;
       mm = M_TFMSG_HEARTBEAT (m_tfmsg_heartbeat_new ());
 
+      printf ("SZ %d\n", g_async_queue_length (self->qu_out));
+
       /**
        * Should be this instead: Select(Dispatch)->Send(mm)
        */

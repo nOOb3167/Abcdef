@@ -1,0 +1,44 @@
+%header{
+#include <src/error.h>
+#include <src/array_macro.h>
+
+#include <src/test/m-tfthread.h>
+%}
+
+class Tf:Gfx:Threads from G:Object
+{
+  /* (gint, TfGfxThreadsM *) */
+  public GHashTable *threads
+    destroywith g_hash_table_unref;
+}
+
+%adh{
+
+enum TfThreadEnum
+{
+  TF_THREAD_ALLEGRO = 0,
+  TF_THREAD_ALLEGRO_TIMER,
+  TF_THREAD_COGL,
+  TF_NUM_THREADS
+};
+
+struct _TfGfxThreadsM
+{
+  GThread *thread;
+  MTfThread *data;
+};
+typedef struct _TfGfxThreadsM TfGfxThreadsM;
+
+void
+tf_gfx_threads_m_init (TfGfxThreadsM *tm, GThread *thread, MTfThread *data);
+
+GObject *
+tf_gfx_threads_new (void);
+
+void
+tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id, GThread *thread, MTfThread *data);
+
+TfGfxThreadsM *
+tf_gfx_threads_get (TfGfxThreads *self, enum TfThreadEnum id);
+
+%}

@@ -7,6 +7,7 @@
 #include <src/test/m-tfmsg-fbup.h>
 #include <src/test/m-tfthread.h>
 #include <src/test/m-tfthreadal.h>
+#include <src/test/tf-gfx-threads.h>
 #include <sr.h>
 
 struct TfSharedData
@@ -162,14 +163,6 @@ tf_init_cogl (gpointer data)
   return NULL;
 }
 
-enum SrMtThreadEnum
-{
-  SR_MT_THREAD_ALLEGRO = 0,
-  SR_MT_THREAD_ALLEGRO_TIMER,
-  SR_MT_THREAD_COGL,
-  SR_MT_NUM_THREADS
-};
-
 gpointer
 tf_init_allegro_timer (gpointer data)
 {
@@ -200,15 +193,15 @@ main (int argc, char **argv)
   MTfThreadAl *mtta;
   mtta = M_TFTHREADAL (m_tfthreadal_new ());
 
-  GThread *gfx_threads[SR_MT_NUM_THREADS];
-  gfx_threads[SR_MT_THREAD_ALLEGRO] = g_thread_create (tf_init_allegro, sha, TRUE, NULL);
-  gfx_threads[SR_MT_THREAD_ALLEGRO_TIMER] = g_thread_create (tf_init_allegro_timer,
+  GThread *gfx_threads[TF_NUM_THREADS];
+  gfx_threads[TF_THREAD_ALLEGRO] = g_thread_create (tf_init_allegro, sha, TRUE, NULL);
+  gfx_threads[TF_THREAD_ALLEGRO_TIMER] = g_thread_create (tf_init_allegro_timer,
                                                              mtta,
                                                              TRUE,
                                                              NULL);
-  gfx_threads[SR_MT_THREAD_COGL] = g_thread_create (tf_init_cogl, sha, TRUE, NULL);
+  gfx_threads[TF_THREAD_COGL] = g_thread_create (tf_init_cogl, sha, TRUE, NULL);
 
-  for (int i = 0; i < SR_MT_NUM_THREADS; ++ i)
+  for (int i = 0; i < TF_NUM_THREADS; ++ i)
     {
       g_thread_join (gfx_threads[i]);
     }
