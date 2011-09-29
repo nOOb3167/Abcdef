@@ -16,12 +16,14 @@ class M:TfThreadAl from M:TfThread
   public ALLEGRO_EVENT_SOURCE *timer_source;
   
   public ALLEGRO_EVENT_SOURCE *custom_source
-    destroywith al_destroy_user_event_source;
+    destroy { al_destroy_user_event_source (VAR); g_free (VAR); };
   
   public ALLEGRO_TIMER *timer
     destroywith al_destroy_timer;
   
   public gboolean kill_me;
+  
+  public gboolean inited;
 
   public GAsyncQueue *qu_out
     unrefwith g_async_queue_unref;
@@ -38,7 +40,7 @@ class M:TfThreadAl from M:TfThread
 #define TF_USER_EVENT_TYPE ALLEGRO_GET_EVENT_TYPE('T', 'F', 'T', 'U')
 
 GObject *
-m_tfthreadal_new_inside_thread (void);
+m_tfthreadal_new (void);
 
 void
 m_tfthreadal_event_loop_enter (MTfThreadAl *self);
@@ -56,6 +58,6 @@ gboolean
 _m_tfthreadal_check_overflow (MTfThreadAl *self);
 
 void
-_m_tfthreadal_process_incoming (MTfThreadAl *self);
+_m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev);
 
 %}

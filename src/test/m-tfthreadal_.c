@@ -5,13 +5,18 @@
 NX_GET_NEW (m_tfthreadal);
 
 GObject *
-m_tfthreadal_new_inside_thread (void)
+m_tfthreadal_new (void)
 {
   MTfThreadAl *self;
   MTfThread *par;
 
   self = M_TFTHREADAL (nx_get_new ());
   par = M_TFTHREAD (self);
+
+  /**
+   * Allegro MUST be initialized prior to calling any routines.
+   */
+  al_init ();
 
   self->queue = al_create_event_queue ();
   g_xassert (self->queue);
@@ -22,12 +27,14 @@ m_tfthreadal_new_inside_thread (void)
   self->timer_source = al_get_timer_event_source (self->timer);
   g_xassert (self->timer_source);
 
+  self->custom_source = g_malloc0 (sizeof (*self->custom_source));
   al_init_user_event_source (self->custom_source);
 
   al_register_event_source (self->queue, self->timer_source);
   al_register_event_source (self->queue, self->custom_source);
 
   self->kill_me = FALSE;
+  self->inited = TRUE;
 
   self->qu_out = g_async_queue_new ();
   g_xassert (self->qu_out);
@@ -59,7 +66,7 @@ void
 m_tfthreadal_send_ (MTfThread *self, MTfMsg * msg)
 {
   MTfThreadAl *this;
-  this = M_TFTHREAD (self);
+  this = M_TFTHREADAL (self);
 
   /**
    * As far as I can tell, Allegro documentation and source indicate events are copied,
@@ -70,7 +77,7 @@ m_tfthreadal_send_ (MTfThread *self, MTfMsg * msg)
 
   g_object_ref (msg);
   uev.user.type = TF_USER_EVENT_TYPE;
-  uev.user.data1 = msg;
+  uev.user.data1 = (intptr_t)msg;
 
   al_emit_user_event (this->custom_source, &uev, _m_tfthreadal_user_event_dtor);
 }
@@ -110,18 +117,21 @@ _m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
   switch (ev->type)
   {
   case ALLEGRO_EVENT_TIMER:
+    {
       MTfMsgHeartBeat *mm;
-      mm = m_tfmsg_heartbeat_new ();
+      mm = M_TFMSG_HEARTBEAT (m_tfmsg_heartbeat_new ());
 
       /**
        * Should be this instead: Select(Dispatch)->Send(mm)
        */
       g_async_queue_push (self->qu_out, mm);
       break;
+    }
 
   case TF_USER_EVENT_TYPE:
+    {
       MTfMsg *msg;
-      msg = M_TFMSG (ev->user->data1);
+      msg = M_TFMSG (ev->user.data1);
 
       /**
        * Switch on msg->msg_type
@@ -129,6 +139,7 @@ _m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
       printf ("UserEventType received\n");
       g_xassert (0);
       break;
+    }
 
   default:
       g_xassert (("EEH MAJI, UNHANDLED MESSAGE TYPE", FALSE));

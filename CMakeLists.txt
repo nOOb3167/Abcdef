@@ -121,11 +121,13 @@ ADD_EXECUTABLE(sr_mt
  src/test/model_skin/nx_mat.c
  src/test/m-tfmsg.c src/test/m-tfmsg_funcs.c
  src/test/m-tfmsg-heartbeat.c src/test/m-tfmsg-heartbeat_funcs.c
- src/test/m-tfmsg-fbup.c src/test/m-tfmsg-fbup_.c)
+ src/test/m-tfmsg-fbup.c src/test/m-tfmsg-fbup_.c
+ src/test/m-tfthread.c src/test/m-tfthread_.c
+ src/test/m-tfthreadal.c src/test/m-tfthreadal_.c)
 TARGET_LINK_LIBRARIES(sr_mt nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(sr_mt PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-ADD_EXECUTABLE(mt_yield
+ADD_EXECUTABLE(mt_yield EXCLUDE_FROM_ALL
  src/test/m-tfthread.c
  src/test/m-tfthreadal.c
  src/test/m-tfthreadcogl.c
