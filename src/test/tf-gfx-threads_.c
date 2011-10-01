@@ -11,6 +11,8 @@ _tf_gfx_threads_new (void)
   self = TF_GFX_THREADS (nx_get_new ());
   par = G_OBJECT (self);
 
+  self->mmutex = g_mutex_new ();
+
   self->threads = g_hash_table_new_full (g_int_hash, g_int_equal,
                                          g_free, g_free);
 
@@ -21,9 +23,11 @@ TfGfxThreads *
 tf_gfx_threads_get_instance (void)
 {
   static TfGfxThreads *tgt = NULL;
+
   if (NULL == tgt)
       tgt = TF_GFX_THREADS (_tf_gfx_threads_new ());
   g_xassert (tgt);
+
   return tgt;
 }
 
@@ -40,14 +44,18 @@ tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id, GThread *thread, M
   TfGfxThreadsM *tm;
   enum TfThreadEnum *key;
 
-  tm = g_malloc0 (sizeof (*tm));
-  tf_gfx_threads_m_init (tm, thread, data);
+  g_mutex_lock (self->mmutex);
+  {
+    tm = g_malloc0 (sizeof (*tm));
+    tf_gfx_threads_m_init (tm, thread, data);
 
-  /* FIXME: Warning, assumes sizeof TfThreadEnum == sizeof int or something */
-  key = g_malloc0 (sizeof (*key));
-  *key = id;
+    /* FIXME: Warning, assumes sizeof TfThreadEnum == sizeof int or something */
+    key = g_malloc0 (sizeof (*key));
+    *key = id;
 
-  g_hash_table_insert (self->threads, key, tm);
+    g_hash_table_insert (self->threads, key, tm);
+  }
+  g_mutex_unlock (self->mmutex);
 }
 
 /**
@@ -61,9 +69,13 @@ tf_gfx_threads_get (TfGfxThreads *self, enum TfThreadEnum id)
   gint key;
   TfGfxThreadsM *value;
 
-  key = id;
-  value = g_hash_table_lookup (self->threads, &key);
-  g_xassert (value);
+  g_mutex_lock (self->mmutex);
+  {
+    key = id;
+    value = g_hash_table_lookup (self->threads, &key);
+    g_xassert (value);
+  }
+  g_mutex_unlock (self->mmutex);
 
   return value;
 }

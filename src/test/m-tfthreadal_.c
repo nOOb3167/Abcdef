@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <src/test/tf-gfx-threads.h>
 #include <src/test/m-tfthread.h>
 #include <src/test/m-tfthreadal.h>
 
@@ -126,7 +127,22 @@ _m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
       /**
        * Should be this instead: Select(Dispatch)->Send(mm)
        */
+      g_object_ref (mm);
       g_async_queue_push (self->qu_out, mm);
+
+      TfGfxThreads *tgt;
+      tgt = tf_gfx_threads_get_instance ();
+
+      TfGfxThreadsM *tm;
+      tm = tf_gfx_threads_get (tgt, TF_THREAD_COGL);
+
+      /**
+       * Send refs its argument so no g_object_ref necessary here.
+       */
+      m_tfthread_send (tm->data, M_TFMSG (mm));
+
+      g_object_unref (mm);
+
       break;
     }
 

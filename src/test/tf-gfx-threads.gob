@@ -7,6 +7,9 @@
 
 class Tf:Gfx:Threads from G:Object
 {
+  public GMutex *mmutex
+    destroywith g_mutex_free;
+
   /* (gint, TfGfxThreadsM *) */
   public GHashTable *threads
     destroywith g_hash_table_unref;

@@ -3,9 +3,9 @@
 #include <src/array_macro.h>
 #include <src/test/m-tfthread.h>
 
+#include <allegro5/allegro.h>
 #include <src/test/m-tfmsg.h>
 #include <src/test/m-tfmsg-heartbeat.h>
-#include <allegro5/allegro.h>
 %}
 
 class M:TfThreadAl from M:TfThread

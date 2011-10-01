@@ -206,7 +206,7 @@ main (int argc, char **argv)
   mtta = M_TFTHREADAL (m_tfthreadal_new ());
 
   MTfThreadAl *mttc;
-  mttc = M_TFTHREADAL (m_tfthreadcogl_new ());
+  mttc = M_TFTHREADCOGL (m_tfthreadcogl_new ());
 
   GThread *gfx_threads[TF_NUM_THREADS];
   gfx_threads[TF_THREAD_ALLEGRO] = g_thread_create (tf_init_allegro, sha, TRUE, NULL);
@@ -235,6 +235,7 @@ main (int argc, char **argv)
 
 
   TfGfxThreadsM *tm = tf_gfx_threads_get (tgt, TF_THREAD_ALLEGRO_TIMER);
+  TfGfxThreadsM *tm2 = tf_gfx_threads_get (tgt, TF_THREAD_COGL);
 
   for (int i = 0; i < TF_NUM_THREADS; ++ i)
     {
