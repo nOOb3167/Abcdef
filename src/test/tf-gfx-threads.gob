@@ -27,13 +27,17 @@ enum TfThreadEnum
 
 struct _TfGfxThreadsM
 {
+  gboolean started;
+  gpointer (*func)(gpointer arg1);
   GThread *thread;
   MTfThread *data;
 };
 typedef struct _TfGfxThreadsM TfGfxThreadsM;
 
 void
-tf_gfx_threads_m_init (TfGfxThreadsM *tm, GThread *thread, MTfThread *data);
+tf_gfx_threads_m_init (TfGfxThreadsM *tm,
+                       gpointer (*func)(gpointer arg1),
+                       MTfThread *data);
 
 GObject *
 _tf_gfx_threads_new (void);
@@ -42,9 +46,16 @@ TfGfxThreads *
 tf_gfx_threads_get_instance (void);
 
 void
-tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id, GThread *thread, MTfThread *data);
+tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,
+    gpointer (*func1)(gpointer arg1), MTfThread *data);
+
+void
+tf_gfx_threads_start (TfGfxThreads *self);
 
 TfGfxThreadsM *
 tf_gfx_threads_get (TfGfxThreads *self, enum TfThreadEnum id);
+
+MTfThread *
+tf_gfx_threads_get_data (TfGfxThreads *self, enum TfThreadEnum id);
 
 %}

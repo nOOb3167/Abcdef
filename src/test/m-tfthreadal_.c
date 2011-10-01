@@ -133,13 +133,13 @@ _m_tfthreadal_process_incoming_one (MTfThreadAl *self, ALLEGRO_EVENT *ev)
       TfGfxThreads *tgt;
       tgt = tf_gfx_threads_get_instance ();
 
-      TfGfxThreadsM *tm;
-      tm = tf_gfx_threads_get (tgt, TF_THREAD_COGL);
+      MTfThread *tm;
+      tm = tf_gfx_threads_get_data (tgt, TF_THREAD_COGL);
 
       /**
        * Send refs its argument so no g_object_ref necessary here.
        */
-      m_tfthread_send (tm->data, M_TFMSG (mm));
+      m_tfthread_send (tm, M_TFMSG (mm));
 
       g_object_unref (mm);
 

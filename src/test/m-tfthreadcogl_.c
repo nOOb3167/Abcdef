@@ -67,10 +67,10 @@ _m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg)
       TfGfxThreads *tgt;
       tgt = tf_gfx_threads_get_instance ();
 
-      TfGfxThreadsM *tm;
-      tm = tf_gfx_threads_get (tgt, TF_THREAD_ALLEGRO);
+      MTfThread *tm;
+      tm = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO);
 
-      m_tfthread_send (tm->data, M_TFMSG (mm));
+      m_tfthread_send (tm, M_TFMSG (mm));
 
       g_object_unref (mm);
 
