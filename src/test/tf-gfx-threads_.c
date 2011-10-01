@@ -3,7 +3,7 @@
 NX_GET_NEW (tf_gfx_threads);
 
 GObject *
-tf_gfx_threads_new (void)
+_tf_gfx_threads_new (void)
 {
   TfGfxThreads *self;
   GObject *par;
@@ -15,6 +15,16 @@ tf_gfx_threads_new (void)
                                          g_free, g_free);
 
   return G_OBJECT (self);
+}
+
+TfGfxThreads *
+tf_gfx_threads_get_instance (void)
+{
+  static TfGfxThreads *tgt = NULL;
+  if (NULL == tgt)
+      tgt = TF_GFX_THREADS (_tf_gfx_threads_new ());
+  g_xassert (tgt);
+  return tgt;
 }
 
 void

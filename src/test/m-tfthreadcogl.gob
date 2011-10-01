@@ -6,11 +6,28 @@
 
 class M:TfThreadCogl from M:TfThread
 {
+  public GAsyncQueue *qu_in
+    unrefwith g_async_queue_unref;
+    
+  class_init (self)
+  {
+    MTfThreadClass *parent = M_TFTHREAD_CLASS (self);
+  	parent->send = m_tfthreadcogl_send_;
+  }
 }
 
 %adh{
 
 GObject *
 m_tfthreadcogl_new (void);
+
+void
+m_tfthreadcogl_send_ (MTfThread *self, MTfMsg * msg);
+
+void
+m_tfthreadcogl_event_loop_enter (MTfThreadCogl *self);
+
+void
+_m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg);
 
 %}

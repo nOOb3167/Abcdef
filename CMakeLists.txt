@@ -72,10 +72,12 @@ GOB2IZE(src/mai-info-win.gob)
 GOB2IZE(src/test/m-tfmsg.gob)
 GOB2IZE(src/test/m-tfmsg-heartbeat.gob)
 GOB2IZE(src/test/m-tfmsg-fbup.gob)
+GOB2IZE(src/test/m-tfmsg-redraw.gob)
 GOB2IZE(src/test/m-tfthread.gob)
 GOB2IZE(src/test/m-tfthreadal.gob)
 GOB2IZE(src/test/m-tfthreadcogl.gob)
 GOB2IZE(src/test/tf-gfx-threads.gob)
+
 
 ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
@@ -127,6 +129,7 @@ ADD_EXECUTABLE(sr_mt
  src/test/m-tfmsg-fbup.c src/test/m-tfmsg-fbup_.c
  src/test/m-tfthread.c src/test/m-tfthread_.c
  src/test/m-tfthreadal.c src/test/m-tfthreadal_.c
+ src/test/m-tfthreadcogl.c src/test/m-tfthreadcogl_.c
  src/test/tf-gfx-threads.c src/test/tf-gfx-threads_.c)
 TARGET_LINK_LIBRARIES(sr_mt nx_ai ${ALLEGRO_LIBRARIES} ${GTK2_LIBRARIES} ${COGL_LIBRARIES} opengl32 assimp)
 SET_TARGET_PROPERTIES(sr_mt PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

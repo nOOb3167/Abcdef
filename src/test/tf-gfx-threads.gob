@@ -33,7 +33,10 @@ void
 tf_gfx_threads_m_init (TfGfxThreadsM *tm, GThread *thread, MTfThread *data);
 
 GObject *
-tf_gfx_threads_new (void);
+_tf_gfx_threads_new (void);
+
+TfGfxThreads *
+tf_gfx_threads_get_instance (void);
 
 void
 tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id, GThread *thread, MTfThread *data);

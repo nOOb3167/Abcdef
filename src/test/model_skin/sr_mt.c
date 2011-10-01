@@ -7,6 +7,7 @@
 #include <src/test/m-tfmsg-fbup.h>
 #include <src/test/m-tfthread.h>
 #include <src/test/m-tfthreadal.h>
+#include <src/test/m-tfthreadcogl.h>
 #include <src/test/tf-gfx-threads.h>
 #include <sr.h>
 
@@ -129,7 +130,7 @@ tf_cogl_texture_get_data (CoglHandle texture, gchar **data_out, gint *size_out)
 }
 
 gpointer
-tf_init_cogl (gpointer data)
+tf_init_cogl_x (gpointer data)
 {
   struct TfSharedData *sha;
   int width, height;
@@ -175,6 +176,17 @@ tf_init_allegro_timer (gpointer data)
   return NULL;
 }
 
+gpointer
+tf_init_cogl (gpointer data)
+{
+  MTfThreadCogl *mtta;
+  mtta = M_TFTHREADCOGL (data);
+
+  m_tfthreadcogl_event_loop_enter (mtta);
+
+  return NULL;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -193,13 +205,36 @@ main (int argc, char **argv)
   MTfThreadAl *mtta;
   mtta = M_TFTHREADAL (m_tfthreadal_new ());
 
+  MTfThreadAl *mttc;
+  mttc = M_TFTHREADAL (m_tfthreadcogl_new ());
+
   GThread *gfx_threads[TF_NUM_THREADS];
   gfx_threads[TF_THREAD_ALLEGRO] = g_thread_create (tf_init_allegro, sha, TRUE, NULL);
   gfx_threads[TF_THREAD_ALLEGRO_TIMER] = g_thread_create (tf_init_allegro_timer,
                                                              mtta,
                                                              TRUE,
                                                              NULL);
-  gfx_threads[TF_THREAD_COGL] = g_thread_create (tf_init_cogl, sha, TRUE, NULL);
+  gfx_threads[TF_THREAD_COGL] = g_thread_create (tf_init_cogl_x, sha, TRUE, NULL);
+
+  TfGfxThreads *tgt;
+  tgt = tf_gfx_threads_get_instance ();
+  tf_gfx_threads_add (tgt,
+                      TF_THREAD_ALLEGRO_TIMER,
+                      g_thread_create (tf_init_allegro_timer,
+                                       mtta,
+                                       TRUE,
+                                       NULL),
+                      M_TFTHREAD (mtta));
+  tf_gfx_threads_add (tgt,
+                      TF_THREAD_COGL,
+                      g_thread_create (tf_init_cogl,
+                                       mttc,
+                                       TRUE,
+                                       NULL),
+                      M_TFTHREAD (mttc));
+
+
+  TfGfxThreadsM *tm = tf_gfx_threads_get (tgt, TF_THREAD_ALLEGRO_TIMER);
 
   for (int i = 0; i < TF_NUM_THREADS; ++ i)
     {
