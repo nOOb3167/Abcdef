@@ -2,6 +2,7 @@ GOB2IZE(nx-base.gob)
 GOB2IZE(nx-derived.gob)
 
 ADD_EXECUTABLE(mgob2 main.c
+ ${CMAKE_SOURCE_DIR}/src/error.c
  ${CMAKE_CURRENT_BINARY_DIR}/nx-base.c
  ${CMAKE_CURRENT_BINARY_DIR}/nx-derived.c)
 TARGET_LINK_LIBRARIES(mgob2 ${GTK2_LIBRARIES})
@@ -9,6 +10,7 @@ TARGET_LINK_LIBRARIES(mgob2 ${GTK2_LIBRARIES})
 GOB2IZE(mgob-x1.gob)
 
 ADD_EXECUTABLE(test_gvalue test_gvalue.c
+ ${CMAKE_SOURCE_DIR}/src/error.c
  ${CMAKE_CURRENT_BINARY_DIR}/mgob-x1.c
  ${CMAKE_CURRENT_SOURCE_DIR}/mgob-x1_funcs.c)
 TARGET_LINK_LIBRARIES(test_gvalue ${GTK2_LIBRARIES})

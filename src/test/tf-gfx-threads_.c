@@ -47,7 +47,7 @@ tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,
     gpointer (*func1)(gpointer arg1), MTfThread *data)
 {
   TfGfxThreadsM *tm;
-  enum TfThreadEnum *key;
+  gint *key;
 
   g_mutex_lock (self->mmutex);
   {

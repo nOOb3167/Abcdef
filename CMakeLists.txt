@@ -38,8 +38,8 @@ LINK_DIRECTORIES(
 
 #-mthreads required on mingw for mtsafe exception handling, just saying
 
-ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
-#ADD_DEFINITIONS(-DX_ERROR_STACK_TRACE_INSTEAD_OF_ASSERT)
+#ADD_DEFINITIONS(-DX_ERROR_ASSERT_INSTEAD_OF_STACK_TRACE)
+ADD_DEFINITIONS(-DX_ERROR_STACK_TRACE_INSTEAD_OF_ASSERT)
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
@@ -55,7 +55,10 @@ ADD_SUBDIRECTORY(src)
 GOB2IZE(src/ab-cd.gob)
 GOB2IZE(src/ab-cd-alt.gob)
 
-ADD_EXECUTABLE(MGob MGob.c src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
+ADD_EXECUTABLE(MGob
+ MGob.c
+ src/error.c
+ src/ab-cd.c src/ab-cd-alt_funcs.c src/ab-cd-alt.c)
 TARGET_LINK_LIBRARIES(MGob ${GTK2_LIBRARIES})
 
 ADD_EXECUTABLE(Main Main.cpp)
