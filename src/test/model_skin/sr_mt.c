@@ -249,24 +249,11 @@ main (int argc, char **argv)
                       tf_init_allegro,
                       M_TFTHREAD (mttallegro));
 
-//  tf_gfx_threads_add (tgt,
-//                      TF_THREAD_ALLEGRO_TIMER,
-//                      g_thread_create (tf_init_allegro_timer,
-//                                       mtta,
-//                                       TRUE,
-//                                       NULL),
-//                      M_TFTHREAD (mtta));
-
   tf_gfx_threads_start (tgt);
 
   MTfThread *tm = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO_TIMER);
   MTfThread *tm2 = tf_gfx_threads_get_data (tgt, TF_THREAD_COGL);
   MTfThread *tm3 = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO);
-
-//  for (int i = 0; i < TF_NUM_THREADS; ++ i)
-//    {
-//      g_thread_join (gfx_threads[i]);
-//    }
 
   MaiInfoWin *iw;
   iw = MAI_INFO_WIN (mai_info_win_new ());
