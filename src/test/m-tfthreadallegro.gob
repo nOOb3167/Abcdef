@@ -1,0 +1,48 @@
+%header{
+#include <src/error.h>
+#include <src/array_macro.h>
+#include <src/test/m-tfthread.h>
+
+#include <allegro5/allegro.h>
+#include <src/gfx_lib_setup.h>
+#include <src/test/m-tfmsg-fbup.h>
+%}
+
+class M:TfThreadAllegro from M:TfThread
+{
+  public GAsyncQueue *qu_in
+    unrefwith g_async_queue_unref;
+    
+  public gboolean inited;
+  
+  /* Should be initialized inthread */
+  public ALLEGRO_DISPLAY *disp;
+    
+  class_init (self)
+  {
+    MTfThreadClass *parent = M_TFTHREAD_CLASS (self);
+  	parent->send = m_tfthreadallegro_send_;
+  }
+}
+
+%adh{
+
+GObject *
+m_tfthreadallegro_new (void);
+
+void
+m_tfthreadallegro_init_inthread (MTfThreadAllegro *self);
+
+void
+m_tfthreadallegro_send_ (MTfThread *self, MTfMsg * msg);
+
+void
+m_tfthreadallegro_event_loop_enter (MTfThreadAllegro *self);
+
+void
+_m_tfthreadallegro_process_incoming_one (MTfThreadAllegro *self, MTfMsg *msg);
+
+void
+_m_tfthreadallegro_display_transfer (ALLEGRO_DISPLAY *disp, MTfMsgFbUp *mm);
+
+%}
