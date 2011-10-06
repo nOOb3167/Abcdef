@@ -2,12 +2,17 @@
 #include <src/error.h>
 #include <src/array_macro.h>
 #include <src/test/m-tfthread.h>
+
+#include <src/cogl_include.h>
+#include <src/gfx_lib_setup.h>
 %}
 
 class M:TfThreadCogl from M:TfThread
 {
   public GAsyncQueue *qu_in
     unrefwith g_async_queue_unref;
+    
+  public gboolean inited;
     
   class_init (self)
   {
@@ -20,6 +25,9 @@ class M:TfThreadCogl from M:TfThread
 
 GObject *
 m_tfthreadcogl_new (void);
+
+void
+m_tfthreadcogl_init_inthread (MTfThreadCogl *self);
 
 void
 m_tfthreadcogl_send_ (MTfThread *self, MTfMsg * msg);

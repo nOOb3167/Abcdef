@@ -19,7 +19,23 @@ m_tfthreadcogl_new (void)
   self->qu_in = g_async_queue_new ();
   g_xassert (self->qu_in);
 
+  self->inited = FALSE;
+
   return G_OBJECT (self);
+}
+
+void
+m_tfthreadcogl_init_inthread (MTfThreadCogl *self)
+{
+  gint width, height;
+  CoglHandle ofs, tx;
+
+  width = 640;
+  height = 480;
+
+  _cogl_setup (width, height, &ofs, &tx);
+
+  self->inited = TRUE;
 }
 
 void
@@ -35,6 +51,8 @@ m_tfthreadcogl_send_ (MTfThread *self, MTfMsg * msg)
 void
 m_tfthreadcogl_event_loop_enter (MTfThreadCogl *self)
 {
+  g_xassert (self->inited);
+
   while (TRUE)
     {
       MTfMsg *msg;

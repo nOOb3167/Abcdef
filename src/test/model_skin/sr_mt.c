@@ -184,6 +184,7 @@ tf_init_cogl (gpointer data)
   MTfThreadCogl *mtta;
   mtta = M_TFTHREADCOGL (data);
 
+  m_tfthreadcogl_init_inthread (mtta);
   m_tfthreadcogl_event_loop_enter (mtta);
 
   return NULL;
