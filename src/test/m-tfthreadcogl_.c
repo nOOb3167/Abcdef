@@ -27,13 +27,7 @@ m_tfthreadcogl_new (void)
 void
 m_tfthreadcogl_init_inthread (MTfThreadCogl *self)
 {
-  gint width, height;
-  CoglHandle ofs, tx;
-
-  width = 640;
-  height = 480;
-
-  _cogl_setup (width, height, &ofs, &tx);
+  _cogl_setup (self->width, self->height, &self->ofs, &self->tx);
 
   self->inited = TRUE;
 }
@@ -76,17 +70,26 @@ _m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg)
 
   case TF_MSGTYPE_HEARTBEAT:
     {
-      printf ("STUFF\n");
-
-      //etc tf_cogl_texture_get_data (tx, &tex_data, &tex_siz);
-      MTfMsgFbUp *mm;
-      mm = M_TFMSG_FBUP (m_tfmsg_fbup_new ("HERP", 0, 0, 0));
-
       TfGfxThreads *tgt;
-      tgt = tf_gfx_threads_get_instance ();
-
       MTfThread *tm;
+      MTfMsgFbUp *mm;
+
+      tgt = tf_gfx_threads_get_instance ();
       tm = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO);
+
+      /* This is where painting should be done */
+      {
+        CoglColor clear_color;
+        cogl_color_set_from_4ub (&clear_color, '\x80', '\x0', '\x0', 255);
+        cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);
+
+        gchar *tex_data;
+        gint tex_siz;
+        _m_tfthreadcogl_texture_get_data (self->tx, &tex_data, &tex_siz);
+
+        mm = M_TFMSG_FBUP (m_tfmsg_fbup_new (tex_data, tex_siz,
+                                             self->width, self->height));
+      }
 
       m_tfthread_send (tm, M_TFMSG (mm));
 
@@ -99,4 +102,22 @@ _m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg)
       g_xassert (("EEH MAJI, UNHANDLED MESSAGE TYPE", FALSE));
       break;
   }
+}
+
+void
+_m_tfthreadcogl_texture_get_data (CoglHandle texture, gchar **data_out, gint *size_out)
+{
+  int siz;
+  gchar *data;
+
+  siz = cogl_texture_get_data (texture, COGL_PIXEL_FORMAT_RGB_888, 0, NULL);
+  g_xassert (siz);
+
+  data = g_malloc (sizeof (*data) * siz);
+
+  siz = cogl_texture_get_data (texture, COGL_PIXEL_FORMAT_RGB_888, 0, (guint8 *)data);
+  g_xassert (siz);
+
+  *data_out = data;
+  *size_out = siz;
 }

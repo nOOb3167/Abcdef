@@ -11,9 +11,16 @@ class M:TfThreadCogl from M:TfThread
 {
   public GAsyncQueue *qu_in
     unrefwith g_async_queue_unref;
-    
+
+  public gint width = 640;
+  public gint height = 480;
+  
   public gboolean inited;
-    
+  
+  /* Destroywith please */
+  public CoglHandle ofs;
+  public CoglHandle tx;
+  
   class_init (self)
   {
     MTfThreadClass *parent = M_TFTHREAD_CLASS (self);
@@ -37,5 +44,8 @@ m_tfthreadcogl_event_loop_enter (MTfThreadCogl *self);
 
 void
 _m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg);
+
+void
+_m_tfthreadcogl_texture_get_data (CoglHandle texture, gchar **data_out, gint *size_out);
 
 %}
