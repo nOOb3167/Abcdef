@@ -2,6 +2,53 @@
 
 NX_GET_NEW (tf_gfx_threads);
 
+
+static gpointer
+tf_init_allegro_timer (gpointer data);
+
+static gpointer
+tf_init_cogl (gpointer data);
+
+static gpointer
+tf_init_allegro (gpointer data);
+
+
+gpointer
+tf_init_allegro_timer (gpointer data)
+{
+  MTfThreadAl *mtta;
+  mtta = M_TFTHREADAL (data);
+
+  m_tfthreadal_start_timer (mtta);
+  m_tfthreadal_event_loop_enter (mtta);
+
+  return NULL;
+}
+
+gpointer
+tf_init_cogl (gpointer data)
+{
+  MTfThreadCogl *mtta;
+  mtta = M_TFTHREADCOGL (data);
+
+  m_tfthreadcogl_init_inthread (mtta);
+  m_tfthreadcogl_event_loop_enter (mtta);
+
+  return NULL;
+}
+
+gpointer
+tf_init_allegro (gpointer data)
+{
+  MTfThreadAllegro *mtta;
+  mtta = M_TFTHREADALLEGRO (data);
+
+  m_tfthreadallegro_init_inthread (mtta);
+  m_tfthreadallegro_event_loop_enter (mtta);
+
+  return NULL;
+}
+
 GObject *
 _tf_gfx_threads_new (void)
 {
@@ -15,6 +62,8 @@ _tf_gfx_threads_new (void)
 
   self->threads = g_hash_table_new_full (g_int_hash, g_int_equal,
                                          g_free, g_free);
+
+  _tf_gfx_threads_add_default (self);
 
   return G_OBJECT (self);
 }
@@ -43,6 +92,31 @@ tf_gfx_threads_m_init (TfGfxThreadsM *tm,
 }
 
 void
+_tf_gfx_threads_add_default (TfGfxThreads *self)
+{
+  MTfThreadAl *mtta;
+  MTfThreadCogl *mttc;
+  MTfThreadAllegro *mttallegro;
+
+  mtta = M_TFTHREADAL (m_tfthreadal_new ());
+  mttc = M_TFTHREADCOGL (m_tfthreadcogl_new ());
+  mttallegro = M_TFTHREADALLEGRO (m_tfthreadallegro_new ());
+
+  tf_gfx_threads_add (self,
+                      TF_THREAD_ALLEGRO_TIMER,
+                      tf_init_allegro_timer,
+                      M_TFTHREAD (mtta));
+  tf_gfx_threads_add (self,
+                      TF_THREAD_COGL,
+                      tf_init_cogl,
+                      M_TFTHREAD (mttc));
+  tf_gfx_threads_add (self,
+                      TF_THREAD_ALLEGRO,
+                      tf_init_allegro,
+                      M_TFTHREAD (mttallegro));  
+}
+
+void
 tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,
     gpointer (*func1)(gpointer arg1), MTfThread *data)
 {
@@ -64,6 +138,10 @@ tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,
   g_mutex_unlock (self->mmutex);
 }
 
+/**
+ * Start all currently added by creating the actual thread
+ * using g_thread_create, then mark started.
+ */
 void
 tf_gfx_threads_start (TfGfxThreads *self)
 {

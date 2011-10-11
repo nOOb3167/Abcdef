@@ -27,6 +27,8 @@ m_tfthreadcogl_new (void)
 void
 m_tfthreadcogl_init_inthread (MTfThreadCogl *self)
 {
+  g_xassert (FALSE == self->inited);
+
   _cogl_setup (self->width, self->height, &self->ofs, &self->tx);
 
   self->inited = TRUE;
@@ -50,7 +52,6 @@ m_tfthreadcogl_event_loop_enter (MTfThreadCogl *self)
   while (TRUE)
     {
       MTfMsg *msg;
-
       msg = M_TFMSG (g_async_queue_pop (self->qu_in));
 
       _m_tfthreadcogl_process_incoming_one (self, msg);

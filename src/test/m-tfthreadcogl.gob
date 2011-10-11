@@ -21,10 +21,12 @@ class M:TfThreadCogl from M:TfThread
   public CoglHandle ofs;
   public CoglHandle tx;
   
+  signal NONE (NONE) void sig_heartbeat (self);
+
   class_init (self)
   {
     MTfThreadClass *parent = M_TFTHREAD_CLASS (self);
-  	parent->send = m_tfthreadcogl_send_;
+    parent->send = m_tfthreadcogl_send_;
   }
 }
 

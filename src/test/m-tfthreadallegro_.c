@@ -24,7 +24,7 @@ m_tfthreadallegro_new (void)
 void
 m_tfthreadallegro_init_inthread (MTfThreadAllegro *self)
 {
-  g_xassert (0 == self->inited);
+  g_xassert (FALSE == self->inited);
 
   _allegro_setup (&self->disp);
 
@@ -53,7 +53,6 @@ m_tfthreadallegro_event_loop_enter (MTfThreadAllegro *self)
   while (TRUE)
     {
       MTfMsg *msg;
-
       msg = M_TFMSG (g_async_queue_pop (self->qu_in));
 
       _m_tfthreadallegro_process_incoming_one (self, msg);

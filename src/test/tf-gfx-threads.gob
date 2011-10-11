@@ -3,6 +3,9 @@
 #include <src/array_macro.h>
 
 #include <src/test/m-tfthread.h>
+#include <src/test/m-tfthreadal.h>
+#include <src/test/m-tfthreadallegro.h>
+#include <src/test/m-tfthreadcogl.h>
 %}
 
 class Tf:Gfx:Threads from G:Object
@@ -44,6 +47,9 @@ _tf_gfx_threads_new (void);
 
 TfGfxThreads *
 tf_gfx_threads_get_instance (void);
+
+void
+_tf_gfx_threads_add_default (TfGfxThreads *self);
 
 void
 tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,

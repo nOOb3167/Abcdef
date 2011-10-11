@@ -166,42 +166,6 @@ tf_init_cogl_x (gpointer data)
   return NULL;
 }
 
-gpointer
-tf_init_allegro_timer (gpointer data)
-{
-  MTfThreadAl *mtta;
-  mtta = M_TFTHREADAL (data);
-
-  m_tfthreadal_start_timer (mtta);
-  m_tfthreadal_event_loop_enter (mtta);
-
-  return NULL;
-}
-
-gpointer
-tf_init_cogl (gpointer data)
-{
-  MTfThreadCogl *mtta;
-  mtta = M_TFTHREADCOGL (data);
-
-  m_tfthreadcogl_init_inthread (mtta);
-  m_tfthreadcogl_event_loop_enter (mtta);
-
-  return NULL;
-}
-
-gpointer
-tf_init_allegro (gpointer data)
-{
-  MTfThreadAllegro *mtta;
-  mtta = M_TFTHREADALLEGRO (data);
-
-  m_tfthreadallegro_init_inthread (mtta);
-  m_tfthreadallegro_event_loop_enter (mtta);
-
-  return NULL;
-}
-
 int
 main (int argc, char **argv)
 {
@@ -217,43 +181,9 @@ main (int argc, char **argv)
   struct TfSharedData *sha;
   sha = tf_shared_data_new ();
 
-  MTfThreadAl *mtta;
-  mtta = M_TFTHREADAL (m_tfthreadal_new ());
-
-  MTfThreadCogl *mttc;
-  mttc = M_TFTHREADCOGL (m_tfthreadcogl_new ());
-
-  MTfThreadAllegro *mttallegro;
-  mttallegro = M_TFTHREADALLEGRO (m_tfthreadallegro_new ());
-
-  GThread *gfx_threads[TF_NUM_THREADS];
-//  gfx_threads[TF_THREAD_ALLEGRO] = g_thread_create (tf_init_allegro_x, sha, TRUE, NULL);
-//  gfx_threads[TF_THREAD_ALLEGRO_TIMER] = g_thread_create (tf_init_allegro_timer,
-//                                                             mtta,
-//                                                             TRUE,
-//                                                             NULL);
-//  gfx_threads[TF_THREAD_COGL] = g_thread_create (tf_init_cogl_x, sha, TRUE, NULL);
-
   TfGfxThreads *tgt;
   tgt = tf_gfx_threads_get_instance ();
-  tf_gfx_threads_add (tgt,
-                      TF_THREAD_ALLEGRO_TIMER,
-                      tf_init_allegro_timer,
-                      M_TFTHREAD (mtta));
-  tf_gfx_threads_add (tgt,
-                      TF_THREAD_COGL,
-                      tf_init_cogl,
-                      M_TFTHREAD (mttc));
-  tf_gfx_threads_add (tgt,
-                      TF_THREAD_ALLEGRO,
-                      tf_init_allegro,
-                      M_TFTHREAD (mttallegro));
-
   tf_gfx_threads_start (tgt);
-
-  MTfThread *tm = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO_TIMER);
-  MTfThread *tm2 = tf_gfx_threads_get_data (tgt, TF_THREAD_COGL);
-  MTfThread *tm3 = tf_gfx_threads_get_data (tgt, TF_THREAD_ALLEGRO);
 
   MaiInfoWin *iw;
   iw = MAI_INFO_WIN (mai_info_win_new ());
