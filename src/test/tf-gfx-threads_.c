@@ -102,6 +102,10 @@ _tf_gfx_threads_add_default (TfGfxThreads *self)
   mttc = M_TFTHREADCOGL (m_tfthreadcogl_new ());
   mttallegro = M_TFTHREADALLEGRO (m_tfthreadallegro_new ());
 
+  void nothing (MTfThreadCogl *c, gpointer d) {printf ("HELLO\n");}
+  m_tfthreadcogl_connect__sig_heartbeat (mttc, nothing, NULL);
+  m_tfthreadcogl_sig_heartbeat (mttc);
+
   tf_gfx_threads_add (self,
                       TF_THREAD_ALLEGRO_TIMER,
                       tf_init_allegro_timer,
