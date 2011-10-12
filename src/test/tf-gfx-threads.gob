@@ -75,4 +75,8 @@ tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
                                                          gpointer arg2),
                                            GObject *ctx);
 
+void
+tf_gfx_threads_ext_cogl_heartbeat_disconnect_by_ctx (TfGfxThreads *self,
+                                                     GObject *ctx);
+
 %}

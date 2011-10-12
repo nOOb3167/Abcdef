@@ -254,8 +254,43 @@ tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
                                                          gpointer arg2),
                                            GObject *ctx)
 {
+  /**
+   * Ugh, no ref/unref just don't fuck up.
+   * Okay, scrap using the wrappers, use g_signal_connect_object.
+   * (Has some kind of auto handler disconnect and refcounting feature)
+   * (No disconnect is still useful, use the if connectedp disconnect shim)
+   */
   MTfThreadCogl *mttc;
+
+  g_xassert (("SEE COMMENT", 0));
+
   mttc = M_TFTHREADCOGL (_tf_gfx_threads_get_data_ul (self, TF_THREAD_COGL));
-  
+    
   m_tfthreadcogl_connect__sig_heartbeat (mttc, func, ctx);
+}
+
+/**
+ * Never tested or even invoked.
+ */
+void
+tf_gfx_threads_ext_cogl_heartbeat_disconnect_by_ctx (TfGfxThreads *self,
+                                                     GObject *ctx)
+{
+  guint signo;
+  gint found;
+
+  g_xassert (("SEE COMMENT IN CONNECT", 0));
+
+  signo = g_signal_lookup ("sig_heartbeat", G_TYPE_FROM_INSTANCE (self));
+  g_xassert (signo);
+  
+  found = g_signal_handlers_disconnect_matched (self,
+                                                G_SIGNAL_MATCH_ID |
+                                                G_SIGNAL_MATCH_DATA,
+                                                signo,
+                                                0,
+                                                0,
+                                                0,
+                                                ctx);
+  g_xassert (found != 0);
 }
