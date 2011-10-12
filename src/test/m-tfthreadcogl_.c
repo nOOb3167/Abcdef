@@ -80,6 +80,8 @@ _m_tfthreadcogl_process_incoming_one (MTfThreadCogl *self, MTfMsg *msg)
 
       /* This is where painting should be done */
       {
+        m_tfthreadcogl_sig_heartbeat (self);
+
         CoglColor clear_color;
         cogl_color_set_from_4ub (&clear_color, '\x80', '\x0', '\x0', 255);
         cogl_clear (&clear_color, COGL_BUFFER_BIT_COLOR | COGL_BUFFER_BIT_DEPTH);

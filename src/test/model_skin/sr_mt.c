@@ -185,6 +185,9 @@ main (int argc, char **argv)
   tgt = tf_gfx_threads_get_instance ();
   tf_gfx_threads_start (tgt);
 
+  void nothing (MTfThreadCogl *c, gpointer d) {printf ("HELLO AAA\n");}
+  tf_gfx_threads_ext_cogl_heartbeat_connect (tgt, nothing, NULL);
+
   MaiInfoWin *iw;
   iw = MAI_INFO_WIN (mai_info_win_new ());
 

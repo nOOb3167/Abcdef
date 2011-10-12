@@ -52,8 +52,10 @@ void
 _tf_gfx_threads_add_default (TfGfxThreads *self);
 
 void
-tf_gfx_threads_add (TfGfxThreads *self, enum TfThreadEnum id,
-    gpointer (*func1)(gpointer arg1), MTfThread *data);
+tf_gfx_threads_add (TfGfxThreads *self,
+                    enum TfThreadEnum id,
+                    gpointer (*func1)(gpointer arg1),
+                    MTfThread *data);
 
 void
 tf_gfx_threads_start (TfGfxThreads *self);
@@ -63,5 +65,14 @@ tf_gfx_threads_get (TfGfxThreads *self, enum TfThreadEnum id);
 
 MTfThread *
 tf_gfx_threads_get_data (TfGfxThreads *self, enum TfThreadEnum id);
+
+MTfThread *
+_tf_gfx_threads_get_data_ul (TfGfxThreads *self, enum TfThreadEnum id);
+
+void
+tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
+                                           void (*func) (MTfThreadCogl *arg1,
+                                                         gpointer arg2),
+                                           GObject *ctx);
 
 %}

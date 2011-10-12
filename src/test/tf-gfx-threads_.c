@@ -102,10 +102,6 @@ _tf_gfx_threads_add_default (TfGfxThreads *self)
   mttc = M_TFTHREADCOGL (m_tfthreadcogl_new ());
   mttallegro = M_TFTHREADALLEGRO (m_tfthreadallegro_new ());
 
-  void nothing (MTfThreadCogl *c, gpointer d) {printf ("HELLO\n");}
-  m_tfthreadcogl_connect__sig_heartbeat (mttc, nothing, NULL);
-  m_tfthreadcogl_sig_heartbeat (mttc);
-
   tf_gfx_threads_add (self,
                       TF_THREAD_ALLEGRO_TIMER,
                       tf_init_allegro_timer,
@@ -222,17 +218,44 @@ tf_gfx_threads_get (TfGfxThreads *self, enum TfThreadEnum id)
 MTfThread *
 tf_gfx_threads_get_data (TfGfxThreads *self, enum TfThreadEnum id)
 {
-  gint key;
-  TfGfxThreadsM *value;
+  MTfThread *ret;
 
   g_mutex_lock (self->mmutex);
   {
-    key = id;
-    value = g_hash_table_lookup (self->threads, &key);
-    g_xassert (value);
-    g_object_ref (value->data);
+    ret = _tf_gfx_threads_get_data_ul (self, id);
   }
   g_mutex_unlock (self->mmutex);
 
+  return ret;
+}
+
+MTfThread *
+_tf_gfx_threads_get_data_ul (TfGfxThreads *self, enum TfThreadEnum id)
+{
+  gint key;
+  TfGfxThreadsM *value;
+
+  key = id;
+  value = g_hash_table_lookup (self->threads, &key);
+  g_xassert (value);
+  g_object_ref (value->data);
+    
   return value->data;
+}
+
+/**
+ * Connects a handler.
+ * The signals purpose is essentially 'on-render'.
+ * The handler will be invoked in the context of Cogl thread.
+ */
+void
+tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
+                                           void (*func) (MTfThreadCogl *arg1,
+                                                         gpointer arg2),
+                                           GObject *ctx)
+{
+  MTfThreadCogl *mttc;
+  mttc = M_TFTHREADCOGL (_tf_gfx_threads_get_data_ul (self, TF_THREAD_COGL));
+  
+  m_tfthreadcogl_connect__sig_heartbeat (mttc, func, ctx);
 }
