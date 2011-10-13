@@ -20,6 +20,9 @@ class Tf:Gfx:Threads from G:Object
 
 %adh{
 
+typedef void (*TfGfxThreadsCoglHeartbeatHandler) (MTfThreadCogl *arg1,
+                                                  gpointer arg2);
+
 enum TfThreadEnum
 {
   TF_THREAD_ALLEGRO = 0,
@@ -69,11 +72,10 @@ tf_gfx_threads_get_data (TfGfxThreads *self, enum TfThreadEnum id);
 MTfThread *
 _tf_gfx_threads_get_data_ul (TfGfxThreads *self, enum TfThreadEnum id);
 
-void
+gulong
 tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
-                                           void (*func) (MTfThreadCogl *arg1,
-                                                         gpointer arg2),
-                                           GObject *ctx);
+                                         TfGfxThreadsCoglHeartbeatHandler func,
+                                         GObject *ctx);
 
 void
 tf_gfx_threads_ext_cogl_heartbeat_disconnect_by_ctx (TfGfxThreads *self,

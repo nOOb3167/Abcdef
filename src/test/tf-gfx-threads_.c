@@ -247,26 +247,33 @@ _tf_gfx_threads_get_data_ul (TfGfxThreads *self, enum TfThreadEnum id)
  * Connects a handler.
  * The signals purpose is essentially 'on-render'.
  * The handler will be invoked in the context of Cogl thread.
+ *
+ * g_signal_connect_object is meant to disconnect the handler
+ * when the ctx object dies.
+ * According to gobject documentation that does not happen,
+ * however it IS disabled, (Won't be called with a dead object)
+ * so no problems.
  */
-void
+gulong
 tf_gfx_threads_ext_cogl_heartbeat_connect (TfGfxThreads *self,
-                                           void (*func) (MTfThreadCogl *arg1,
-                                                         gpointer arg2),
-                                           GObject *ctx)
+                                         TfGfxThreadsCoglHeartbeatHandler func,
+                                         GObject *ctx)
 {
-  /**
-   * Ugh, no ref/unref just don't fuck up.
-   * Okay, scrap using the wrappers, use g_signal_connect_object.
-   * (Has some kind of auto handler disconnect and refcounting feature)
-   * (No disconnect is still useful, use the if connectedp disconnect shim)
-   */
   MTfThreadCogl *mttc;
+  gulong ret;
 
-  g_xassert (("SEE COMMENT", 0));
+  mttc = M_TFTHREADCOGL (_tf_gfx_threads_get_data_ul (self,
+                                                      TF_THREAD_COGL));
+      
+  ret = g_signal_connect_object (mttc,
+                                 "sig_heartbeat",
+                                 G_CALLBACK (func),
+                                 ctx,
+                                 0);
+  
+  g_xassert (0 != ret);
 
-  mttc = M_TFTHREADCOGL (_tf_gfx_threads_get_data_ul (self, TF_THREAD_COGL));
-    
-  m_tfthreadcogl_connect__sig_heartbeat (mttc, func, ctx);
+  return ret;
 }
 
 /**
@@ -276,6 +283,9 @@ void
 tf_gfx_threads_ext_cogl_heartbeat_disconnect_by_ctx (TfGfxThreads *self,
                                                      GObject *ctx)
 {
+  /**
+   * This code is wrong/outdated etc.
+   */
   guint signo;
   gint found;
 
