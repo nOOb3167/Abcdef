@@ -1,3 +1,5 @@
+/** \file */
+
 #include <src/test/tf-gfx-threads.h>
 
 NX_GET_NEW (tf_gfx_threads);
@@ -243,9 +245,8 @@ _tf_gfx_threads_get_data_ul (TfGfxThreads *self, enum TfThreadEnum id)
   return value->data;
 }
 
-/**
- * Connects a handler.
- * The signals purpose is essentially 'on-render'.
+/** 
+ * Connect 'on-render' handler.
  * The handler will be invoked in the context of Cogl thread.
  *
  * g_signal_connect_object is meant to disconnect the handler

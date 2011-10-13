@@ -1,0 +1,16 @@
+Abcdef_deps_001_2011_6_30.7z
+Build/*
+!Build/PathsCustomInclude.cmake.sample
+!Build/wr.bat
+!Build/wr_what.txt
+inst/*
+misc/*
+doc/doxygen_main/html/*
+.settings
+.project
+.cproject
+.gitignore
+GPATH
+GTAGS
+GRTAGS
+*~

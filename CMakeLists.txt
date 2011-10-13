@@ -5,6 +5,7 @@ INCLUDE(${CMAKE_SOURCE_DIR}/cmake/AlInc.cmake)
 INCLUDE(${CMAKE_SOURCE_DIR}/cmake/Unfuck.cmake)
 INCLUDE(${CMAKE_SOURCE_DIR}/cmake/PkgInc.cmake)
 INCLUDE(${CMAKE_SOURCE_DIR}/cmake/Gob2Inc.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/cmake/DoxygenInc.cmake)
 
 ALLEGRO_INCLUDE(image primitives)
 
@@ -51,6 +52,8 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 ADD_SUBDIRECTORY(src/mgob)
 ADD_SUBDIRECTORY(src/test)
 ADD_SUBDIRECTORY(src)
+
+ADD_SUBDIRECTORY(doc)
 
 GOB2IZE(src/ab-cd.gob)
 GOB2IZE(src/ab-cd-alt.gob)
