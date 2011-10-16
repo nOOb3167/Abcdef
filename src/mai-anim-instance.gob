@@ -6,13 +6,30 @@
 
 class Mai:Anim:Instance from G:Object
 {
- public Mai:Anim *anim
-   unrefwith g_object_unref;
+  /**
+   * The MaiAnim this instance was made from.
+   */
+  public Mai:Anim *anim
+    unrefwith g_object_unref;
 
- public GHashTable *name_node_map
-   destroywith g_hash_table_unref;
+  /**
+   * As a _reference_ to the MaiAnis's map,
+   * MaiAnimInstance does not own this member,
+   * so try not to modify it.
+   */
+  public GHashTable *name_node_map
+    destroywith g_hash_table_unref;
 
- public int current_frame;
+  /**
+   * Since the purpose of MaiAnimInstance is to bundle dynamic data,
+   * (In contrast to MaiAnim and similar that just wrap Assimp structures)
+   * and animations are used by being evaluated for a specific frame,
+   * (Correction: Assimp exposes the timeline by timestamp, not frame;
+   *  user supposed to compute frames_per_second, find the keyframes just
+   *  before and after the target frame time, and interpolate)
+   * this member is justified, the sr_skeletal routines
+   */
+  public int current_frame;
 
  /* Do I need this? name_node_map might obsolete it. */
  public Mai:Node *nodes
