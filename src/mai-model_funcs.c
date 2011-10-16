@@ -122,9 +122,6 @@ _nx_mai_collect_node_map (MaiNode *from)
     g_hash_table_insert (ht,
                          g_strdup (node->name), g_object_ref (node));
 
-    if (node->children->len == 0)
-        return;
-
     for (int i = 0; i < node->children->len; ++i)
         _collector (ht, MAI_NODE (g_mai_node_ptr_array_index(node->children, i)));
   }
