@@ -2,11 +2,21 @@
 #include <stdio.h>
 #include <lua.h>
 #include <lauxlib.h>
+#include <assert.h>
 
 int
 f1_c (lua_State *L)
 {
+  int ret;
+  int ctx;
+
   printf ("Continuation\n");
+
+  ret = lua_getctx (L, &ctx);
+  assert (LUA_YIELD == ret);
+
+  printf ("Ctx %d\n", ctx);
+  
   return 0;
 }
 
