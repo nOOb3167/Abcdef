@@ -4,6 +4,7 @@ SET(PCI_INCLUDED "TRUE" CACHE INTERNAL "PathsCustomInclude inclusion guard")
 
 SET(PCI_PKG_CONFIG_EXECUTABLE "${CMAKE_BINARY_DIR}/../../deps/OBS24_mingw/bin/pkg-config.exe")
 SET(PCI_PKG_CONFIG_PATH "${CMAKE_BINARY_DIR}/../../deps/OBS24_mingw/lib/pkgconfig;${CMAKE_BINARY_DIR}/../../deps/cogl_build_004/lib/pkgconfig")
+#Current PKG_CONFIG_PATH just in case: "C:/testM/Glade/OBS/OBS24/mingw/lib/pkgconfig;C:/tmp2/clutter/cogl_build_004/lib/pkgconfig;C:/tmp2/lua/lua52_beta/inst/lib/pkgconfig"
 
 #SET(PCI_ALLEGRO_ROOT_DIR "C:/NVIDIA/tmp/dev/Abcdef/deps/allegro_inst")
 SET(PCI_ALLEGRO_ROOT_DIR "${CMAKE_BINARY_DIR}/../../deps/allegro_inst")
