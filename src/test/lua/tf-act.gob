@@ -1,0 +1,42 @@
+%h{
+#include <src/error.h>
+#include <lua.h>
+%}
+
+class Tf:Act from G:Object
+{
+  public GQueue *qu;
+  public lua_State *cr;
+
+
+  public void init_d (self, lua_State *L)
+  {
+    /**
+     * From the Lua manual:
+     * There is no explicit function to close or to destroy a thread.
+     * Threads are subject to garbage collection, like any Lua object. 
+     *
+     * First it's like: "Yay, GC is great!"
+     * But then how does it track references/use?
+     * I believe I definitely need to keep a reference somewhere tracked
+     * by lua, the stack (No) or some Table. (In C Registry?).
+     * (Some subtable in the C Registry, use luaL_ref)
+     */
+
+    self->qu = g_queue_new ();
+    self->cr = lua_newthread (L);
+    g_xassert (self->cr);
+
+    //FIXME: Unbalances stack (The new thread was pushed on)
+  }
+
+  public GObject *new (lua_State *L)
+  {
+    Self *self = GET_NEW;
+    
+    self_init_d (self, L);
+
+    return G_OBJECT (self);
+  }
+
+}

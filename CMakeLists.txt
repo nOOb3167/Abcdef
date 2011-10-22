@@ -54,6 +54,7 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
 ADD_SUBDIRECTORY(src/mgob)
 ADD_SUBDIRECTORY(src/test)
+ADD_SUBDIRECTORY(src/test/lua)
 ADD_SUBDIRECTORY(src)
 
 ADD_SUBDIRECTORY(doc)
@@ -88,6 +89,7 @@ GOB2IZE(src/test/m-tfthreadallegro.gob)
 GOB2IZE(src/test/m-tfthreadcogl.gob)
 GOB2IZE(src/test/tf-gfx-threads.gob)
 
+GOB2IZE(src/test/lua/tf-act.gob)
 
 ADD_LIBRARY(nx_ai STATIC
  ${CMAKE_SOURCE_DIR}/src/gfx_lib_setup.c
@@ -159,6 +161,7 @@ TARGET_LINK_LIBRARIES(rec ${GTK2_LIBRARIES})
 SET_TARGET_PROPERTIES(rec PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 ADD_EXECUTABLE(lua1
- src/test/lua/lua1.c)
-TARGET_LINK_LIBRARIES(lua1 ${LUA52_LIBRARIES})
+ src/test/lua/lua1.c
+ src/test/lua/tf-act.c)
+TARGET_LINK_LIBRARIES(lua1 nx_ai ${GTK2_LIBRARIES} ${LUA52_LIBRARIES})
 SET_TARGET_PROPERTIES(lua1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
