@@ -37,6 +37,9 @@ void
 tf_act_cr_cfunc (TfAct *self, lua_CFunction mf);
 
 void
+tf_act_cr_lfunc_s (TfAct *self, const char *fstr);
+
+void
 tf_act_cr_resume_argless (TfAct *self);
 
 void

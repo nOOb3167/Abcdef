@@ -102,9 +102,33 @@ tf_act_cr_cfunc (TfAct *self, lua_CFunction mf)
 }
 
 void
+tf_act_cr_lfunc_s (TfAct *self, const char *fstr)
+{
+  int err;
+
+  err = luaL_loadstring (self->L, fstr);
+
+  if (LUA_OK != err)
+    {
+      printf ("ERR: %s\n", lua_tostring (self->L, -1));
+      g_xassert (FALSE);
+    }
+
+  lua_xmove (self->L, self->cr, 1);
+}
+
+void
 tf_act_cr_resume_argless (TfAct *self)
 {
-  lua_resume (self->cr, 0);
+  int err;
+
+  err = lua_resume (self->cr, 0);
+
+  if (LUA_OK != err && LUA_YIELD != err)
+    {
+      printf ("ERR: %s\n", lua_tostring (self->L, -1));
+      g_xassert (FALSE);
+    }
 }
 
 void

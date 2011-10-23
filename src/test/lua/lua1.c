@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <lua.h>
 #include <lauxlib.h>
+#include <lualib.h>
 #include <assert.h>
 #include <glib.h>
 
@@ -40,6 +41,7 @@ main (int argc, char **argv)
   g_type_init ();
 
   L = luaL_newstate ();
+  luaL_openlibs (L);
 
   TfAct *ta;
   ta = TF_ACT (tf_act_new (L));
@@ -51,7 +53,7 @@ main (int argc, char **argv)
   tf_act_cr_resume_argless (ta);
   tf_act_cr_resume_argless (ta);
 
-  tf_act_cr_cfunc (tb, f1);
+  tf_act_cr_lfunc_s (tb, "coroutine.yield (); return 0;");
   tf_act_cr_resume_argless (tb);
   tf_act_cr_resume_argless (tb);
 
