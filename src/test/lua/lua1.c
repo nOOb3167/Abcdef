@@ -40,31 +40,20 @@ main (int argc, char **argv)
   g_type_init ();
 
   L = luaL_newstate ();
-  L2 = lua_newthread (L);
-
-  lua_pushcfunction (L2, f1);
-  ret = lua_resume (L2, 0);
-
-  if (LUA_YIELD != ret)
-    {
-      printf ("FAIL |%s|\n", lua_tostring (L2, -1));
-      return EXIT_FAILURE;
-    }
-
-  ret = lua_resume (L2, 0);
-
-  if (LUA_OK != ret)
-    {
-      printf ("FAIL |%s|\n", lua_tostring (L2, -1));
-      return EXIT_FAILURE;
-    }
 
   TfAct *ta;
   ta = TF_ACT (tf_act_new (L));
 
+  TfAct *tb;
+  tb = TF_ACT (tf_act_new (L));
+
   tf_act_cr_cfunc (ta, f1);
   tf_act_cr_resume_argless (ta);
   tf_act_cr_resume_argless (ta);
+
+  tf_act_cr_cfunc (tb, f1);
+  tf_act_cr_resume_argless (tb);
+  tf_act_cr_resume_argless (tb);
 
   return EXIT_SUCCESS;
 }

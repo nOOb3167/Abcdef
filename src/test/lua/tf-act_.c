@@ -51,21 +51,7 @@ tf_act_init_d (TfAct *self, lua_State *L)
 void
 tf_act_actcr_ensure (TfAct *self)
 {
-  lua_pushvalue (self->L, LUA_REGISTRYINDEX);
-  lua_pushstring (self->L, "ActCr");
-  lua_rawget (self->L, -2);
-
-  if (lua_isnil (self->L, -1))
-    {
-      lua_pushvalue (self->L, LUA_REGISTRYINDEX);
-      lua_pushstring (self->L, "ActCr");
-      lua_newtable (self->L);
-      lua_rawset (self->L, -3);
-
-      lua_pop (self->L, 1);
-    }
-
-  lua_pop (self->L, 1);
+  _tf_act_creg_subtable_ensure_s (self, "ActCr");
 }
 
 void
@@ -119,4 +105,24 @@ void
 tf_act_cr_resume_argless (TfAct *self)
 {
   lua_resume (self->cr, 0);
+}
+
+void
+_tf_act_creg_subtable_ensure_s (TfAct *self, const char *key)
+{
+  lua_pushvalue (self->L, LUA_REGISTRYINDEX);
+  lua_pushstring (self->L, key);
+  lua_rawget (self->L, -2);
+
+  if (lua_isnil (self->L, -1))
+    {
+      lua_pushvalue (self->L, LUA_REGISTRYINDEX);
+      lua_pushstring (self->L, key);
+      lua_newtable (self->L);
+      lua_rawset (self->L, -3);
+
+      lua_pop (self->L, 1);
+    }
+
+  lua_pop (self->L, 1);
 }

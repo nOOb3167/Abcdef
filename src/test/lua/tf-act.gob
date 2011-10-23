@@ -39,4 +39,7 @@ tf_act_cr_cfunc (TfAct *self, lua_CFunction mf);
 void
 tf_act_cr_resume_argless (TfAct *self);
 
+void
+_tf_act_creg_subtable_ensure_s (TfAct *self, const char *key);
+
 %}
