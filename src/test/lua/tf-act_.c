@@ -120,7 +120,19 @@ tf_act_cr_lfunc_s (TfAct *self, const char *fstr)
 void
 tf_act_cr_resume_argless (TfAct *self)
 {
-  int err;
+  int st, err;
+
+  /**
+   * Since this is resume_argless, nothing should be on the cr thread stack.
+   * Except on the first run, then the status is LUA_OK, and a function
+   * (The coroutine's func) should be on the stack.
+   * Finishing execution should get an error code, yielding a LUA_YIELD.
+   */
+  st = lua_status (self->cr);
+  if (LUA_OK == st)
+    g_xassert (1 == lua_gettop (self->cr));
+  else
+    g_xassert (0 == lua_gettop (self->cr));
 
   err = lua_resume (self->cr, 0);
 
@@ -129,6 +141,13 @@ tf_act_cr_resume_argless (TfAct *self)
       printf ("ERR: %s\n", lua_tostring (self->L, -1));
       g_xassert (FALSE);
     }
+
+  /**
+   * Since the yield/return isn't supposed to return anything either,
+   * just drop all return values.
+   * Make a resume_argless_stdyield I guess.
+   */
+  lua_settop (self->cr, 0);
 }
 
 void
