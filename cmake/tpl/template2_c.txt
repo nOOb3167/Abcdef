@@ -1,0 +1,64 @@
+${INCLUDE_THIS_HEADER}
+
+#define SELF(x) ${TYPE_CAPS}(x)
+#define TYPE_SELF ${TAIL_THIS}_TYPE_${HEAD_THIS}
+#define SELF_CLASS(x) ${TYPE_CAPS}_CLASS(x)
+#define SELF_GET_CLASS(x) ${TYPE_CAPS}_GET_CLASS(x)
+
+typedef ${TYPE_UPPER} Self;
+typedef ${TYPE_UPPER}Class SelfClass;
+
+static void ab_cd_init (${TYPE_UPPER} * o);
+static void ab_cd_class_init (${TYPE_UPPER}Class * c);
+
+static ${TYPE_PARENT_UPPER}Class *parent_class = NULL;
+
+GType
+${TYPE_LOWER}_get_type (void)
+{
+  static GType type = 0;
+
+  if (0 == type)
+    {
+      static const GTypeInfo info = {
+          sizeof (AbCdClass),
+          (GBaseInitFunc) NULL,
+          (GBaseFinalizeFunc) NULL,
+          (GClassInitFunc) ${TYPE_LOWER}_class_init,
+          (GClassFinalizeFunc) NULL,
+          NULL /* class_data */,
+          sizeof (${TYPE_UPPER}),
+          0 /* n_preallocs */,
+          (GInstanceInitFunc) ${TYPE_LOWER}_init,
+          NULL};
+
+      type = g_type_register_static (${TAIL_PARENT}_TYPE_${HEAD_PARENT}, "${TYPE_UPPER}", &info, (GTypeFlags)0);
+    }
+
+  return type;
+}
+
+#define GET_NEW ((${TYPE_UPPER} *)g_object_new(${TYPE_LOWER}_get_type(), NULL))
+
+static void 
+${TYPE_LOWER}_init (${TYPE_UPPER} * o)
+{
+}
+
+static void 
+${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c)
+{
+  parent_class = g_type_class_ref (${TAIL_PARENT}_TYPE_${HEAD_PARENT});
+}
+
+GObject * 
+${TYPE_LOWER}_new (void)
+{
+  ${TYPE_UPPER} *self;
+  ${TYPE_PARENT_UPPER} *parent;
+
+  self = ${CHECKEDCAST_THIS} (GET_NEW);
+  par = ${CHECKEDCAST_PARENT} (self);
+
+  return G_OBJECT (self);
+}
