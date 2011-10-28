@@ -27,6 +27,6 @@ struct _${TYPE_UPPER}Class {
 
 GType	${TYPE_LOWER}_get_type	(void);
 
-AbCd * 	${TYPE_LOWER}_new	(void);
+GObject * 	${TYPE_LOWER}_new	(void);
 
 #endif /* __${CLASS_THIS}_H__ */
