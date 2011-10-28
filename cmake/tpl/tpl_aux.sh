@@ -142,9 +142,8 @@ toupper "${RET}"
 TAIL_PARENT="$(echo $RET | tr : _)"
 
 
-ctonc "$CLASS_THIS"
-toupper "${RET}"
-TYPE_CAPS="$RET"
+toupper "${CLASS_THIS}"
+TYPE_CAPS="$(echo $RET | tr : _)"
 
 #sub_all_into template_file out_file
 sub_all_into ()
@@ -166,6 +165,8 @@ sub_all_into ()
     -e "s^\${CHECKEDCAST_PARENT}^${CHECKEDCAST_PARENT}^g" \
     -e "s/\${HEAD_THIS}/${HEAD_THIS}/g" \
     -e "s/\${TAIL_THIS}/${TAIL_THIS}/g" \
+    -e "s/\${HEAD_PARENT}/${HEAD_PARENT}/g" \
+    -e "s/\${TAIL_PARENT}/${TAIL_PARENT}/g" \
     -e "s/\${TYPE_CAPS}/${TYPE_CAPS}/g" \
     "${TEMPLATE_FILE}" \
     > "${OUTPUT_FILE}"

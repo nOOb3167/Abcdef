@@ -4,12 +4,13 @@ ${INCLUDE_THIS_HEADER}
 #define TYPE_SELF ${TAIL_THIS}_TYPE_${HEAD_THIS}
 #define SELF_CLASS(x) ${TYPE_CAPS}_CLASS(x)
 #define SELF_GET_CLASS(x) ${TYPE_CAPS}_GET_CLASS(x)
+#define GET_NEW ((${TYPE_UPPER} *)g_object_new(${TYPE_LOWER}_get_type(), NULL))
 
 typedef ${TYPE_UPPER} Self;
 typedef ${TYPE_UPPER}Class SelfClass;
 
-static void ab_cd_init (${TYPE_UPPER} * o);
 static void ab_cd_class_init (${TYPE_UPPER}Class * c);
+static void ab_cd_init (${TYPE_UPPER} * o);
 
 static ${TYPE_PARENT_UPPER}Class *parent_class = NULL;
 
@@ -38,17 +39,15 @@ ${TYPE_LOWER}_get_type (void)
   return type;
 }
 
-#define GET_NEW ((${TYPE_UPPER} *)g_object_new(${TYPE_LOWER}_get_type(), NULL))
-
-static void 
-${TYPE_LOWER}_init (${TYPE_UPPER} * o)
-{
-}
-
 static void 
 ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c)
 {
   parent_class = g_type_class_ref (${TAIL_PARENT}_TYPE_${HEAD_PARENT});
+}
+
+static void 
+${TYPE_LOWER}_init (${TYPE_UPPER} * o)
+{
 }
 
 GObject * 
