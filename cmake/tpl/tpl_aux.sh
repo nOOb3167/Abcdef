@@ -119,6 +119,9 @@ CHECKEDCAST_PARENT="$(echo $RET | tr : _)"
 
 
 make_outbase "$CLASS_THIS"
+OUT_BASE="${RET}"
+
+make_outbase "$CLASS_THIS"
 OUT_GOB="${RET}.gob"
 
 make_outbase "$CLASS_THIS"
