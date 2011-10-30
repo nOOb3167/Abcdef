@@ -43,13 +43,15 @@ ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c)
   parent_class = g_type_class_ref (${TAIL_PARENT}_TYPE_${HEAD_PARENT});
 
   G_OBJECT_CLASS (c)->finalize = ${TYPE_LOWER}_finalize;
-  ${TYPE_CAPS}_CLASS (c)->add = ${TYPE_LOWER}_add;
-  ${TYPE_CAPS}_CLASS (c)->index = ${TYPE_LOWER}_index;
 }
 
 static void 
 ${TYPE_LOWER}_init (${TYPE_UPPER} * o)
 {
+  o->array = g_ptr_array_new_with_free_func (g_object_unref);
+
+  ${TYPE_CAPS} (o)->add = ${TYPE_LOWER}_add;
+  ${TYPE_CAPS} (o)->index = ${TYPE_LOWER}_index;
 }
 
 static void

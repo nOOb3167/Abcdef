@@ -14,18 +14,22 @@ ${INCLUDE_PARENT_HEADER}
 
 #define ${TYPE_CAPS}_GET_CLASS(obj)	G_TYPE_INSTANCE_GET_CLASS((obj), ${TYPE_LOWER}_get_type(), ${TYPE_UPPER}Class)
 
+/* Forward Declaration */
+${VTYPE_UPPER};
+
 typedef struct _${TYPE_UPPER} ${TYPE_UPPER};
 struct _${TYPE_UPPER} {
-	${TYPE_PARENT_UPPER} __parent__;
+        ${TYPE_PARENT_UPPER} __parent__;
         GPtrArray *array;
         guint len;
+
+        void (*add) (${TYPE_UPPER} *array, ${VTYPE_UPPER} *data);
+        ${VTYPE_UPPER} * (*index) (${TYPE_UPPER} *array, int index);
 };
 
 typedef struct _${TYPE_UPPER}Class ${TYPE_UPPER}Class;
 struct _${TYPE_UPPER}Class {
-	${TYPE_PARENT_UPPER}Class __parent__;
-        void (*add) (${TYPE_UPPER} *array, ${VTYPE_UPPER} *data);
-        ${VTYPE_UPPER} (*index) (${TYPE_UPPER} *array, int index);
+        ${TYPE_PARENT_UPPER}Class __parent__;
 };
 
 
