@@ -7,8 +7,8 @@ static void ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c);
 static void ${TYPE_LOWER}_init (${TYPE_UPPER} * o);
 
 static void ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o);
-static void ${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${VTYPE_UPPER} *data);
-${VTYPE_UPPER} * ${TYPE_LOWER}_index (${TYPE_UPPER} *self, int index);
+static void ${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value);
+${VTYPE_UPPER} * ${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
 
 static ${TYPE_PARENT_UPPER}Class *parent_class = NULL;
 
@@ -48,30 +48,31 @@ ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c)
 static void 
 ${TYPE_LOWER}_init (${TYPE_UPPER} * o)
 {
-  o->array = g_ptr_array_new_with_free_func (g_object_unref);
+  o->ht = g_hash_table_new_full (${HASH_KEY_FUNC},
+                                 ${HASH_VALUE_FUNC},
+                                 ${KEY_DESTROY_FUNC),
+                                 ${VALUE_DESTROY_FUNC));
 
-  ${TYPE_CAPS} (o)->add = ${TYPE_LOWER}_add;
-  ${TYPE_CAPS} (o)->index = ${TYPE_LOWER}_index;
+  ${TYPE_CAPS} (o)->insert = ${TYPE_LOWER}_insert;
+  ${TYPE_CAPS} (o)->lookup = ${TYPE_LOWER}_lookup;
 }
 
 static void
 ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o)
 {
-  g_ptr_array_unref (o->array);
+  g_hash_table_unref (o->ht);
 }
 
 static void
-${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${VTYPE_UPPER} *data)
+${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value)
 {
-  g_ptr_array_add (self->array, data);
-  self->len = self->array->len;
+  g_hash_table_insert (self->ht, key, value);
 }
 
 ${VTYPE_UPPER} *
-${TYPE_LOWER}_index (${TYPE_UPPER} *self, int index)
+${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key)
 {
-  g_xassert (index < self->array->len);
-  return g_ptr_array_index (self->array, index);
+  return g_hash_table_lookup (self->ht, key);
 }
 
 GObject * 

@@ -15,5 +15,10 @@ main (int argc, char **argv)
   PrAbCdEf *rr;
   rr = PR_AB_CD_EF (pr_ab_cd_ef_new ());
 
+  rr->add (rr, re);
+
+  AbCdEf *elt;
+  elt = rr->index (rr, 0);
+
   return EXIT_SUCCESS;
 }
