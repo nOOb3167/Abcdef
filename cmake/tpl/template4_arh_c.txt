@@ -49,9 +49,9 @@ static void
 ${TYPE_LOWER}_init (${TYPE_UPPER} * o)
 {
   o->ht = g_hash_table_new_full (${HASH_KEY_FUNC},
-                                 ${HASH_VALUE_FUNC},
-                                 ${KEY_DESTROY_FUNC),
-                                 ${VALUE_DESTROY_FUNC));
+                                 ${EQUAL_KEY_FUNC},
+                                 ${KEY_DESTROY_FUNC},
+                                 ${VALUE_DESTROY_FUNC});
 
   ${TYPE_CAPS} (o)->insert = ${TYPE_LOWER}_insert;
   ${TYPE_CAPS} (o)->lookup = ${TYPE_LOWER}_lookup;
