@@ -174,6 +174,7 @@ SET_TARGET_PROPERTIES(crctx PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_
 ADD_EXECUTABLE(ar1
  src/test/ar/ar1.c
  src/test/ar/ab-cd-ef.c
+ src/mgob/nx-base.c
  ar/pa-base.c
  ar/pr-ab-cd-ef.c
  ar/ha-base.c

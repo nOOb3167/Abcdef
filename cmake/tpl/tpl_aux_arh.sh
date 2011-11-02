@@ -55,6 +55,7 @@ get_head ()
     RET="${1##*:}"
 }
 
+#------------------ PATH CLASS
 
 PATH_K="${1%%;*}"
 PATH_V="${2%%;*}"
@@ -64,10 +65,14 @@ CLASS_K="${1#*;}"
 CLASS_V="${2#*;}"
 CLASS_PARENT="${3#*;}"
 
+#------------------ MISC
+
 HASH_KEY_FUNC="$4"
 EQUAL_KEY_FUNC="$5"
 KEY_DESTROY_FUNC="$6"
 VALUE_DESTROY_FUNC="$7"
+
+#------------------ KTYPE VTYPE L/H
 
 tolower "$CLASS_K"
 KTYPE_LOWER="$(echo $RET | tr : _)"
@@ -81,6 +86,7 @@ VTYPE_LOWER="$(echo $RET | tr : _)"
 ctonc "$CLASS_V"
 VTYPE_UPPER="struct _$RET"
 
+#------------------ TYPE L/H and TYPE_CAPS
 
 tolower "$CLASS_K"
 _RET="hr4${RET}5"
@@ -98,19 +104,22 @@ toupper "$TYPE_LOWER"
 TYPE_CAPS="$RET"
 
 
+tolower "$CLASS_PARENT"
+TYPE_PARENT_LOWER="$(echo $RET | tr : _)"
+
+ctonc "$CLASS_PARENT"
+TYPE_PARENT_UPPER="$RET"
+
+toupper "$TYPE_PARENT_LOWER"
+TYPE_PARENT_CAPS="$RET"
+
+#------------------ INCLUDE THIS/PARENT HEADER, OUT_BASE
+
 tolower "$CLASS_K"
 _RET="hr4${RET}5"
 tolower "$CLASS_V"
 _RET="${_RET}${RET}6"
 INCLUDE_THIS_HEADER="#include <ar/$(echo ${_RET} | tr : -).h>"
-
-
-tolower "$CLASS_K"
-_RET="hr4${RET}5"
-tolower "$CLASS_V"
-_RET="${_RET}${RET}6"
-OUT_BASE="$(echo $_RET | tr : -)"
-
 
 if [ -z "$PATH_PARENT" ]
 then
@@ -120,13 +129,13 @@ else
 	INCLUDE_PARENT_HEADER="$RET"
 fi
 
+tolower "$CLASS_K"
+_RET="hr4${RET}5"
+tolower "$CLASS_V"
+_RET="${_RET}${RET}6"
+OUT_BASE="$(echo $_RET | tr : -)"
 
-tolower "$CLASS_PARENT"
-TYPE_PARENT_LOWER="$(echo $RET | tr : _)"
-
-ctonc "$CLASS_PARENT"
-TYPE_PARENT_UPPER="$RET"
-
+#------------------ HEADS TAILS
 
 toupper "$TYPE_LOWER"
 HEAD_THIS="${RET#hr}"
@@ -141,6 +150,7 @@ get_tail "$CLASS_PARENT"
 toupper "${RET}"
 TAIL_PARENT="$(echo $RET | tr : _)"
 
+#------------------ MAIN SUBSTITUTION ROUTINE
 
 #sub_all_into template_file out_file
 sub_all_into ()
@@ -155,6 +165,7 @@ sub_all_into ()
     -e "s/\${TYPE_UPPER}/${TYPE_UPPER}/g" \
     -e "s/\${TYPE_PARENT_LOWER}/${TYPE_PARENT_LOWER}/g" \
     -e "s/\${TYPE_PARENT_UPPER}/${TYPE_PARENT_UPPER}/g" \
+    -e "s/\${TYPE_PARENT_CAPS}/${TYPE_PARENT_CAPS}/g" \
     -e "s/\${NXGETNEW}/${NXGETNEW}/g" \
     -e "s^\${INCLUDE_THIS_HEADER}^${INCLUDE_THIS_HEADER}^g" \
     -e "s^\${INCLUDE_PARENT_HEADER}^${INCLUDE_PARENT_HEADER}^g" \

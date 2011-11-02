@@ -75,14 +75,14 @@ ${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key)
   return g_hash_table_lookup (self->ht, key);
 }
 
-GObject * 
+${TYPE_UPPER} * 
 ${TYPE_LOWER}_new (void)
 {
   ${TYPE_UPPER} *self;
   ${TYPE_PARENT_UPPER} *par;
 
-  self = ${CHECKEDCAST_THIS} (GET_NEW);
-  par = ${CHECKEDCAST_PARENT} (self);
+  self = ${TYPE_CAPS} (GET_NEW);
+  par = ${TYPE_PARENT_CAPS} (self);
 
-  return G_OBJECT (self);
+  return self;
 }

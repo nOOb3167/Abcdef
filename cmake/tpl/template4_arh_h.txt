@@ -22,7 +22,6 @@ typedef struct _${TYPE_UPPER} ${TYPE_UPPER};
 struct _${TYPE_UPPER} {
         ${TYPE_PARENT_UPPER} __parent__;
         GHashTable *ht;
-        guint len;
 
         void (*insert) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value);
         ${VTYPE_UPPER} * (*lookup) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
@@ -36,6 +35,6 @@ struct _${TYPE_UPPER}Class {
 
 GType	${TYPE_LOWER}_get_type	(void);
 
-GObject * 	${TYPE_LOWER}_new	(void);
+${TYPE_UPPER} * 	${TYPE_LOWER}_new	(void);
 
 #endif /* __${CLASS_THIS}_H__ */
