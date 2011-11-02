@@ -175,6 +175,8 @@ ADD_EXECUTABLE(ar1
  src/test/ar/ar1.c
  src/test/ar/ab-cd-ef.c
  ar/pa-base.c
- ar/pr-ab-cd-ef.c)
+ ar/pr-ab-cd-ef.c
+ ar/ha-base.c
+ ar/hr4ab-cd-ef5nx-base6.c)
 TARGET_LINK_LIBRARIES(ar1  nx_ai ${GTK2_LIBRARIES} ${LUA52_LIBRARIES})
 SET_TARGET_PROPERTIES(ar1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

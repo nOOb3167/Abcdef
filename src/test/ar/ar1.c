@@ -3,6 +3,7 @@
 #include <glib-object.h>
 #include <src/test/ar/ab-cd-ef.h>
 #include <ar/pr-ab-cd-ef.h>
+#include <ar/hr4ab-cd-ef5nx-base6.h>
 
 int
 main (int argc, char **argv)
@@ -19,6 +20,9 @@ main (int argc, char **argv)
 
   AbCdEf *elt;
   elt = rr->index (rr, 0);
+
+  Hr4AbCdEf5NxBase6 *hr;
+  hr = hr4ab_cd_ef5nx_base6_new ();
 
   return EXIT_SUCCESS;
 }

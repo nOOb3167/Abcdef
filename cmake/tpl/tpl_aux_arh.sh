@@ -91,7 +91,7 @@ TYPE_LOWER="$(echo $_RET | tr : _)"
 ctonc "$CLASS_K"
 _RET="Hr4${RET}5"
 ctonc "$CLASS_V"
-_RET="${RET}${_RET}6"
+_RET="${_RET}${RET}6"
 TYPE_UPPER="${_RET}"
 
 toupper "$TYPE_LOWER"
@@ -99,10 +99,18 @@ TYPE_CAPS="$RET"
 
 
 tolower "$CLASS_K"
-_RET="$hr4{RET}5"
+_RET="hr4${RET}5"
 tolower "$CLASS_V"
 _RET="${_RET}${RET}6"
-INCLUDE_THIS_HEADER="#include <ar/$(echo $RET | tr : -).h>"
+INCLUDE_THIS_HEADER="#include <ar/$(echo ${_RET} | tr : -).h>"
+
+
+tolower "$CLASS_K"
+_RET="hr4${RET}5"
+tolower "$CLASS_V"
+_RET="${_RET}${RET}6"
+OUT_BASE="$(echo $_RET | tr : -)"
+
 
 if [ -z "$PATH_PARENT" ]
 then
@@ -124,6 +132,14 @@ toupper "$TYPE_LOWER"
 HEAD_THIS="${RET#hr}"
 
 TAIL_THIS="HR"
+
+get_head "$CLASS_PARENT"
+toupper "${RET}"
+HEAD_PARENT="$(echo $RET | tr : _)"
+
+get_tail "$CLASS_PARENT"
+toupper "${RET}"
+TAIL_PARENT="$(echo $RET | tr : _)"
 
 
 #sub_all_into template_file out_file
