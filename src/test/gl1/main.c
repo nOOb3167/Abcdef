@@ -6,6 +6,7 @@
 
 #include <assimp.h>
 #include <aiScene.h>
+#include <src/error.h>
 #include <src/mai-model.h>
 
 #define xassert(exp) do { ((exp)?0:++(*((char *)0x00000010))); } while (0)
@@ -25,6 +26,19 @@ mmstuff (void)
 {
   struct aiScene *scene;
   mai_model_new_from_file ("../misc/gl1_1.dae", &scene);
+
+  g_xassert (scene->mNumMaterials >= 1);
+
+  struct aiMaterial *mat;
+  mat = scene->mMaterials[0];
+
+  struct aiColor4D col_diff;
+  g_xassert (AI_SUCCESS ==
+             aiGetMaterialColor (mat, AI_MATKEY_COLOR_DIFFUSE, &col_diff));
+
+  struct aiColor4D col_spec;
+  g_xassert (AI_SUCCESS ==
+             aiGetMaterialColor (mat, AI_MATKEY_COLOR_SPECULAR, &col_spec));
 }
 
 int
