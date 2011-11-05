@@ -4,6 +4,10 @@
 #include <allegro5/allegro_opengl.h>
 #include <assert.h>
 
+#include <assimp.h>
+#include <aiScene.h>
+#include <src/mai-model.h>
+
 #define xassert(exp) do { ((exp)?0:++(*((char *)0x00000010))); } while (0)
 
 #include <src/test/gl1/vshd_src.h>
@@ -14,6 +18,13 @@ int check_gl_error (void)
   err = glGetError ();
   if (GL_NO_ERROR != err) printf ("GLERROR: %x\n", err);
   xassert (GL_NO_ERROR == err);
+}
+
+int
+mmstuff (void)
+{
+  struct aiScene *scene;
+  mai_model_new_from_file ("../misc/gl1_1.dae", &scene);
 }
 
 int
@@ -198,6 +209,8 @@ make_fbo (void)
 int
 main (int argc, char **argv)
 {
+  g_type_init ();
+  
   al_init ();
 
   al_set_new_display_option (ALLEGRO_RED_SIZE, 8,  ALLEGRO_REQUIRE);
@@ -226,6 +239,8 @@ main (int argc, char **argv)
   xassert (4 <= glvar);
   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &glvar);
   xassert (4 <= glvar);
+
+  mmstuff ();
 
   make_fbo ();
 

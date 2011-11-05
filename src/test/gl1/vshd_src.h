@@ -7,6 +7,9 @@
  *
  * Also don't use custom attributes and fixed pipeline together
  * (If one of a vertex/fragment shader is not present, that counts as ffp!)
+ *
+ * In Blender Collada export plugin do not check "Use UV Image Mats",
+ * doing so seems not to produce material related data.
  */
 
 const GLchar *vshd_src[] = {"\

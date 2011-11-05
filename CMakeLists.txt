@@ -184,5 +184,11 @@ SET_TARGET_PROPERTIES(ar1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DI
 
 ADD_EXECUTABLE(gl1
  src/test/gl1/main.c)
-TARGET_LINK_LIBRARIES(gl1  nx_ai ${GTK2_LIBRARIES} ${ALLEGRO_LIBRARIES} opengl32)
+TARGET_LINK_LIBRARIES(gl1
+                      nx_ai
+                      ${GTK2_LIBRARIES}
+                      ${ALLEGRO_LIBRARIES}
+                      ${COGL_LIBRARIES}
+                      assimp
+                      opengl32)
 SET_TARGET_PROPERTIES(gl1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
