@@ -39,6 +39,31 @@ one_ptr_line ()
 one_hash_line ()
 {
     echo "HASH $1"
+
+    line="$1"
+
+    set x $1
+    shift
+
+    flags="$1"
+
+    case "$flags" in
+    "GG")
+      ktype="$2"
+      vtype="$3"
+      
+      if [ -z "$ktype" ] || [ -z "$vtype" ]
+      then fail 1 "GG Flags with empty ktype or vtype"; fi
+      
+      ./tpl_arh.sh ";$ktype" ";$vtype" "ar;Ha:Base" "g_direct_hash" "g_direct_equal" "g_object_unref" "g_object_unref" || fail 1 "Substitution using tpl_arh.sh failed"
+      ;;
+    "C")
+      #ok I guess, but have to recode the template to support custom destruct
+      ;;
+    *)
+      fail 1 "Unrecognized flag"
+      ;;
+    esac
 }
 
 one_list_line ()
