@@ -55,24 +55,27 @@ get_head ()
     RET="${1##*:}"
 }
 
+#------------------ PATH CLASS
+
 PATH_THIS="${1%%;*}"
 PATH_PARENT="${2%%;*}"
 
 CLASS_THIS="${1#*;}"
 CLASS_PARENT="${2#*;}"
 
+#------------------ MISC
+
+VALUE_DESTROY_FUNC="$3"
+
+#------------------ KTYPE VTYPE L/H
 
 tolower "$CLASS_THIS"
-INCLUDE_THIS_HEADER="#include <ar/pr-$(echo $RET | tr : -).h>"
+VTYPE_LOWER="$(echo $RET | tr : _)"
 
-if [ -z "$PATH_PARENT" ]
-then
-	INCLUDE_PARENT_HEADER=""
-else
-	make_include "$PATH_PARENT" "$CLASS_PARENT"
-	INCLUDE_PARENT_HEADER="$RET"
-fi
+ctonc "$CLASS_THIS"
+VTYPE_UPPER="struct _$RET"
 
+#------------------ TYPE L/H and TYPE_CAPS
 
 tolower "$CLASS_THIS"
 RET="pr_$RET"
@@ -89,10 +92,27 @@ TYPE_PARENT_LOWER="$(echo $RET | tr : _)"
 ctonc "$CLASS_PARENT"
 TYPE_PARENT_UPPER="$RET"
 
+toupper "${CLASS_THIS}"
+RET="PR_$RET"
+TYPE_CAPS="$(echo $RET | tr : _)"
+
+#------------------ INCLUDE THIS/PARENT HEADER, OUT_BASE
+
+tolower "$CLASS_THIS"
+INCLUDE_THIS_HEADER="#include <ar/pr-$(echo $RET | tr : -).h>"
+
+if [ -z "$PATH_PARENT" ]
+then
+	INCLUDE_PARENT_HEADER=""
+else
+	make_include "$PATH_PARENT" "$CLASS_PARENT"
+	INCLUDE_PARENT_HEADER="$RET"
+fi
 
 make_outbase "$CLASS_THIS"
 OUT_BASE="${RET}"
 
+#------------------ HEADS TAILS
 
 get_head "$CLASS_THIS"
 toupper "${RET}"
@@ -111,18 +131,25 @@ get_tail "$CLASS_PARENT"
 toupper "${RET}"
 TAIL_PARENT="$(echo $RET | tr : _)"
 
+#------------------ SPECIAL
 
-toupper "${CLASS_THIS}"
-RET="PR_$RET"
-TYPE_CAPS="$(echo $RET | tr : _)"
+SPECIAL_VTYPE_UPPER="${VTYPE_UPPER} *"
+SPECIAL_TOPTR="data"
+SPECIAL_INDEX="g_ptr_array_index (self->array, index)"
 
+#------------------ INT SPECIAL
 
-tolower "$CLASS_THIS"
-VTYPE_LOWER="$(echo $RET | tr : _)"
+## Int Special
+ if [ "$CLASS_THIS" = "Int" ]
+then
+    VTYPE_LOWER="int"
+    VTYPE_UPPER="int"
+    SPECIAL_VTYPE_UPPER="int"
+    SPECIAL_TOPTR="GINT_TO_POINTER (data)"
+    SPECIAL_INDEX="GPOINTER_TO_INT (g_ptr_array_index (self->array, index))"
+fi
 
-ctonc "$CLASS_THIS"
-VTYPE_UPPER="struct _$RET"
-
+#------------------ MAIN SUBSTITUTION ROUTINE
 
 #sub_all_into template_file out_file
 sub_all_into ()
@@ -149,6 +176,10 @@ sub_all_into ()
     -e "s/\${TYPE_CAPS}/${TYPE_CAPS}/g" \
     -e "s/\${VTYPE_LOWER}/${VTYPE_LOWER}/g" \
     -e "s/\${VTYPE_UPPER}/${VTYPE_UPPER}/g" \
+    -e "s/\${SPECIAL_VTYPE_UPPER}/${SPECIAL_VTYPE_UPPER}/g" \
+    -e "s/\${SPECIAL_TOPTR}/${SPECIAL_TOPTR}/g" \
+    -e "s/\${SPECIAL_INDEX}/${SPECIAL_INDEX}/g" \
+    -e "s/\${VALUE_DESTROY_FUNC}/${VALUE_DESTROY_FUNC}/g" \
     "${TEMPLATE_FILE}" \
     > "${OUTPUT_FILE}"
 }

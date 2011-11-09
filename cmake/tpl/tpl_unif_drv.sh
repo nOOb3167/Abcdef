@@ -15,25 +15,25 @@ one_ptr_line ()
     set x $1
     shift
 
-    flags="$1"
+    vflags="$1"
     type="$2"
 
-    case "$flags" in
+    shift 2
+
+    case "$vflags" in
     "G")
-      #ok
+      vdestroy="g_object_unref"
       ;;
     "C")
-      #ok I guess, but have to recode the template to support custom destruct
+      vdestroy="$1"
+      shift
       ;;
     *)
       fail 1 "Unrecognized flag"
       ;;
     esac
 
-    if [ -z "$type" ]
-    then fail 1 "No type specified"; fi
-
-    ./tpl_ar.sh ";$type" "ar;Pa:Base" || fail 1 "Substitution using tpl_ar.sh failed"
+    ./tpl_ar.sh ";$type" "ar;Pa:Base" "$vdestroy" || fail 1 "Substitution using tpl_ar.sh failed"
 }
 
 one_hash_line ()
@@ -46,24 +46,53 @@ one_hash_line ()
     shift
 
     flags="$1"
+    ktype="$2"
+    vtype="$3"
 
-    case "$flags" in
-    "GG")
-      ktype="$2"
-      vtype="$3"
-      
-      if [ -z "$ktype" ] || [ -z "$vtype" ]
-      then fail 1 "GG Flags with empty ktype or vtype"; fi
-      
-      ./tpl_arh.sh ";$ktype" ";$vtype" "ar;Ha:Base" "g_direct_hash" "g_direct_equal" "g_object_unref" "g_object_unref" || fail 1 "Substitution using tpl_arh.sh failed"
+    shift 3
+
+    kflags="${flags%%;*}"
+    vflags="${flags##*;}"
+
+    if [ -z "$ktype" ] || [ -z "$vtype" ]
+    then fail 1 "Hash with empty ktype or vtype"; fi
+
+    khash=""
+    kequal=""
+    kdestroy=""
+    vdestroy=""
+
+    case "$kflags" in
+    "G")
+      khash="g_direct_hash"
+      kequal="g_direct_equal"
+      kdestroy="g_object_unref"
       ;;
     "C")
-      #ok I guess, but have to recode the template to support custom destruct
+      khash="$1"
+      kequal="$2"
+      kdestroy="$3"
+      shift 3
       ;;
     *)
       fail 1 "Unrecognized flag"
       ;;
     esac
+
+    case "$vflags" in
+    "G")
+      vdestroy="g_object_unref"
+      ;;
+    "C")
+      vdestroy="$1"
+      shift
+      ;;
+    *)
+      fail 1 "Unrecognized flag"
+      ;;
+    esac
+
+    ./tpl_arh.sh ";$ktype" ";$vtype" "ar;Ha:Base" "$khash" "$kequal" "$kdestroy" "$vdestroy" || fail 1 "Substitution using tpl_arh.sh failed"
 }
 
 one_list_line ()

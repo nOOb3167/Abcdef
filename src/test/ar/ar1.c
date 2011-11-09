@@ -6,6 +6,7 @@
 #include <src/mgob/nx-base.h>
 #include <ar/pr-ab-cd-ef.h>
 #include <ar/hr4ab-cd-ef5nx-base6.h>
+#include <ar/pr-int.h>
 
 int
 main (int argc, char **argv)
@@ -35,6 +36,13 @@ main (int argc, char **argv)
   nx2 = hr->lookup (hr, re);
 
   g_xassert (nx2 && nx == nx2);
+
+  PrInt *pi;
+  pi = PR_INT (pr_int_new ());
+
+  gint someint;
+  pi->add (pi, someint);
+  g_xassert (someint == pi->index (pi, 0));
 
   return EXIT_SUCCESS;
 }

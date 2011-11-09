@@ -7,8 +7,8 @@ static void ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c);
 static void ${TYPE_LOWER}_init (${TYPE_UPPER} * o);
 
 static void ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o);
-static void ${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${VTYPE_UPPER} *data);
-${VTYPE_UPPER} * ${TYPE_LOWER}_index (${TYPE_UPPER} *self, int index);
+static void ${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${SPECIAL_VTYPE_UPPER} data);
+${SPECIAL_VTYPE_UPPER} ${TYPE_LOWER}_index (${TYPE_UPPER} *self, int index);
 
 static ${TYPE_PARENT_UPPER}Class *parent_class = NULL;
 
@@ -48,7 +48,7 @@ ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c)
 static void 
 ${TYPE_LOWER}_init (${TYPE_UPPER} * o)
 {
-  o->array = g_ptr_array_new_with_free_func (g_object_unref);
+  o->array = g_ptr_array_new_with_free_func (${VALUE_DESTROY_FUNC});
 
   ${TYPE_CAPS} (o)->add = ${TYPE_LOWER}_add;
   ${TYPE_CAPS} (o)->index = ${TYPE_LOWER}_index;
@@ -61,20 +61,22 @@ ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o)
 }
 
 static void
-${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${VTYPE_UPPER} *data)
+${TYPE_LOWER}_add (${TYPE_UPPER} *self, ${SPECIAL_VTYPE_UPPER} data)
 {
-  g_ptr_array_add (self->array, data);
+  /* data or GINT_TO_POINTER (data), depending whether Int Special */
+  g_ptr_array_add (self->array, ${SPECIAL_TOPTR});
   self->len = self->array->len;
 }
 
-${VTYPE_UPPER} *
+${SPECIAL_VTYPE_UPPER}
 ${TYPE_LOWER}_index (${TYPE_UPPER} *self, int index)
 {
   g_xassert (index < self->array->len);
-  return g_ptr_array_index (self->array, index);
+
+  return ${SPECIAL_INDEX};
 }
 
-GObject * 
+${TYPE_UPPER} * 
 ${TYPE_LOWER}_new (void)
 {
   ${TYPE_UPPER} *self;
@@ -83,5 +85,5 @@ ${TYPE_LOWER}_new (void)
   self = ${CHECKEDCAST_THIS} (GET_NEW);
   par = ${CHECKEDCAST_PARENT} (self);
 
-  return G_OBJECT (self);
+  return self;
 }

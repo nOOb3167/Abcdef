@@ -1,3 +1,4 @@
 P G Ab:Cd:Ef
-P C Nx:Base
-H GG Ab:Cd:Ef Nx:Base
+P C Nx:Base g_object_unref
+P C Int NULL
+H G;G Ab:Cd:Ef Nx:Base
