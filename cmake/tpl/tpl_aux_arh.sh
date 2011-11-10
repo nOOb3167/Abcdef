@@ -150,6 +150,25 @@ get_tail "$CLASS_PARENT"
 toupper "${RET}"
 TAIL_PARENT="$(echo $RET | tr : _)"
 
+#------------------ SPECIAL
+
+SPECIAL_VTYPE_UPPER="${VTYPE_UPPER} *"
+SPECIAL_TOPTR="value"
+SPECIAL_INDEX="g_hash_table_lookup (self->ht, key)"
+
+#------------------ INT SPECIAL
+
+## Int Special
+ if [ "$CLASS_V" = "Int" ]
+then
+    echo "Int Special"
+    VTYPE_LOWER="int"
+    VTYPE_UPPER="int"
+    SPECIAL_VTYPE_UPPER="int"
+    SPECIAL_TOPTR="GINT_TO_POINTER (value)"
+    SPECIAL_INDEX="GPOINTER_TO_INT (g_hash_table_lookup (self->ht, key))"
+fi
+
 #------------------ MAIN SUBSTITUTION ROUTINE
 
 #sub_all_into template_file out_file
@@ -180,6 +199,9 @@ sub_all_into ()
     -e "s/\${VTYPE_UPPER}/${VTYPE_UPPER}/g" \
     -e "s/\${KTYPE_LOWER}/${KTYPE_LOWER}/g" \
     -e "s/\${KTYPE_UPPER}/${KTYPE_UPPER}/g" \
+    -e "s/\${SPECIAL_VTYPE_UPPER}/${SPECIAL_VTYPE_UPPER}/g" \
+    -e "s/\${SPECIAL_TOPTR}/${SPECIAL_TOPTR}/g" \
+    -e "s/\${SPECIAL_INDEX}/${SPECIAL_INDEX}/g" \
     -e "s/\${HASH_KEY_FUNC}/${HASH_KEY_FUNC}/g" \
     -e "s/\${EQUAL_KEY_FUNC}/${EQUAL_KEY_FUNC}/g" \
     -e "s/\${KEY_DESTROY_FUNC}/${KEY_DESTROY_FUNC}/g" \

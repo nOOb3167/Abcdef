@@ -7,8 +7,8 @@ static void ${TYPE_LOWER}_class_init (${TYPE_UPPER}Class * c);
 static void ${TYPE_LOWER}_init (${TYPE_UPPER} * o);
 
 static void ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o);
-static void ${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value);
-${VTYPE_UPPER} * ${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
+static void ${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${SPECIAL_VTYPE_UPPER} value);
+${SPECIAL_VTYPE_UPPER} ${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
 
 static ${TYPE_PARENT_UPPER}Class *parent_class = NULL;
 
@@ -64,15 +64,15 @@ ${TYPE_LOWER}_finalize (${TYPE_UPPER} * o)
 }
 
 static void
-${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value)
+${TYPE_LOWER}_insert (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${SPECIAL_VTYPE_UPPER} value)
 {
-  g_hash_table_insert (self->ht, key, value);
+  g_hash_table_insert (self->ht, key, ${SPECIAL_TOPTR});
 }
 
-${VTYPE_UPPER} *
+${SPECIAL_VTYPE_UPPER}
 ${TYPE_LOWER}_lookup (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key)
 {
-  return g_hash_table_lookup (self->ht, key);
+  return ${SPECIAL_INDEX};
 }
 
 ${TYPE_UPPER} * 

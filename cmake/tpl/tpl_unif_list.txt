@@ -2,3 +2,4 @@ P G Ab:Cd:Ef
 P C Nx:Base g_object_unref
 P C Int NULL
 H G;G Ab:Cd:Ef Nx:Base
+H G;G Ab:Cd:Ef Int

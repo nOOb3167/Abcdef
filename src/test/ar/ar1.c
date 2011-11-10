@@ -7,6 +7,7 @@
 #include <ar/pr-ab-cd-ef.h>
 #include <ar/hr4ab-cd-ef5nx-base6.h>
 #include <ar/pr-int.h>
+#include <ar/hr4ab-cd-ef5int6.h>
 
 int
 main (int argc, char **argv)
@@ -38,11 +39,17 @@ main (int argc, char **argv)
   g_xassert (nx2 && nx == nx2);
 
   PrInt *pi;
-  pi = PR_INT (pr_int_new ());
+  pi = pr_int_new ();
 
   gint someint;
   pi->add (pi, someint);
   g_xassert (someint == pi->index (pi, 0));
+
+  Hr4AbCdEf5Int6 *ai;
+  ai = hr4ab_cd_ef5int6_new ();
+
+  ai->insert (ai, re, 1234);
+  g_xassert (1234 == ai->lookup (ai, re));
 
   return EXIT_SUCCESS;
 }

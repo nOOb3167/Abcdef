@@ -23,8 +23,8 @@ struct _${TYPE_UPPER} {
         ${TYPE_PARENT_UPPER} __parent__;
         GHashTable *ht;
 
-        void (*insert) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${VTYPE_UPPER} *value);
-        ${VTYPE_UPPER} * (*lookup) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
+        void (*insert) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key, ${SPECIAL_VTYPE_UPPER} value);
+        ${SPECIAL_VTYPE_UPPER} (*lookup) (${TYPE_UPPER} *self, ${KTYPE_UPPER} *key);
 };
 
 typedef struct _${TYPE_UPPER}Class ${TYPE_UPPER}Class;
